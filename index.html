@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="JAMB CBT"/>
 <link rel="manifest" id="pwaManifest"/>
+<link rel="icon" type="image/svg+xml" id="faviconLink"/>
+<link rel="apple-touch-icon" id="appleTouchIcon"/>
 <title>JAMB CBT Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
@@ -230,6 +232,7 @@ input,select{font-family:inherit}
 .result-actions button{padding:12px 26px;border-radius:10px;font-size:14px;font-weight:700}
 .btn-retake{background:var(--g1);color:#fff;box-shadow:0 4px 14px rgba(0,70,0,.3)}
 .btn-retake:hover{background:var(--g2)}
+.btn-retake:disabled,.btn-retake[disabled]{background:#9ca3af;box-shadow:none;cursor:not-allowed;opacity:.6}
 .btn-review-all{background:#fff;color:var(--g1);border:2px solid var(--g2)}
 .btn-review-all:hover{background:var(--bg)}
 .btn-setup{background:var(--bg);color:var(--muted);border:2px solid var(--border)}
@@ -476,7 +479,7 @@ input,select{font-family:inherit}
     </div>
     <div class="subj-perf" id="subjPerf"></div>
     <div class="result-actions">
-      <button class="btn-retake" onclick="retake()">Retake Exam</button>
+      <button id="retakeBtn" class="btn-retake" onclick="retake()">Retake Exam</button>
       <button class="btn-review-all" onclick="goReview()">Review Answers</button>
       <button class="btn-setup" onclick="goSetup()">New Setup</button>
     </div>
@@ -1140,6 +1143,15 @@ function show(id){
   const ct=document.getElementById('calcToggle');
   const cp=document.getElementById('calcPanel');
   if(id==='exam'){ct.style.display='flex'}else{ct.style.display='none';cp.classList.add('hidden')}
+  // Re-apply retake block if user reviewed
+  if(id==='result'&&window._hasReviewed){
+    const retakeBtn=document.getElementById('retakeBtn');
+    if(retakeBtn){
+      retakeBtn.disabled=true;
+      retakeBtn.title='Review complete — use New Setup for a fresh exam';
+      retakeBtn.textContent='Retake Locked';
+    }
+  }
 }
 
 function goInstructions(){
@@ -1242,6 +1254,9 @@ function startExam(){
   const subjects=window._selectedSubjects;
   const qPerSubject=window._qCount;
   questions=[];
+
+  // Reset used indices so every exam session gets freshly shuffled questions
+  Object.keys(usedIndices).forEach(k=>delete usedIndices[k]);
 
   subjects.forEach(sub=>{
     let picked;
@@ -1398,6 +1413,13 @@ function confirmSubmit(){
 function closeModal(){document.getElementById('submitModal').classList.remove('active');}
 
 function goReview(){
+  // Mark that user has reviewed — retake is now blocked
+  window._hasReviewed = true;
+  const retakeBtn = document.getElementById('retakeBtn');
+  if(retakeBtn){
+    retakeBtn.disabled = true;
+    retakeBtn.title = 'Start a new exam from Setup to try again';
+  }
   const letters=['A','B','C','D'];
   const cards=lastExamQuestions.map((q,idx)=>{
     const userAns=lastExamAnswers[q.id];
@@ -1431,8 +1453,22 @@ function goReview(){
   show('review');
 }
 
-function retake(){clearInterval(timerInterval);startExam();}
-function goSetup(){clearInterval(timerInterval);show('setup');}
+function retake(){
+  if(window._hasReviewed){
+    alert('You cannot retake after reviewing answers. Please use "New Setup" to start a fresh exam.');
+    return;
+  }
+  clearInterval(timerInterval);
+  startExam();
+}
+function goSetup(){
+  clearInterval(timerInterval);
+  window._hasReviewed=false;
+  // Reset retake button in case user comes back
+  const retakeBtn=document.getElementById('retakeBtn');
+  if(retakeBtn){retakeBtn.disabled=false;retakeBtn.title='';}
+  show('setup');
+}
 
 // CALCULATOR
 let calcStr='',calcHasResult=false;
@@ -1601,17 +1637,72 @@ window.submitExam=function(){
 
 // ═══════ PWA SETUP ═══════
 (function initPWA(){
-  // Inline manifest via blob
+  // ── SVG Favicon ──
+  const faviconSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#004d00"/>
+        <stop offset="100%" stop-color="#16a34a"/>
+      </linearGradient>
+    </defs>
+    <rect width="64" height="64" rx="14" fill="url(%23bg)"/>
+    <text x="32" y="26" font-family="Georgia,serif" font-size="13" font-weight="900" fill="%23fff" text-anchor="middle" dominant-baseline="middle" letter-spacing="0.5">JAMB</text>
+    <rect x="10" y="30" width="44" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
+    <text x="32" y="45" font-family="Georgia,serif" font-size="11" font-weight="700" fill="%23f59e0b" text-anchor="middle" dominant-baseline="middle" letter-spacing="1">CBT</text>
+    <circle cx="52" cy="12" r="5" fill="%23f59e0b"/>
+    <text x="52" y="12.5" font-family="Georgia,serif" font-size="7" font-weight="900" fill="%23004d00" text-anchor="middle" dominant-baseline="middle">✓</text>
+  </svg>`;
+
+  const faviconBlob = new Blob([faviconSVG], {type:'image/svg+xml'});
+  const faviconUrl = URL.createObjectURL(faviconBlob);
+  const faviconLink = document.getElementById('faviconLink');
+  if(faviconLink) faviconLink.href = faviconUrl;
+
+  // Apple touch icon (PNG-like via canvas)
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 180; canvas.height = 180;
+    const ctx = canvas.getContext('2d');
+    // Background
+    const grad = ctx.createLinearGradient(0,0,180,180);
+    grad.addColorStop(0,'#004d00'); grad.addColorStop(1,'#16a34a');
+    ctx.fillStyle = grad;
+    const r = 36;
+    ctx.beginPath();
+    ctx.moveTo(r,0); ctx.lineTo(180-r,0); ctx.quadraticCurveTo(180,0,180,r);
+    ctx.lineTo(180,180-r); ctx.quadraticCurveTo(180,180,180-r,180);
+    ctx.lineTo(r,180); ctx.quadraticCurveTo(0,180,0,180-r);
+    ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+    ctx.closePath(); ctx.fill();
+    // JAMB text
+    ctx.fillStyle='#fff'; ctx.font='bold 38px Georgia,serif'; ctx.textAlign='center';
+    ctx.fillText('JAMB',90,72);
+    // Divider
+    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.fillRect(20,82,140,3);
+    // CBT text
+    ctx.fillStyle='#f59e0b'; ctx.font='bold 32px Georgia,serif';
+    ctx.fillText('CBT',90,122);
+    const pngUrl = canvas.toDataURL('image/png');
+    const touchIcon = document.getElementById('appleTouchIcon');
+    if(touchIcon) touchIcon.href = pngUrl;
+  } catch(e){}
+
+  // ── Inline manifest via blob ──
+  const iconSVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23004d00'/><stop offset='100%25' stop-color='%2316a34a'/></linearGradient></defs><rect width='192' height='192' rx='40' fill='url(%23g)'/><text x='96' y='80' font-family='Georgia,serif' font-size='38' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'>JAMB</text><rect x='24' y='94' width='144' height='4' rx='2' fill='rgba(255,255,255,0.35)'/><text x='96' y='130' font-family='Georgia,serif' font-size='34' font-weight='700' fill='%23f59e0b' text-anchor='middle' dominant-baseline='middle'>CBT</text></svg>`;
+
   const manifest={
     name:'JAMB CBT Practice',
     short_name:'JAMB CBT',
     start_url:'.',
     display:'standalone',
-    background_color:'#f8faf7',
+    orientation:'portrait',
+    background_color:'#004d00',
     theme_color:'#006400',
     description:'Simulate real JAMB CBT exams with 14 subjects, timer, and performance analytics.',
+    categories:['education'],
     icons:[
-      {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="32" fill="%23006400"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-size="100" font-family="serif" fill="white">J</text></svg>',sizes:'192x192',type:'image/svg+xml'},
+      {src:`data:image/svg+xml,${iconSVG}`,sizes:'192x192',type:'image/svg+xml'},
+      {src:`data:image/svg+xml,${iconSVG}`,sizes:'512x512',type:'image/svg+xml','purpose':'any maskable'},
     ]
   };
   const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
@@ -1619,31 +1710,51 @@ window.submitExam=function(){
   const link=document.getElementById('pwaManifest');
   if(link)link.href=url;
 
-  // Register inline service worker
+  // ── Service Worker ──
   if('serviceWorker' in navigator){
+    const CACHE_VER = 'jamb-cbt-v4';
     const swCode=`
-      const CACHE='jamb-cbt-v1';
+      const CACHE='${CACHE_VER}';
+      const ASSETS=['/'];
       self.addEventListener('install',e=>{
-        e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/'])));
-        self.skipWaiting();
+        e.waitUntil(
+          caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())
+        );
       });
       self.addEventListener('activate',e=>{
-        e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
-        self.clients.claim();
+        e.waitUntil(
+          caches.keys().then(keys=>Promise.all(
+            keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))
+          )).then(()=>self.clients.claim())
+        );
       });
       self.addEventListener('fetch',e=>{
-        e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-          if(res.ok){const clone=res.clone();caches.open(CACHE).then(c=>c.put(e.request,clone));}
-          return res;
-        }).catch(()=>caches.match('/'))));
+        // Network-first for navigation, cache-first for assets
+        if(e.request.mode==='navigate'){
+          e.respondWith(
+            fetch(e.request).then(res=>{
+              if(res.ok){const c=res.clone();caches.open(CACHE).then(ca=>ca.put(e.request,c));}
+              return res;
+            }).catch(()=>caches.match('/'))
+          );
+        } else {
+          e.respondWith(
+            caches.match(e.request).then(cached=>cached||fetch(e.request).then(res=>{
+              if(res.ok&&e.request.url.startsWith('https://fonts')){
+                const c=res.clone();caches.open(CACHE).then(ca=>ca.put(e.request,c));
+              }
+              return res;
+            }))
+          );
+        }
       });
     `;
     const swBlob=new Blob([swCode],{type:'application/javascript'});
     const swUrl=URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl).catch(()=>{});
+    navigator.serviceWorker.register(swUrl,{scope:'./'}).catch(()=>{});
   }
 
-  // Install prompt banner
+  // ── Install prompt banner ──
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();
@@ -1652,12 +1763,23 @@ window.submitExam=function(){
     if(banner)banner.style.display='flex';
   });
   window.installApp=function(){
-    if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.waitUserChoice().then(()=>{deferredPrompt=null;const b=document.getElementById('installBanner');if(b)b.style.display='none';});}
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      deferredPrompt.waitUserChoice().then(()=>{
+        deferredPrompt=null;
+        const b=document.getElementById('installBanner');
+        if(b)b.style.display='none';
+      });
+    }
   };
-  window.dismissInstall=function(){const b=document.getElementById('installBanner');if(b)b.style.display='none';};
+  window.dismissInstall=function(){
+    const b=document.getElementById('installBanner');
+    if(b)b.style.display='none';
+  };
 })();
 
 // Init on load
+window._hasReviewed = false;
 initPersonalization();
 </script>
 </body>
