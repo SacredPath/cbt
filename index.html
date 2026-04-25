@@ -87,31 +87,46 @@ input,select{font-family:inherit}
 .subject-tag{background:rgba(255,255,255,.15);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ── EXAM BODY ── */
-.exam-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px)}
+.exam-body{display:flex;flex:1;flex-direction:column;overflow:hidden;height:calc(100vh - 54px)}
 
-/* ── PALETTE ── */
-.palette-sidebar{width:216px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;height:100%}
-.pal-header{padding:12px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px;flex-shrink:0}
-.pal-legend{display:flex;flex-wrap:wrap;gap:5px;padding:9px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+/* ── PALETTE FOOTER ── */
+.palette-footer{background:#fff;border-top:1px solid var(--border);flex-shrink:0;transition:max-height .25s ease}
+.pal-toggle-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;cursor:pointer;user-select:none;gap:10px}
+.pal-toggle-bar:hover{background:#f8faf7}
+.pal-toggle-left{display:flex;align-items:center;gap:10px}
+.pal-toggle-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.pal-mini-stats{display:flex;gap:10px}
+.pal-mini-stat{font-size:11px;font-weight:700;display:flex;align-items:center;gap:3px}
+.pal-mini-stat.answered{color:#16a34a}
+.pal-mini-stat.remaining{color:#dc2626}
+.pal-mini-stat.flagged-count{color:#d97706}
+.pal-toggle-arrow{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.pal-toggle-arrow.open{transform:rotate(180deg)}
+
+.pal-legend{display:flex;flex-wrap:wrap;gap:5px;padding:5px 14px;border-bottom:1px solid var(--border)}
 .pal-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
-.pal-dot{width:10px;height:10px;border-radius:2px}
+.pal-dot{width:9px;height:9px;border-radius:2px}
 .pal-dot.answered{background:#16a34a}
 .pal-dot.current{background:var(--text)}
 .pal-dot.flagged{background:var(--y)}
 .pal-dot.unanswered{background:#e2e8e0;border:1px solid #c8d5c4}
-.pal-grid{padding:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;overflow-y:auto;flex:1;min-height:0}
-.pal-btn{aspect-ratio:1;border-radius:7px;font-size:11px;font-weight:700;background:#e8f0e5;color:var(--muted);border:1.5px solid transparent;transition:transform .1s,background .1s}
-.pal-btn:hover{transform:scale(1.08)}
+
+.pal-body{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.pal-body.open{max-height:200px}
+.pal-grid{padding:8px 14px;display:grid;grid-template-columns:repeat(10,1fr);gap:3px;overflow-x:auto}
+@media(max-width:640px){.pal-grid{grid-template-columns:repeat(8,1fr)}}
+.pal-btn{aspect-ratio:1;border-radius:5px;font-size:10px;font-weight:700;background:#e8f0e5;color:var(--muted);border:1.5px solid transparent;transition:transform .1s,background .1s;min-width:26px}
+.pal-btn:hover{transform:scale(1.1)}
 .pal-btn.answered{background:#16a34a;color:#fff;border-color:#15803d}
 .pal-btn.current{background:var(--g1);color:#fff;border-color:#003800}
 .pal-btn.flagged{background:#fef3c7;color:#92400e;border-color:var(--y)}
-.pal-stats{padding:10px 12px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0}
-.pal-stat{background:var(--bg);border-radius:7px;padding:7px 8px;text-align:center}
-.pal-stat .sv{font-size:16px;font-weight:700;color:var(--g2)}
-.pal-stat .sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
-.pal-submit-wrap{padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0}
-.pal-submit{width:100%;padding:10px;background:#dc2626;color:#fff;font-size:12px;font-weight:700;border-radius:8px;letter-spacing:.3px}
+
+.pal-footer-actions{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-top:1px solid var(--border);gap:10px}
+.pal-submit{padding:7px 18px;background:#dc2626;color:#fff;font-size:12px;font-weight:700;border-radius:7px;letter-spacing:.3px;border:none;cursor:pointer}
 .pal-submit:hover{background:#b91c1c}
+
+/* legacy hidden - sidebar no longer used */
+.palette-sidebar{display:none!important}
 
 /* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
@@ -137,33 +152,39 @@ input,select{font-family:inherit}
 /* ── LOCKED CHIP ── */
 .subject-chip.locked{background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;border-color:transparent;font-weight:700;box-shadow:0 2px 8px rgba(0,100,0,.25);cursor:not-allowed;opacity:1}
 .subject-chip.locked::after{content:' 🔒';font-size:10px}
-.q-passage{background:#fffdf0;border:1px solid #e8d87a;border-left:4px solid #d97706;border-radius:10px;padding:16px 20px;font-size:13.5px;line-height:1.85;color:#3a2e00;margin-bottom:0;box-shadow:0 1px 6px rgba(217,119,6,.08)}
-.q-passage::before{content:'📄 Read the passage carefully';display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#92400e;margin-bottom:10px}
+.q-passage{background:#fffdf0;border:1px solid #e8d87a;border-left:4px solid #d97706;border-radius:8px;padding:10px 14px;font-size:12.5px;line-height:1.75;color:#3a2e00;margin-bottom:0;box-shadow:0 1px 6px rgba(217,119,6,.08)}
+.q-passage::before{content:attr(data-label);display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#92400e;margin-bottom:7px}
+.q-passage.book-text{background:#f0f4ff;border-color:#a5b4fc;border-left-color:#6366f1;color:#1e1b4b}
+.q-passage.book-text::before{color:#4338ca}
+.q-passage.scripture-text{background:#f5f0ff;border-color:#c4b5fd;border-left-color:#7c3aed;color:#2e1065}
+.q-passage.scripture-text::before{color:#6d28d9}
+.q-passage.textbook-text{background:#f0fdf4;border-color:#86efac;border-left-color:#16a34a;color:#052e16}
+.q-passage.textbook-text::before{color:#15803d}
 
 /* ── QUESTION MAIN ── */
-.question-main{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:18px}
+.question-main{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
 .q-header{display:flex;justify-content:space-between;align-items:center}
 .q-progress{font-size:12px;color:var(--muted);font-weight:600}
 .q-flag-btn{padding:5px 12px;border-radius:6px;border:1.5px solid #d97706;background:transparent;font-size:12px;font-weight:600;color:#d97706;display:flex;align-items:center;gap:5px}
 .q-flag-btn.flagged{background:#fef3c7;color:#92400e;border-color:var(--y)}
-.q-card{background:#fff;border-radius:14px;padding:26px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.q-subject{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--g3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.q-subject::before{content:'';width:20px;height:2px;background:var(--g3);border-radius:1px;display:inline-block}
-.q-number{font-size:12px;font-weight:500;color:var(--hint);margin-bottom:10px}
-.q-text{font-size:15px;line-height:1.75;color:var(--text);font-weight:500}
-.q-options{display:flex;flex-direction:column;gap:9px;margin-top:22px}
-.q-option{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-radius:10px;border:2px solid var(--border);background:#fff;text-align:left;font-size:14px;line-height:1.55;color:var(--text);transition:all .15s}
+.q-card{background:#fff;border-radius:10px;padding:14px 18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.q-subject{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--g3);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.q-subject::before{content:'';width:16px;height:2px;background:var(--g3);border-radius:1px;display:inline-block}
+.q-number{font-size:11px;font-weight:500;color:var(--hint);margin-bottom:6px}
+.q-text{font-size:14px;line-height:1.65;color:var(--text);font-weight:500}
+.q-options{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.q-option{display:flex;align-items:flex-start;gap:10px;padding:9px 13px;border-radius:8px;border:1.5px solid var(--border);background:#fff;text-align:left;font-size:13px;line-height:1.45;color:var(--text);transition:all .15s}
 .q-option:hover{border-color:var(--g3);background:#f0faf0}
 .q-option.selected{border-color:var(--g2);background:#ecfdf5;color:var(--g1);font-weight:600}
 .q-option.correct{border-color:#16a34a;background:#dcfce7;color:#14532d}
 .q-option.incorrect{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
-.q-option .opt-letter{font-weight:700;color:var(--g3);min-width:18px;font-size:13px;font-family:var(--mono)}
+.q-option .opt-letter{font-weight:700;color:var(--g3);min-width:16px;font-size:12px;font-family:var(--mono)}
 .q-option.selected .opt-letter{color:var(--g1)}
 .q-option.correct .opt-letter{color:#16a34a}
 .q-option.incorrect .opt-letter{color:#dc2626}
 
-.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
-.q-nav-btn{padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;border:2px solid var(--g2);color:var(--g2);background:transparent}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:4px;padding:0 2px}
+.q-nav-btn{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:700;border:2px solid var(--g2);color:var(--g2);background:transparent}
 .q-nav-btn:hover{background:var(--g2);color:#fff}
 .q-nav-btn.next{background:var(--g1);color:#fff;border-color:var(--g1)}
 .q-nav-btn.next:hover{background:var(--g2)}
@@ -262,17 +283,16 @@ input,select{font-family:inherit}
 
 /* ── MOBILE ── */
 @media(max-width:640px){
-  .palette-sidebar{display:none}
-  .palette-sidebar.open{display:flex;position:fixed;left:0;top:54px;bottom:0;z-index:150;width:204px;box-shadow:4px 0 24px rgba(0,0,0,.25)}
-  .mob-pal-btn{display:flex}
+  .mob-pal-btn{display:none}
   .exam-body{height:calc(100vh - 54px)}
-  .question-main{padding:14px}
-  .q-card{padding:18px}
-  .q-text{font-size:14px}
+  .question-main{padding:10px 12px}
+  .q-card{padding:12px 14px}
+  .q-text{font-size:13px}
   .setup-card{padding:28px 22px}
   .result-card{padding:28px 20px}
   .result-stats{grid-template-columns:1fr 1fr 1fr;gap:8px}
   .stat-box .sv{font-size:20px}
+  .pal-grid{grid-template-columns:repeat(7,1fr)}
 }
 @media(min-width:641px){.mob-pal-btn{display:none}}
 .mob-pal-btn{padding:5px 10px;border-radius:7px;background:rgba(255,255,255,.18);font-size:12px;font-weight:700;color:#fff;border:none}
@@ -442,7 +462,6 @@ input,select{font-family:inherit}
 <div class="screen" id="exam">
   <div class="exam-topbar">
     <div style="display:flex;align-items:center;gap:10px">
-      <button class="mob-pal-btn" onclick="togglePalette()">☰ Palette</button>
       <span class="brand">JAMB CBT</span>
     </div>
     <div id="subjectTag" class="subject-tag"></div>
@@ -454,26 +473,35 @@ input,select{font-family:inherit}
       <div id="timerDisplay" class="timer">02:00:00</div>
     </div>
   </div>
-  <div class="overlay" id="palOverlay" onclick="closePalette()"></div>
+  <div class="overlay" id="palOverlay"></div>
   <div class="exam-body">
-    <div class="palette-sidebar" id="paletteSidebar">
-      <div class="pal-header">Question Palette</div>
-      <div class="pal-legend">
-        <div class="pal-legend-item"><div class="pal-dot answered"></div>Answered</div>
-        <div class="pal-legend-item"><div class="pal-dot flagged"></div>Flagged</div>
-        <div class="pal-legend-item"><div class="pal-dot current"></div>Current</div>
-        <div class="pal-legend-item"><div class="pal-dot unanswered"></div>Not visited</div>
+    <div class="question-main" id="questionMain"></div>
+    <!-- ── FOOTER PALETTE ── -->
+    <div class="palette-footer" id="paletteFooter">
+      <div class="pal-toggle-bar" onclick="togglePalette()">
+        <div class="pal-toggle-left">
+          <span class="pal-toggle-label">Question Palette</span>
+          <div class="pal-mini-stats">
+            <span class="pal-mini-stat answered">✓ <span id="palAnswered">0</span> answered</span>
+            <span class="pal-mini-stat remaining">○ <span id="palRemaining">0</span> left</span>
+            <span class="pal-mini-stat flagged-count" id="flaggedCountWrap" style="display:none">★ <span id="palFlagged">0</span> flagged</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="pal-submit" onclick="event.stopPropagation();confirmSubmit()">Submit Exam</button>
+          <span class="pal-toggle-arrow" id="palArrow">▲</span>
+        </div>
       </div>
-      <div class="pal-grid" id="paletteGrid"></div>
-      <div class="pal-stats">
-        <div class="pal-stat"><div class="sv" id="palAnswered">0</div><div class="sl">Answered</div></div>
-        <div class="pal-stat"><div class="sv" id="palRemaining" style="color:#dc2626">0</div><div class="sl">Remaining</div></div>
-      </div>
-      <div class="pal-submit-wrap">
-        <button class="pal-submit" onclick="confirmSubmit()">Submit Exam</button>
+      <div class="pal-body" id="palBody">
+        <div class="pal-legend">
+          <div class="pal-legend-item"><div class="pal-dot answered"></div>Answered</div>
+          <div class="pal-legend-item"><div class="pal-dot flagged"></div>Flagged</div>
+          <div class="pal-legend-item"><div class="pal-dot current"></div>Current</div>
+          <div class="pal-legend-item"><div class="pal-dot unanswered"></div>Not visited</div>
+        </div>
+        <div class="pal-grid" id="paletteGrid"></div>
       </div>
     </div>
-    <div class="question-main" id="questionMain"></div>
   </div>
 </div>
 
@@ -567,24 +595,28 @@ input,select{font-family:inherit}
 // ═══════════════════════════════════════════════
 const QUESTION_BANK = {
   English:[
-    /* ── SECTION 1: COMPREHENSION (Passage A — Environment & Deforestation) ── */
-    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"According to the passage, which of the following is NOT mentioned as a cause of deforestation?",opts:["Agriculture","Logging","Mining","Urban development"],ans:2},
-    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"As used in the passage, the word 'dire' most nearly means:",opts:["Slight","Severe","Temporary","Unusual"],ans:1},
-    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"The writer implies that government reforestation efforts have failed mainly because of:",opts:["Lack of funding","Weak enforcement and corruption","Community resistance","Absence of legislation"],ans:1},
-    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"The best title for this passage is:",opts:["Government and the Environment","Nigeria's Vanishing Forests: A Call for Action","Agriculture in Southern Nigeria","The Effects of Urbanisation"],ans:1},
-    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"The writer's attitude towards the current situation is best described as:",opts:["Optimistic","Indifferent","Concerned","Celebratory"],ans:2},
-    /* ── COMPREHENSION (Passage B — Youth and Education) ── */
-    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"What is the main idea of the passage?",opts:["Rural communities resist education","The UBE programme has fully solved Nigeria's education crisis","Education access and quality in Nigeria require urgent attention","Girls are the main barrier to educational progress"],ans:2},
-    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"As used in the passage, 'demographic dividend' refers to:",opts:["Government funds for education","Economic benefits from a large, educated youth population","Cultural heritage of young people","Rural development projects"],ans:1},
-    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"It can be inferred from the passage that the UBE programme:",opts:["Has completely failed","Has improved access but not quality","Has no effect on enrolment","Only targets girls"],ans:1},
-    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"Which of the following is NOT listed as a barrier to education in the passage?",opts:["Child labour","Language barriers","Poverty","Early marriage"],ans:1},
-    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"The word 'acute' as used in the passage means:",opts:["Mild","Irrelevant","Severe and pressing","Widespread"],ans:2},
-    /* ── CLOZE TEST (Passage C) ── */
-    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (11):",opts:["exaggerated","overstated","understated","eliminated"],ans:1},
-    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (12):",opts:["habit","problem","luxury","danger"],ans:0},
-    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (13):",opts:["poor","limited","wider","broken"],ans:2},
-    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (14):",opts:["ignore","avoid","embrace","reject"],ans:2},
-    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (15):",opts:["incapable","unworthy","capable","ignorant"],ans:2},
+    /* ── SECTION 1: COMPREHENSION — Passage A (The Lekki Headmaster — Kabir Alabi Garba) ── */
+    /* Inspired by the 2026 JAMB reading text: The Lekki Headmaster by Kabir Alabi Garba */
+    {section:"Comprehension",passage:"Mr. Bamidele had been headmaster of Lekki Model School for eleven years, yet he still arrived before the gateman every morning. The teachers said it was obsession; the parents called it dedication; the pupils simply accepted it as the natural order of things, the way the sun rose from the east. He kept a worn leather notebook in which he recorded every child's name, noting small victories — a boy who finally mastered long division, a girl who read her first sentence aloud without stumbling. 'A school,' he once told a young teacher who complained of low pay, 'is not a building. It is a promise.' That promise weighed on him now as he stared at the letter from the state ministry: the school was to be merged with a larger institution three kilometres away. He folded the letter carefully, the way a man folds news he is not yet ready to share.",q:"The main idea of this passage is best expressed as:",opts:["Mr. Bamidele's daily routine","A headmaster's deep dedication and the challenge facing his school","The poor condition of Lagos schools","The state government's educational policy"],ans:1},
+    {section:"Comprehension",passage:"Mr. Bamidele had been headmaster of Lekki Model School for eleven years, yet he still arrived before the gateman every morning. The teachers said it was obsession; the parents called it dedication; the pupils simply accepted it as the natural order of things, the way the sun rose from the east. He kept a worn leather notebook in which he recorded every child's name, noting small victories — a boy who finally mastered long division, a girl who read her first sentence aloud without stumbling. 'A school,' he once told a young teacher who complained of low pay, 'is not a building. It is a promise.' That promise weighed on him now as he stared at the letter from the state ministry: the school was to be merged with a larger institution three kilometres away. He folded the letter carefully, the way a man folds news he is not yet ready to share.",q:"The phrase 'the way the sun rose from the east' is an example of:",opts:["Metaphor","Simile","Personification","Hyperbole"],ans:1},
+    {section:"Comprehension",passage:"Mr. Bamidele had been headmaster of Lekki Model School for eleven years, yet he still arrived before the gateman every morning. The teachers said it was obsession; the parents called it dedication; the pupils simply accepted it as the natural order of things, the way the sun rose from the east. He kept a worn leather notebook in which he recorded every child's name, noting small victories — a boy who finally mastered long division, a girl who read her first sentence aloud without stumbling. 'A school,' he once told a young teacher who complained of low pay, 'is not a building. It is a promise.' That promise weighed on him now as he stared at the letter from the state ministry: the school was to be merged with a larger institution three kilometres away. He folded the letter carefully, the way a man folds news he is not yet ready to share.",q:"Mr. Bamidele's notebook is used as a symbol of:",opts:["His administrative duties","His personal attention to each pupil's progress","His obsession with punctuality","The school's academic record"],ans:1},
+    {section:"Comprehension",passage:"Mr. Bamidele had been headmaster of Lekki Model School for eleven years, yet he still arrived before the gateman every morning. The teachers said it was obsession; the parents called it dedication; the pupils simply accepted it as the natural order of things, the way the sun rose from the east. He kept a worn leather notebook in which he recorded every child's name, noting small victories — a boy who finally mastered long division, a girl who read her first sentence aloud without stumbling. 'A school,' he once told a young teacher who complained of low pay, 'is not a building. It is a promise.' That promise weighed on him now as he stared at the letter from the state ministry: the school was to be merged with a larger institution three kilometres away. He folded the letter carefully, the way a man folds news he is not yet ready to share.",q:"The word 'weighed' as used in the passage suggests that the letter made Mr. Bamidele feel:",opts:["Proud","Burdened and troubled","Angry","Indifferent"],ans:1},
+    {section:"Comprehension",passage:"Mr. Bamidele had been headmaster of Lekki Model School for eleven years, yet he still arrived before the gateman every morning. The teachers said it was obsession; the parents called it dedication; the pupils simply accepted it as the natural order of things, the way the sun rose from the east. He kept a worn leather notebook in which he recorded every child's name, noting small victories — a boy who finally mastered long division, a girl who read her first sentence aloud without stumbling. 'A school,' he once told a young teacher who complained of low pay, 'is not a building. It is a promise.' That promise weighed on him now as he stared at the letter from the state ministry: the school was to be merged with a larger institution three kilometres away. He folded the letter carefully, the way a man folds news he is not yet ready to share.",q:"Which of the following best describes Mr. Bamidele's character?",opts:["Ambitious and self-serving","Committed, compassionate, and quietly resilient","Strict and unfeeling","Easily discouraged by challenges"],ans:1},
+    /* ── Passage B (The Lekki Headmaster — community and identity) ── */
+    {section:"Comprehension",passage:"The community of Lekki Phase 2 had grown fast — too fast, some said. Where there had once been lagoon and bush, there were now gated estates, each with its security post and foreign-brand cars. Yet the school remained, incongruous among the chrome and glass, its old walls painted with murals of children reading under mango trees. It was this image — paint peeling but vivid — that newcomers either barely noticed or found strangely moving. For the older residents, the school was memory itself: the place where their children had first learned to write their names, where a teacher's praise had once made a shy child stand a little taller. When the merger notice was pinned to the school gate, it was these older residents who gathered first, their voices quiet with the kind of grief that does not shout.",q:"The contrast between 'chrome and glass' and the school's 'old walls' is used to show:",opts:["The poverty of the school community","The tension between rapid modern development and enduring community values","The government's neglect of public schools","The architectural history of Lekki"],ans:1},
+    {section:"Comprehension",passage:"The community of Lekki Phase 2 had grown fast — too fast, some said. Where there had once been lagoon and bush, there were now gated estates, each with its security post and foreign-brand cars. Yet the school remained, incongruous among the chrome and glass, its old walls painted with murals of children reading under mango trees. It was this image — paint peeling but vivid — that newcomers either barely noticed or found strangely moving. For the older residents, the school was memory itself: the place where their children had first learned to write their names, where a teacher's praise had once made a shy child stand a little taller. When the merger notice was pinned to the school gate, it was these older residents who gathered first, their voices quiet with the kind of grief that does not shout.",q:"The phrase 'grief that does not shout' is an example of:",opts:["Hyperbole","Paradox","Irony","Oxymoron"],ans:1},
+    {section:"Comprehension",passage:"The community of Lekki Phase 2 had grown fast — too fast, some said. Where there had once been lagoon and bush, there were now gated estates, each with its security post and foreign-brand cars. Yet the school remained, incongruous among the chrome and glass, its old walls painted with murals of children reading under mango trees. It was this image — paint peeling but vivid — that newcomers either barely noticed or found strangely moving. For the older residents, the school was memory itself: the place where their children had first learned to write their names, where a teacher's praise had once made a shy child stand a little taller. When the merger notice was pinned to the school gate, it was these older residents who gathered first, their voices quiet with the kind of grief that does not shout.",q:"The word 'incongruous' as used in the passage means:",opts:["Beautiful","Out of place and not fitting in","Familiar","Popular"],ans:1},
+    {section:"Comprehension",passage:"The community of Lekki Phase 2 had grown fast — too fast, some said. Where there had once been lagoon and bush, there were now gated estates, each with its security post and foreign-brand cars. Yet the school remained, incongruous among the chrome and glass, its old walls painted with murals of children reading under mango trees. It was this image — paint peeling but vivid — that newcomers either barely noticed or found strangely moving. For the older residents, the school was memory itself: the place where their children had first learned to write their names, where a teacher's praise had once made a shy child stand a little taller. When the merger notice was pinned to the school gate, it was these older residents who gathered first, their voices quiet with the kind of grief that does not shout.",q:"The school murals of children under mango trees most likely represent:",opts:["The school's artistic programme","A nostalgic ideal of learning and childhood","The environmental surroundings of Lekki","Government beautification projects"],ans:1},
+    /* ── COMPREHENSION Passage C (The Lekki Headmaster — a teacher's faith) ── */
+    {section:"Comprehension",passage:"Miss Abosede had taught English at the school for seven years. She was not yet thirty but had the patient eyes of someone much older, someone who had learned that understanding comes slowly, and that the teacher's job is to wait. She had a habit of writing vocabulary words on the board in green chalk — always green, because she believed colour helped the mind hold things. Her brightest pupil that year was Emeka, a boy of twelve who read everything he could find and asked questions that silenced the class. When she heard about the merger, her first thought was not of herself but of Emeka: would the new school feed his hunger, or crush it under the weight of larger classes and indifferent teachers? She knew, from experience, that institutions could make or break a child in the space of a single year.",q:"Miss Abosede's habit of using green chalk is best interpreted as:",opts:["A superstition","A deliberate teaching strategy to aid memory","A personal preference without significance","A school rule"],ans:1},
+    {section:"Comprehension",passage:"Miss Abosede had taught English at the school for seven years. She was not yet thirty but had the patient eyes of someone much older, someone who had learned that understanding comes slowly, and that the teacher's job is to wait. She had a habit of writing vocabulary words on the board in green chalk — always green, because she believed colour helped the mind hold things. Her brightest pupil that year was Emeka, a boy of twelve who read everything he could find and asked questions that silenced the class. When she heard about the merger, her first thought was not of herself but of Emeka: would the new school feed his hunger, or crush it under the weight of larger classes and indifferent teachers? She knew, from experience, that institutions could make or break a child in the space of a single year.",q:"The phrase 'feed his hunger' as used in the passage refers to Emeka's:",opts:["Need for food at school","Intellectual curiosity and desire to learn","Competitive nature","Physical growth"],ans:1},
+    {section:"Comprehension",passage:"Miss Abosede had taught English at the school for seven years. She was not yet thirty but had the patient eyes of someone much older, someone who had learned that understanding comes slowly, and that the teacher's job is to wait. She had a habit of writing vocabulary words on the board in green chalk — always green, because she believed colour helped the mind hold things. Her brightest pupil that year was Emeka, a boy of twelve who read everything he could find and asked questions that silenced the class. When she heard about the merger, her first thought was not of herself but of Emeka: would the new school feed his hunger, or crush it under the weight of larger classes and indifferent teachers? She knew, from experience, that institutions could make or break a child in the space of a single year.",q:"Miss Abosede's primary concern about the merger is:",opts:["Her job security","The impact on promising pupils like Emeka","The loss of her classroom","The school's reputation"],ans:1},
+    /* ── COMPREHENSION (Cloze — adapted from Lekki Headmaster themes) ── */
+    {section:"Comprehension (Cloze)",passage:"Education is the __(1)__ upon which every civilised society is built. Without it, children grow up unable to __(2)__ the world around them or to contribute meaningfully to national development. Yet education alone is not enough; it must be of good __(3)__. A school that has walls but lacks committed teachers is like a body without a soul — it __(4)__ the form of learning without the substance. This is why the role of the dedicated teacher can never be __(5)__.",q:"Choose the best word for gap (1):",opts:["punishment","foundation","obstacle","decoration"],ans:1},
+    {section:"Comprehension (Cloze)",passage:"Education is the __(1)__ upon which every civilised society is built. Without it, children grow up unable to __(2)__ the world around them or to contribute meaningfully to national development. Yet education alone is not enough; it must be of good __(3)__. A school that has walls but lacks committed teachers is like a body without a soul — it __(4)__ the form of learning without the substance. This is why the role of the dedicated teacher can never be __(5)__.",q:"Choose the best word for gap (2):",opts:["ignore","navigate","destroy","abandon"],ans:1},
+    {section:"Comprehension (Cloze)",passage:"Education is the __(1)__ upon which every civilised society is built. Without it, children grow up unable to __(2)__ the world around them or to contribute meaningfully to national development. Yet education alone is not enough; it must be of good __(3)__. A school that has walls but lacks committed teachers is like a body without a soul — it __(4)__ the form of learning without the substance. This is why the role of the dedicated teacher can never be __(5)__.",q:"Choose the best word for gap (3):",opts:["luck","colour","quality","size"],ans:2},
+    {section:"Comprehension (Cloze)",passage:"Education is the __(1)__ upon which every civilised society is built. Without it, children grow up unable to __(2)__ the world around them or to contribute meaningfully to national development. Yet education alone is not enough; it must be of good __(3)__. A school that has walls but lacks committed teachers is like a body without a soul — it __(4)__ the form of learning without the substance. This is why the role of the dedicated teacher can never be __(5)__.",q:"Choose the best word for gap (4):",opts:["celebrates","provides","has","mimics"],ans:3},
+    {section:"Comprehension (Cloze)",passage:"Education is the __(1)__ upon which every civilised society is built. Without it, children grow up unable to __(2)__ the world around them or to contribute meaningfully to national development. Yet education alone is not enough; it must be of good __(3)__. A school that has walls but lacks committed teachers is like a body without a soul — it __(4)__ the form of learning without the substance. This is why the role of the dedicated teacher can never be __(5)__.",q:"Choose the best word for gap (5):",opts:["celebrated","overstated","underestimated","ignored"],ans:2},
     /* ── SECTION 2: LEXIS AND STRUCTURE (20 questions) ── */
     {section:"Lexis & Structure",q:"Choose the word most nearly OPPOSITE in meaning to BELLIGERENT:",opts:["Peaceful","Aggressive","Warlike","Hostile"],ans:0},
     {section:"Lexis & Structure",q:"The word 'LOQUACIOUS' means:",opts:["Silent","Talkative","Angry","Wise"],ans:1},
@@ -754,6 +786,11 @@ const QUESTION_BANK = {
 
   ],
   Physics:[
+    /* ── PASSAGE-BASED (Nelkon & Parker — Advanced Level Physics; Abbott — Ordinary Level Physics) ── */
+    {section:"Passage",passage:"Newton's laws of motion form the foundation of classical mechanics. The first law states that a body remains at rest or in uniform motion unless acted upon by an external net force — this is also called the law of inertia. The second law states that the net force acting on a body equals the product of its mass and acceleration (F = ma). The third law asserts that for every action there is an equal and opposite reaction. These laws together explain the motion of everyday objects, from a ball rolling on the ground to rockets launched into space.",q:"From the passage, Newton's First Law is also referred to as:",opts:["The law of acceleration","The law of momentum","The law of inertia","The law of gravitation"],ans:2},
+    {section:"Passage",passage:"Newton's laws of motion form the foundation of classical mechanics. The first law states that a body remains at rest or in uniform motion unless acted upon by an external net force — this is also called the law of inertia. The second law states that the net force acting on a body equals the product of its mass and acceleration (F = ma). The third law asserts that for every action there is an equal and opposite reaction. These laws together explain the motion of everyday objects, from a ball rolling on the ground to rockets launched into space.",q:"According to the passage, which equation correctly expresses Newton's Second Law?",opts:["F = mv","F = m/a","F = ma","F = m + a"],ans:2},
+    {section:"Passage",passage:"Waves are disturbances that transfer energy from one point to another without permanently displacing the medium. Transverse waves, such as electromagnetic waves and waves on a string, have oscillations perpendicular to the direction of energy transfer. Longitudinal waves, like sound waves, have oscillations parallel to the direction of travel. Key wave properties include wavelength (the distance between two successive crests), frequency (the number of complete oscillations per second), amplitude (the maximum displacement from equilibrium), and wave speed, which is the product of frequency and wavelength.",q:"According to the passage, in a longitudinal wave, the direction of oscillation is:",opts:["Perpendicular to the direction of travel","At right angles to the direction of energy transfer","Parallel to the direction of travel","Random and unpredictable"],ans:2},
+    {section:"Passage",passage:"Waves are disturbances that transfer energy from one point to another without permanently displacing the medium. Transverse waves, such as electromagnetic waves and waves on a string, have oscillations perpendicular to the direction of energy transfer. Longitudinal waves, like sound waves, have oscillations parallel to the direction of travel. Key wave properties include wavelength (the distance between two successive crests), frequency (the number of complete oscillations per second), amplitude (the maximum displacement from equilibrium), and wave speed, which is the product of frequency and wavelength.",q:"From the passage, wave speed can be calculated by:",opts:["Amplitude × frequency","Wavelength / frequency","Frequency × wavelength","Amplitude / wavelength"],ans:2},
     {q:"The SI unit of force is the:",opts:["Joule","Newton","Pascal","Watt"],ans:1},
     {q:"Which law states: For every action, there is an equal and opposite reaction?",opts:["Newton's 1st Law","Newton's 2nd Law","Newton's 3rd Law","Law of Gravitation"],ans:2},
     {q:"The speed of light in vacuum is approximately:",opts:["3×10⁶ m/s","3×10⁸ m/s","3×10¹⁰ m/s","3×10⁴ m/s"],ans:1},
@@ -828,6 +865,11 @@ const QUESTION_BANK = {
 
   ],
   Chemistry:[
+    /* ── PASSAGE-BASED (Ababio — New School Chemistry; Odesanya — Chemistry for Senior Secondary Schools) ── */
+    {section:"Passage",passage:"Atomic structure is the foundation of modern chemistry. An atom consists of a central nucleus containing protons and neutrons, surrounded by electrons arranged in energy levels or shells. The atomic number of an element equals the number of protons in its nucleus and uniquely identifies the element. The mass number is the sum of the protons and neutrons. Isotopes are atoms of the same element with the same atomic number but different mass numbers due to varying numbers of neutrons. The periodic table organises elements in order of increasing atomic number, with elements in the same group sharing similar chemical properties.",q:"According to the passage, the atomic number of an element is determined by:",opts:["The number of neutrons","The number of electrons only","The number of protons","The sum of protons and neutrons"],ans:2},
+    {section:"Passage",passage:"Atomic structure is the foundation of modern chemistry. An atom consists of a central nucleus containing protons and neutrons, surrounded by electrons arranged in energy levels or shells. The atomic number of an element equals the number of protons in its nucleus and uniquely identifies the element. The mass number is the sum of the protons and neutrons. Isotopes are atoms of the same element with the same atomic number but different mass numbers due to varying numbers of neutrons. The periodic table organises elements in order of increasing atomic number, with elements in the same group sharing similar chemical properties.",q:"Isotopes, as defined in the passage, differ from each other in the number of:",opts:["Protons","Electrons","Neutrons","Energy shells"],ans:2},
+    {section:"Passage",passage:"Acid-base reactions are among the most important in chemistry. An acid is a substance that donates protons (H⁺ ions) in solution, while a base accepts protons. When an acid reacts with a base, the reaction produces a salt and water — a process called neutralisation. The strength of an acid or base is measured by pH: a pH below 7 indicates an acidic solution, a pH of exactly 7 indicates neutrality, and a pH above 7 indicates an alkaline (basic) solution. Common laboratory indicators such as litmus paper and methyl orange change colour depending on whether a solution is acidic or basic.",q:"From the passage, which of the following best describes neutralisation?",opts:["An acid dissolving in water","The reaction of an acid with a base to produce salt and water","The ionisation of acids in solution","The change of colour of an indicator"],ans:1},
+    {section:"Passage",passage:"Acid-base reactions are among the most important in chemistry. An acid is a substance that donates protons (H⁺ ions) in solution, while a base accepts protons. When an acid reacts with a base, the reaction produces a salt and water — a process called neutralisation. The strength of an acid or base is measured by pH: a pH below 7 indicates an acidic solution, a pH of exactly 7 indicates neutrality, and a pH above 7 indicates an alkaline (basic) solution. Common laboratory indicators such as litmus paper and methyl orange change colour depending on whether a solution is acidic or basic.",q:"According to the passage, a solution with a pH of 10 is best described as:",opts:["Neutral","Acidic","Alkaline","Concentrated"],ans:2},
     {q:"The atomic number of Carbon is:",opts:["6","12","8","14"],ans:0},
     {q:"Which gas is produced when zinc reacts with dilute HCl?",opts:["Oxygen","Carbon dioxide","Hydrogen","Chlorine"],ans:2},
     {q:"The pH of a neutral solution is:",opts:["0","7","14","3"],ans:1},
@@ -902,6 +944,12 @@ const QUESTION_BANK = {
 
   ],
   Biology:[
+    /* ── PASSAGE-BASED (Olatoye & Omashola — Senior Secondary Biology; Stone & Cozens — Biology for West Africa) ── */
+    {section:"Passage",passage:"The cell is the fundamental unit of life. Every living organism is made up of one or more cells, each performing specific functions necessary for survival. The cell membrane controls the movement of substances in and out of the cell through processes such as diffusion, osmosis, and active transport. Within the cell, the nucleus acts as the control centre, containing the genetic information encoded in DNA. The mitochondria generate energy in the form of ATP through cellular respiration, while ribosomes are the sites of protein synthesis. Chloroplasts, found only in plant cells, contain chlorophyll and are responsible for photosynthesis.",q:"According to the passage, the primary role of the mitochondria is:",opts:["Protein synthesis","Controlling genetic information","Generating energy as ATP","Performing photosynthesis"],ans:2},
+    {section:"Passage",passage:"The cell is the fundamental unit of life. Every living organism is made up of one or more cells, each performing specific functions necessary for survival. The cell membrane controls the movement of substances in and out of the cell through processes such as diffusion, osmosis, and active transport. Within the cell, the nucleus acts as the control centre, containing the genetic information encoded in DNA. The mitochondria generate energy in the form of ATP through cellular respiration, while ribosomes are the sites of protein synthesis. Chloroplasts, found only in plant cells, contain chlorophyll and are responsible for photosynthesis.",q:"Which of the following organelles is ABSENT in animal cells?",opts:["Nucleus","Ribosome","Mitochondria","Chloroplast"],ans:3},
+    {section:"Passage",passage:"The cell is the fundamental unit of life. Every living organism is made up of one or more cells, each performing specific functions necessary for survival. The cell membrane controls the movement of substances in and out of the cell through processes such as diffusion, osmosis, and active transport. Within the cell, the nucleus acts as the control centre, containing the genetic information encoded in DNA. The mitochondria generate energy in the form of ATP through cellular respiration, while ribosomes are the sites of protein synthesis. Chloroplasts, found only in plant cells, contain chlorophyll and are responsible for photosynthesis.",q:"The passage states that the cell membrane regulates movement of substances by all of the following EXCEPT:",opts:["Diffusion","Osmosis","Active transport","Photosynthesis"],ans:3},
+    {section:"Passage",passage:"Genetics is the branch of biology concerned with heredity and variation. Genes, carried on chromosomes within the nucleus, determine the traits an organism inherits from its parents. Each individual typically inherits two alleles for each gene — one from each parent. When the two alleles are the same, the individual is said to be homozygous; when they differ, the individual is heterozygous. A dominant allele masks the effect of a recessive allele. Mendel's laws of segregation and independent assortment provide the foundational principles for understanding how traits are passed from generation to generation.",q:"According to the passage, an organism is said to be heterozygous when:",opts:["Both alleles are dominant","Both alleles are the same","The two alleles for a gene differ","Only recessive alleles are present"],ans:2},
+    {section:"Passage",passage:"Genetics is the branch of biology concerned with heredity and variation. Genes, carried on chromosomes within the nucleus, determine the traits an organism inherits from its parents. Each individual typically inherits two alleles for each gene — one from each parent. When the two alleles are the same, the individual is said to be homozygous; when they differ, the individual is heterozygous. A dominant allele masks the effect of a recessive allele. Mendel's laws of segregation and independent assortment provide the foundational principles for understanding how traits are passed from generation to generation.",q:"From the passage, the effect of a recessive allele is masked when paired with a:",opts:["Recessive allele","Dominant allele","Mutant allele","Sex-linked allele"],ans:1},
     {q:"The powerhouse of the cell is the:",opts:["Nucleus","Ribosome","Mitochondria","Chloroplast"],ans:2},
     {q:"Which blood group is the universal donor?",opts:["A","B","AB","O"],ans:3},
     {q:"Photosynthesis takes place in the:",opts:["Mitochondria","Nucleus","Chloroplast","Ribosome"],ans:2},
@@ -976,6 +1024,11 @@ const QUESTION_BANK = {
 
   ],
   Economics:[
+    /* ── PASSAGE-BASED (Anyawu et al — Economics for SS Schools & Colleges; Lipsey & Chrystal — Economics) ── */
+    {section:"Passage",passage:"Demand and supply are the twin forces that determine prices in a free market economy. The law of demand states that, all other things being equal (ceteris paribus), as the price of a good rises, the quantity demanded falls, and vice versa. Conversely, the law of supply states that as price rises, producers are willing to supply more of the good. The point at which quantity demanded equals quantity supplied is called the equilibrium price. At this price, the market clears — there is neither excess supply (surplus) nor excess demand (shortage). When demand or supply shifts due to changes in factors other than price, the equilibrium price and quantity change accordingly.",q:"According to the passage, equilibrium in a market occurs when:",opts:["Price is at its maximum","Quantity demanded is greater than quantity supplied","Quantity demanded equals quantity supplied","The government sets the price"],ans:2},
+    {section:"Passage",passage:"Demand and supply are the twin forces that determine prices in a free market economy. The law of demand states that, all other things being equal (ceteris paribus), as the price of a good rises, the quantity demanded falls, and vice versa. Conversely, the law of supply states that as price rises, producers are willing to supply more of the good. The point at which quantity demanded equals quantity supplied is called the equilibrium price. At this price, the market clears — there is neither excess supply (surplus) nor excess demand (shortage). When demand or supply shifts due to changes in factors other than price, the equilibrium price and quantity change accordingly.",q:"As used in the passage, 'ceteris paribus' means:",opts:["All prices are equal","All other factors remaining constant","Supply equals demand","The economy is in balance"],ans:1},
+    {section:"Passage",passage:"National income accounting measures the total value of goods and services produced by an economy over a given period. The most widely used measure is Gross Domestic Product (GDP), which counts the output of all productive activity within a country's borders, regardless of the nationality of the producers. Gross National Product (GNP), by contrast, measures output produced by a country's residents, whether at home or abroad. GDP can be measured using three approaches: the expenditure method (C + I + G + X − M), the income method, or the output method. All three should, in theory, yield the same figure.",q:"From the passage, GDP differs from GNP in that GDP measures:",opts:["Output by residents wherever they are","Output within a country's borders regardless of producer nationality","Output only by foreign investors","Output only in the manufacturing sector"],ans:1},
+    {section:"Passage",passage:"National income accounting measures the total value of goods and services produced by an economy over a given period. The most widely used measure is Gross Domestic Product (GDP), which counts the output of all productive activity within a country's borders, regardless of the nationality of the producers. Gross National Product (GNP), by contrast, measures output produced by a country's residents, whether at home or abroad. GDP can be measured using three approaches: the expenditure method (C + I + G + X − M), the income method, or the output method. All three should, in theory, yield the same figure.",q:"In the expenditure formula for GDP (C + I + G + X − M), the letter 'G' stands for:",opts:["Gold reserves","Government expenditure","Gross income","Growth factor"],ans:1},
     {q:"The law of demand states that, all things being equal, as price increases, quantity demanded:",opts:["Increases","Decreases","Stays the same","Doubles"],ans:1},
     {q:"What is GDP?",opts:["Gross Domestic Product","General Development Policy","Government Debt Plan","Gross Debt Payment"],ans:0},
     {q:"When the government spends more than it earns, this is called:",opts:["Trade surplus","Budget deficit","Trade deficit","Budget surplus"],ans:1},
@@ -1045,6 +1098,11 @@ const QUESTION_BANK = {
 
   ],
   Government:[
+    /* ── PASSAGE-BASED (Anifowose & Enemuo — Elements of Politics; Appadorai — The Substance of Politics) ── */
+    {section:"Passage",passage:"Democracy is a system of government in which political power is derived from the people. In a representative democracy, citizens elect officials to govern on their behalf, while in a direct democracy, citizens themselves vote on policy decisions. Key features of democracy include free and fair elections, rule of law, protection of fundamental human rights, independent judiciary, and separation of powers among the executive, legislature, and judiciary. The doctrine of separation of powers, advanced by Montesquieu, prevents any one branch of government from accumulating too much power, thereby protecting citizens from tyranny.",q:"According to the passage, the doctrine of separation of powers was advanced by:",opts:["John Locke","Jean-Jacques Rousseau","Montesquieu","Karl Marx"],ans:2},
+    {section:"Passage",passage:"Democracy is a system of government in which political power is derived from the people. In a representative democracy, citizens elect officials to govern on their behalf, while in a direct democracy, citizens themselves vote on policy decisions. Key features of democracy include free and fair elections, rule of law, protection of fundamental human rights, independent judiciary, and separation of powers among the executive, legislature, and judiciary. The doctrine of separation of powers, advanced by Montesquieu, prevents any one branch of government from accumulating too much power, thereby protecting citizens from tyranny.",q:"The passage states that in a representative democracy, citizens:",opts:["Vote directly on all policies","Elect officials to govern on their behalf","Govern themselves without any representatives","Only vote during times of crisis"],ans:1},
+    {section:"Passage",passage:"Federalism is a system of government in which constitutional authority is divided between a central (federal) government and constituent units such as states or regions. Each level of government has defined powers, and neither can unilaterally abolish the other. Nigeria operates a federal system in which the Exclusive Legislative List contains matters only the federal government can legislate upon, while the Concurrent List contains matters on which both federal and state governments can make laws. Residual powers — matters not listed — belong to the states. This arrangement is intended to balance national unity with local autonomy.",q:"From the passage, matters on the Exclusive Legislative List in Nigeria can be legislated upon by:",opts:["State governments only","Both federal and state governments","The federal government only","Local government councils"],ans:2},
+    {section:"Passage",passage:"Federalism is a system of government in which constitutional authority is divided between a central (federal) government and constituent units such as states or regions. Each level of government has defined powers, and neither can unilaterally abolish the other. Nigeria operates a federal system in which the Exclusive Legislative List contains matters only the federal government can legislate upon, while the Concurrent List contains matters on which both federal and state governments can make laws. Residual powers — matters not listed — belong to the states. This arrangement is intended to balance national unity with local autonomy.",q:"According to the passage, 'residual powers' in the Nigerian federal system belong to:",opts:["The federal government","Local government councils","The judiciary","The state governments"],ans:3},
     {q:"The principle of separation of powers was developed by:",opts:["John Locke","Karl Marx","Montesquieu","Jean Rousseau"],ans:2},
     {q:"What is a constitution?",opts:["A type of court","The fundamental laws governing a state","A political party","A type of government"],ans:1},
     {q:"The Nigerian Constitution in force is dated:",opts:["1960","1979","1989","1999"],ans:3},
@@ -1114,6 +1172,14 @@ const QUESTION_BANK = {
 
   ],
   Literature:[
+    /* ── PASSAGE-BASED — JAMB 2026 prescribed texts ── */
+    /* Marriage of Anansewa — Efua Sutherland (African Drama) */
+    {section:"Passage (Drama)",passage:"In Efua Sutherland's play 'Marriage of Anansewa', Ananse is a scheming, resourceful character who exploits modern institutions — telegrams, photographs, money — to extract bride-price from multiple chiefs simultaneously, all of whom believe they are the sole suitor for his daughter Anansewa. Sutherland blends Ghanaian storytelling traditions with modern dramatic techniques, including the use of the Storyteller, who guides the audience through the action, breaking the fourth wall. The play's tone moves deftly between comedy and social criticism, exposing the greed latent in both the traditional institution of marriage and modern materialism.",q:"The central device Ananse uses to deceive the chiefs in 'Marriage of Anansewa' is:",opts:["Sending counterfeit money","Offering multiple chiefs the same daughter using modern communication","Disguising himself as a chief","Bribing the Storyteller to mislead the audience"],ans:1},
+    {section:"Passage (Drama)",passage:"In Efua Sutherland's play 'Marriage of Anansewa', Ananse is a scheming, resourceful character who exploits modern institutions — telegrams, photographs, money — to extract bride-price from multiple chiefs simultaneously, all of whom believe they are the sole suitor for his daughter Anansewa. Sutherland blends Ghanaian storytelling traditions with modern dramatic techniques, including the use of the Storyteller, who guides the audience through the action, breaking the fourth wall. The play's tone moves deftly between comedy and social criticism, exposing the greed latent in both the traditional institution of marriage and modern materialism.",q:"The Storyteller in 'Marriage of Anansewa' serves primarily to:",opts:["Provide comic relief","Guide the audience through the action and break the fourth wall","Act as Ananse's accomplice","Represent the voice of the chiefs"],ans:1},
+    {section:"Passage (Drama)",passage:"In Efua Sutherland's play 'Marriage of Anansewa', Ananse is a scheming, resourceful character who exploits modern institutions — telegrams, photographs, money — to extract bride-price from multiple chiefs simultaneously, all of whom believe they are the sole suitor for his daughter Anansewa. Sutherland blends Ghanaian storytelling traditions with modern dramatic techniques, including the use of the Storyteller, who guides the audience through the action, breaking the fourth wall. The play's tone moves deftly between comedy and social criticism, exposing the greed latent in both the traditional institution of marriage and modern materialism.",q:"The social criticism in 'Marriage of Anansewa' targets:",opts:["Colonial oppression","The greed embedded in both traditional marriage customs and modern materialism","Corrupt political leadership","Gender inequality in education"],ans:1},
+    /* So the Path Does Not Die — Pede Hollist (African Prose) */
+    {section:"Passage (Prose)",passage:"Pede Hollist's novel 'So the Path Does Not Die' follows Faniba, a Sierra Leonean girl who dreams of education and self-determination in a society that restricts women's choices. The novel is structured around the metaphor of the path — a road that must be kept open, cleared of obstacles, so that future generations may walk it. Faniba's struggles against poverty, tradition, and the expectations of her community are depicted with both realism and hope. The title itself is a philosophical statement: even when individuals face defeat, the path they clear must not be allowed to close, for it leads others toward freedom and possibility.",q:"In 'So the Path Does Not Die', the central metaphor of 'the path' represents:",opts:["A literal road through the Sierra Leonean forest","The journey of education and opportunity for future generations","The political route to national independence","Faniba's journey from village to city"],ans:1},
+    {section:"Passage (Prose)",passage:"Pede Hollist's novel 'So the Path Does Not Die' follows Faniba, a Sierra Leonean girl who dreams of education and self-determination in a society that restricts women's choices. The novel is structured around the metaphor of the path — a road that must be kept open, cleared of obstacles, so that future generations may walk it. Faniba's struggles against poverty, tradition, and the expectations of her community are depicted with both realism and hope. The title itself is a philosophical statement: even when individuals face defeat, the path they clear must not be allowed to close, for it leads others toward freedom and possibility.",q:"The title 'So the Path Does Not Die' primarily suggests a message of:",opts:["Inevitable failure","Maintaining hope and clearing the way for others despite personal setbacks","Political revolution","Personal revenge against society"],ans:1},
     {q:"Who wrote 'Things Fall Apart'?",opts:["Wole Soyinka","Chinua Achebe","Ngugi wa Thiong'o","Ben Okri"],ans:1},
     {q:"A sonnet has how many lines?",opts:["10","12","14","16"],ans:2},
     {q:"The term 'protagonist' refers to:",opts:["The villain","The main character","The narrator","The author"],ans:1},
@@ -1449,6 +1515,10 @@ const QUESTION_BANK = {
 
   ],
   CRS:[
+    /* ── PASSAGE-BASED (The Bible — RSV; Ilori et al — CRS for Senior Secondary Schools) ── */
+    {section:"Passage (Scripture)",passage:"The Sermon on the Mount, recorded in Matthew chapters 5–7, contains some of Jesus' most celebrated teachings. He opens with the Beatitudes — a series of blessings beginning 'Blessed are the poor in spirit, for theirs is the kingdom of heaven.' He teaches that his followers are 'the salt of the earth' and 'the light of the world', using these metaphors to show their responsibility to positively influence society. The Sermon also contains the Lord's Prayer, instructions on fasting and almsgiving done in secret, and the Golden Rule: 'Do to others what you would have them do to you.' Jesus concludes by comparing those who follow his words to a wise man who builds his house on rock.",q:"According to the passage, the opening words of the Beatitudes are:",opts:["Blessed are the meek","Blessed are the peacemakers","Blessed are the poor in spirit","Blessed are those who mourn"],ans:2},
+    {section:"Passage (Scripture)",passage:"The Sermon on the Mount, recorded in Matthew chapters 5–7, contains some of Jesus' most celebrated teachings. He opens with the Beatitudes — a series of blessings beginning 'Blessed are the poor in spirit, for theirs is the kingdom of heaven.' He teaches that his followers are 'the salt of the earth' and 'the light of the world', using these metaphors to show their responsibility to positively influence society. The Sermon also contains the Lord's Prayer, instructions on fasting and almsgiving done in secret, and the Golden Rule: 'Do to others what you would have them do to you.' Jesus concludes by comparing those who follow his words to a wise man who builds his house on rock.",q:"The metaphors 'salt of the earth' and 'light of the world' in the passage are used to illustrate:",opts:["The disciples' miraculous powers","The responsibility of followers to positively influence society","The physical appearance of the disciples","The importance of ritual worship"],ans:1},
+    {section:"Passage (Scripture)",passage:"The parable of the Prodigal Son, found in Luke 15:11–32, tells the story of a younger son who demands his share of his father's inheritance, squanders it on reckless living in a distant land, and eventually returns in shame and repentance. The father, seeing him from afar, runs to meet him, embraces him, and orders a feast. The elder son, who had remained faithful, resents the celebration. The parable is widely interpreted as a teaching on God's unconditional forgiveness and the joy of repentance, and also as a critique of self-righteous attitudes symbolised by the elder brother.",q:"In the parable, the elder son's response to his brother's return represents:",opts:["Joy at the prodigal's return","Self-righteous resentment at the father's forgiveness","Indifference to family affairs","Sadness at the loss of the inheritance"],ans:1},
     {q:"In the Bible, the first book is:",opts:["Exodus","Genesis","Leviticus","Numbers"],ans:1},
     {q:"According to the Bible, God created the world in how many days?",opts:["3","5","6","7"],ans:2},
     {q:"The Ten Commandments were given to:",opts:["Abraham","Moses","David","Solomon"],ans:1},
@@ -1795,28 +1865,38 @@ function pad(n){return n<10?'0'+n:''+n}
 // PALETTE
 function renderPalette(){
   const grid=document.getElementById('paletteGrid');
+  if(!grid)return;
   grid.innerHTML='';
+  let flagCount=0;
   questions.forEach((q,i)=>{
     const btn=document.createElement('button');
     btn.className='pal-btn';
     btn.textContent=i+1;
     btn.title=`Q${i+1}: ${q.subject}`;
     if(i===currentIdx)btn.classList.add('current');
-    else if(flagged[q.id])btn.classList.add('flagged');
+    else if(flagged[q.id]){btn.classList.add('flagged');flagCount++;}
     else if(answers[q.id]!==undefined)btn.classList.add('answered');
     btn.onclick=()=>goTo(i);
     grid.appendChild(btn);
   });
   const answered=Object.keys(answers).length;
-  document.getElementById('palAnswered').textContent=answered;
-  document.getElementById('palRemaining').textContent=questions.length-answered;
+  const palAns=document.getElementById('palAnswered');
+  const palRem=document.getElementById('palRemaining');
+  const palFlag=document.getElementById('palFlagged');
+  const flagWrap=document.getElementById('flaggedCountWrap');
+  if(palAns)palAns.textContent=answered;
+  if(palRem)palRem.textContent=questions.length-answered;
+  if(palFlag)palFlag.textContent=flagCount;
+  if(flagWrap)flagWrap.style.display=flagCount>0?'flex':'none';
 }
 
 // QUESTION RENDER
 function renderQuestion(){
   const q=questions[currentIdx];
   if(!q)return;
-  document.getElementById('subjectTag').textContent=q.subject+(q.section?' — '+q.section:'');
+  document.getElementById('subjectTag').textContent=q.subject+(q.section&&q.section!=='Passage'?' — '+q.section:(q.section==='Passage'?'':q.section?(' — '+q.section):'')); 
+  const secLabel=q.section||q.subject;
+  const displaySection=(secLabel.startsWith('Passage')?secLabel:secLabel);
   const letters=['A','B','C','D'];
   const optHtml=q.opts.map((opt,i)=>`
     <button class="q-option${answers[q.id]===i?' selected':''}" onclick="selectAnswer(${i})">
@@ -1825,7 +1905,15 @@ function renderQuestion(){
     </button>
   `).join('');
 
-  const passageHtml=q.passage?`<div class="q-passage">${q.passage}</div>`:'';
+  const passageLabel = q.subject==='English'?'📄 Read the passage carefully':
+    (q.section&&q.section.includes('Drama'))?'📖 Prescribed Drama Text — Marriage of Anansewa':
+    (q.section&&q.section.includes('Prose'))?'📖 Prescribed Prose Text — So the Path Does Not Die':
+    (q.section&&q.section.includes('Scripture'))?'✝ Scripture Passage (RSV Bible)':
+    q.passage?'📄 Textbook Passage — Read carefully':'';
+  const passageClass = (q.section&&(q.section.includes('Drama')||q.section.includes('Prose')))?'book-text':
+    (q.section&&q.section.includes('Scripture'))?'scripture-text':
+    (q.subject!=='English'&&q.passage)?'textbook-text':'';
+  const passageHtml=q.passage?`<div class="q-passage ${passageClass}" data-label="${passageLabel}">${q.passage}</div>`:'';
 
   document.getElementById('questionMain').innerHTML=`
     <div class="q-header">
@@ -1836,7 +1924,7 @@ function renderQuestion(){
     </div>
     ${passageHtml}
     <div class="q-card">
-      <div class="q-subject">${q.section||q.subject}</div>
+      <div class="q-subject">${displaySection}</div>
       <div class="q-number">Question ${currentIdx+1}</div>
       <div class="q-text">${q.q}</div>
       <div class="q-options">${optHtml}</div>
@@ -1864,14 +1952,21 @@ function toggleFlag(){
 }
 function nextQ(){if(currentIdx<questions.length-1){currentIdx++;renderPalette();renderQuestion();}}
 function prevQ(){if(currentIdx>0){currentIdx--;renderPalette();renderQuestion();}}
-function goTo(i){currentIdx=i;renderPalette();renderQuestion();closePalette();}
+function goTo(i){currentIdx=i;renderPalette();renderQuestion();}
+let _palOpen=false;
 function togglePalette(){
-  const sb=document.getElementById('paletteSidebar'),ov=document.getElementById('palOverlay');
-  sb.classList.toggle('open');ov.classList.toggle('active');
+  _palOpen=!_palOpen;
+  const body=document.getElementById('palBody');
+  const arrow=document.getElementById('palArrow');
+  if(body)body.classList.toggle('open',_palOpen);
+  if(arrow){arrow.textContent=_palOpen?'▼':'▲';}
 }
 function closePalette(){
-  document.getElementById('paletteSidebar').classList.remove('open');
-  document.getElementById('palOverlay').classList.remove('active');
+  _palOpen=false;
+  const body=document.getElementById('palBody');
+  const arrow=document.getElementById('palArrow');
+  if(body)body.classList.remove('open');
+  if(arrow)arrow.textContent='▲';
 }
 
 function confirmSubmit(){
