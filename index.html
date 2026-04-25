@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#006400"/>
+<meta name="description" content="JAMB CBT Practice — Simulate real JAMB exams with 14 subjects, timed sessions, and performance analytics."/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="JAMB CBT"/>
+<link rel="manifest" id="pwaManifest"/>
+<title>JAMB CBT Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#004d00;--g2:#006400;--g3:#008000;--g4:#16a34a;
+  --y:#f59e0b;--r:#dc2626;--r2:#ef4444;
+  --bg:#f8faf7;--card:#fff;--border:#e2e8e0;
+  --text:#0f1a0e;--muted:#5a7060;--hint:#8fa690;
+  --shadow:0 1px 4px rgba(0,70,0,.08),0 4px 16px rgba(0,70,0,.06);
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--serif:'Fraunces',serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:inherit;border:none;outline:none;transition:all .15s}
+input,select{font-family:inherit}
+
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── SETUP ── */
+#setup{background:linear-gradient(160deg,#001a00 0%,#003300 40%,#004d00 70%,#006400 100%);align-items:center;justify-content:center;position:relative;overflow:hidden}
+#setup::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 20%,rgba(22,163,74,.18) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 10% 90%,rgba(245,158,11,.08) 0%,transparent 50%);pointer-events:none}
+
+.setup-card{background:#fff;border-radius:20px;padding:44px 40px;max-width:500px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.08);position:relative;z-index:1}
+.logo-row{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.logo-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--g1),var(--g3));border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round}
+.logo-text h1{font-family:var(--serif);font-size:22px;color:var(--g1);line-height:1.1}
+.logo-text p{font-size:12px;color:var(--muted);margin-top:3px;font-weight:500;letter-spacing:.3px}
+
+.ai-badge{display:inline-flex;align-items:center;gap:6px;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:20px;letter-spacing:.3px}
+.ai-badge::before{content:'✦';font-size:10px}
+
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.6px}
+.form-group select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);background:#fff;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a7060' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.form-group select:focus{border-color:var(--g2);outline:none;box-shadow:0 0 0 3px rgba(0,100,0,.1)}
+/* ── SUBJECT CHIPS ── */
+.subject-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.subject-chip{padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none}
+.subject-chip:hover{border-color:var(--g3);color:var(--g2);background:#f0faf0}
+.subject-chip.selected{background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;border-color:transparent;font-weight:700;box-shadow:0 2px 8px rgba(0,100,0,.25)}
+.subject-chip.selected:hover{opacity:.9}
+.chip-hint{font-size:11px;color:var(--hint);margin-top:7px;display:block}
+
+.start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;font-size:15px;font-weight:700;border-radius:12px;margin-top:10px;letter-spacing:.3px;box-shadow:0 4px 16px rgba(0,100,0,.35)}
+.start-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,100,0,.4)}
+.start-btn:active{transform:translateY(0)}
+
+/* ── INSTRUCTIONS ── */
+#instructions{background:var(--bg)}
+.inst-header{background:var(--g1);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between}
+.inst-header h2{font-family:var(--serif);font-size:18px;font-weight:700}
+.inst-body{max-width:720px;margin:0 auto;padding:36px 24px}
+.inst-body h3{font-family:var(--serif);font-size:20px;color:var(--g1);margin-bottom:20px}
+.inst-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.inst-list li{display:flex;gap:14px;align-items:flex-start;background:#fff;border-radius:10px;padding:13px 18px;font-size:14px;border-left:3px solid var(--g3);box-shadow:var(--shadow)}
+.inst-list li .num{font-weight:700;color:var(--g3);min-width:20px;font-size:13px}
+.ai-feature-box{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;border-radius:12px;padding:16px 20px;margin-top:20px;display:flex;gap:14px;align-items:flex-start}
+.ai-feature-box .icon{font-size:20px;margin-top:1px}
+.ai-feature-box h4{font-size:14px;font-weight:700;color:#065f46;margin-bottom:4px}
+.ai-feature-box p{font-size:13px;color:#047857}
+.inst-proceed{margin-top:24px;padding:14px 36px;background:var(--g1);color:#fff;font-size:15px;font-weight:700;border-radius:11px;box-shadow:0 4px 14px rgba(0,70,0,.3)}
+.inst-proceed:hover{background:var(--g2)}
+
+/* ── EXAM TOPBAR ── */
+#exam{background:var(--bg)}
+.exam-topbar{background:var(--g1);color:#fff;padding:0 20px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.exam-topbar .brand{font-family:var(--serif);font-size:16px;font-weight:700;letter-spacing:.2px}
+.exam-topbar .timer{background:rgba(255,255,255,.15);border-radius:8px;padding:5px 14px;font-family:var(--mono);font-size:14px;font-weight:500;letter-spacing:1px;min-width:88px;text-align:center}
+.exam-topbar .timer.urgent{background:#dc2626;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
+.subject-tag{background:rgba(255,255,255,.15);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── EXAM BODY ── */
+.exam-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px)}
+
+/* ── PALETTE ── */
+.palette-sidebar{width:216px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.pal-header{padding:12px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px}
+.pal-legend{display:flex;flex-wrap:wrap;gap:5px;padding:9px 12px;border-bottom:1px solid var(--border)}
+.pal-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+.pal-dot{width:10px;height:10px;border-radius:2px}
+.pal-dot.answered{background:#16a34a}
+.pal-dot.current{background:var(--text)}
+.pal-dot.flagged{background:var(--y)}
+.pal-dot.unanswered{background:#e2e8e0;border:1px solid #c8d5c4}
+.pal-grid{padding:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;overflow-y:auto;flex:1}
+.pal-btn{aspect-ratio:1;border-radius:7px;font-size:11px;font-weight:700;background:#e8f0e5;color:var(--muted);border:1.5px solid transparent;transition:transform .1s,background .1s}
+.pal-btn:hover{transform:scale(1.08)}
+.pal-btn.answered{background:#16a34a;color:#fff;border-color:#15803d}
+.pal-btn.current{background:var(--g1);color:#fff;border-color:#003800}
+.pal-btn.flagged{background:#fef3c7;color:#92400e;border-color:var(--y)}
+.pal-stats{padding:10px 12px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pal-stat{background:var(--bg);border-radius:7px;padding:7px 8px;text-align:center}
+.pal-stat .sv{font-size:16px;font-weight:700;color:var(--g2)}
+.pal-stat .sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+.pal-submit-wrap{padding:10px 12px;border-top:1px solid var(--border)}
+.pal-submit{width:100%;padding:10px;background:#dc2626;color:#fff;font-size:12px;font-weight:700;border-radius:8px;letter-spacing:.3px}
+.pal-submit:hover{background:#b91c1c}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-overlay.active{display:flex}
+.modal-box{background:#fff;border-radius:18px;padding:32px 28px;max-width:380px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center;animation:modalIn .22s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.modal-icon{font-size:36px;margin-bottom:14px}
+.modal-title{font-family:var(--serif);font-size:19px;font-weight:700;color:var(--text);margin-bottom:8px}
+.modal-msg{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:22px}
+.modal-count{font-size:13px;font-weight:700;color:#dc2626;background:#fee2e2;padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:16px}
+.modal-actions{display:flex;gap:10px;justify-content:center}
+.modal-btn{padding:11px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit}
+.modal-btn.cancel{background:var(--bg);color:var(--muted);border:2px solid var(--border)}
+.modal-btn.cancel:hover{background:#e2e8e0}
+.modal-btn.confirm{background:#dc2626;color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.3)}
+.modal-btn.confirm:hover{background:#b91c1c}
+
+/* ── NAVBAR USERNAME ── */
+.nav-user{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.13);border-radius:20px;padding:4px 12px 4px 6px;cursor:default}
+.nav-avatar{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-username{font-size:12px;font-weight:600;color:rgba(255,255,255,.9);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── LOCKED CHIP ── */
+.subject-chip.locked{background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;border-color:transparent;font-weight:700;box-shadow:0 2px 8px rgba(0,100,0,.25);cursor:not-allowed;opacity:1}
+.subject-chip.locked::after{content:' 🔒';font-size:10px}
+.q-passage{background:#fffdf0;border:1px solid #e8d87a;border-left:4px solid #d97706;border-radius:10px;padding:16px 20px;font-size:13.5px;line-height:1.85;color:#3a2e00;margin-bottom:0;box-shadow:0 1px 6px rgba(217,119,6,.08)}
+.q-passage::before{content:'📄 Read the passage carefully';display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#92400e;margin-bottom:10px}
+
+/* ── QUESTION MAIN ── */
+.question-main{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:18px}
+.q-header{display:flex;justify-content:space-between;align-items:center}
+.q-progress{font-size:12px;color:var(--muted);font-weight:600}
+.q-flag-btn{padding:5px 12px;border-radius:6px;border:1.5px solid #d97706;background:transparent;font-size:12px;font-weight:600;color:#d97706;display:flex;align-items:center;gap:5px}
+.q-flag-btn.flagged{background:#fef3c7;color:#92400e;border-color:var(--y)}
+.q-card{background:#fff;border-radius:14px;padding:26px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.q-subject{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--g3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.q-subject::before{content:'';width:20px;height:2px;background:var(--g3);border-radius:1px;display:inline-block}
+.q-number{font-size:12px;font-weight:500;color:var(--hint);margin-bottom:10px}
+.q-text{font-size:15px;line-height:1.75;color:var(--text);font-weight:500}
+.q-options{display:flex;flex-direction:column;gap:9px;margin-top:22px}
+.q-option{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-radius:10px;border:2px solid var(--border);background:#fff;text-align:left;font-size:14px;line-height:1.55;color:var(--text);transition:all .15s}
+.q-option:hover{border-color:var(--g3);background:#f0faf0}
+.q-option.selected{border-color:var(--g2);background:#ecfdf5;color:var(--g1);font-weight:600}
+.q-option.correct{border-color:#16a34a;background:#dcfce7;color:#14532d}
+.q-option.incorrect{border-color:#dc2626;background:#fef2f2;color:#7f1d1d}
+.q-option .opt-letter{font-weight:700;color:var(--g3);min-width:18px;font-size:13px;font-family:var(--mono)}
+.q-option.selected .opt-letter{color:var(--g1)}
+.q-option.correct .opt-letter{color:#16a34a}
+.q-option.incorrect .opt-letter{color:#dc2626}
+
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.q-nav-btn{padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;border:2px solid var(--g2);color:var(--g2);background:transparent}
+.q-nav-btn:hover{background:var(--g2);color:#fff}
+.q-nav-btn.next{background:var(--g1);color:#fff;border-color:var(--g1)}
+.q-nav-btn.next:hover{background:var(--g2)}
+.q-nav-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── PERSONALIZATION ENGINE PILL ── */
+.profile-pill{display:flex;align-items:center;gap:8px;background:#f0faf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin-bottom:18px;font-size:13px;color:var(--g1)}
+.profile-pill .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g3));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.profile-pill .info{flex:1}
+.profile-pill .name{font-weight:700;font-size:13px}
+.profile-pill .meta{font-size:11px;color:var(--muted);margin-top:1px}
+.profile-pill .edit-btn{padding:4px 10px;border-radius:6px;background:#006400;color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer}
+.name-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);background:#fff;margin-top:6px}
+.name-input:focus{border-color:var(--g2);outline:none;box-shadow:0 0 0 3px rgba(0,100,0,.1)}
+
+/* ── CALCULATOR ── */
+.calc-toggle{position:fixed;bottom:22px;right:22px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;font-size:18px;box-shadow:0 4px 16px rgba(0,100,0,.45);z-index:200;display:flex;align-items:center;justify-content:center}
+.calc-toggle:hover{transform:scale(1.08)}
+.calc-panel{position:fixed;bottom:80px;right:22px;background:#fff;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.2);padding:14px;width:234px;z-index:200;border:1px solid var(--border)}
+.calc-panel.hidden{display:none}
+.calc-display{background:#0f1a0e;color:#4ade80;font-family:var(--mono);font-size:18px;padding:10px 14px;border-radius:9px;text-align:right;min-height:46px;word-break:break-all;margin-bottom:10px;letter-spacing:.5px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.calc-btn{padding:10px;border-radius:8px;font-size:13px;font-weight:600;background:#f0f4f0;color:var(--text);border:1px solid #e2e8e0;font-family:var(--mono)}
+.calc-btn:hover{background:#e2ece0}
+.calc-btn.op{background:#dcfce7;color:#14532d}
+.calc-btn.eq{background:var(--g1);color:#fff;grid-column:span 2}
+.calc-btn.eq:hover{background:var(--g2)}
+.calc-btn.clr{background:#fee2e2;color:#b91c1c}
+.calc-btn.zero{grid-column:span 2}
+
+/* ── RESULT SCREEN ── */
+#result{align-items:center;justify-content:center;background:linear-gradient(160deg,#001a00,#004d00)}
+.result-card{background:#fff;border-radius:20px;padding:44px 40px;max-width:600px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.result-title{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--g1);margin-bottom:6px;text-align:center}
+.result-subtitle{font-size:14px;color:var(--muted);text-align:center}
+.score-ring{position:relative;width:150px;height:150px;margin:28px auto}
+.score-ring svg{width:100%;height:100%}
+.score-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring-pct{font-family:var(--serif);font-size:38px;font-weight:900;color:var(--g1)}
+.score-ring-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.grade-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin:0 auto 4px;display:flex;width:fit-content}
+.grade-A{background:#dcfce7;color:#15803d}
+.grade-B{background:#dbeafe;color:#1e40af}
+.grade-C{background:#fef9c3;color:#854d0e}
+.grade-F{background:#fee2e2;color:#991b1b}
+.result-bar{height:10px;background:#e2e8e0;border-radius:5px;overflow:hidden;margin:16px 0}
+.result-bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--g1),var(--g4));transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.result-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:20px 0}
+.stat-box{background:var(--bg);border-radius:11px;padding:16px;border:1px solid var(--border);text-align:center}
+.stat-box .sv{font-size:24px;font-weight:800;color:var(--text)}
+.stat-box .sl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.stat-box.green .sv{color:#16a34a}
+.stat-box.red .sv{color:#dc2626}
+.stat-box.gray .sv{color:var(--muted)}
+
+/* subject performance */
+.subj-perf{margin-top:20px;text-align:left}
+.subj-perf h4{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.subj-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.subj-row .name{font-size:13px;font-weight:600;min-width:90px;color:var(--text)}
+.subj-bar-wrap{flex:1;height:8px;background:#e2e8e0;border-radius:4px;overflow:hidden}
+.subj-bar-fill{height:100%;border-radius:4px;background:var(--g3);transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.subj-row .pct{font-size:12px;font-weight:700;min-width:36px;text-align:right;color:var(--g2);font-family:var(--mono)}
+
+.result-actions{display:flex;gap:12px;margin-top:28px;justify-content:center;flex-wrap:wrap}
+.result-actions button{padding:12px 26px;border-radius:10px;font-size:14px;font-weight:700}
+.btn-retake{background:var(--g1);color:#fff;box-shadow:0 4px 14px rgba(0,70,0,.3)}
+.btn-retake:hover{background:var(--g2)}
+.btn-review-all{background:#fff;color:var(--g1);border:2px solid var(--g2)}
+.btn-review-all:hover{background:var(--bg)}
+.btn-setup{background:var(--bg);color:var(--muted);border:2px solid var(--border)}
+.btn-setup:hover{background:#e2e8e0}
+
+/* ── REVIEW MODE ── */
+#review{background:var(--bg)}
+.review-header{background:var(--g1);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px}
+.review-header h2{font-family:var(--serif);font-size:17px;font-weight:700}
+.review-back{background:rgba(255,255,255,.18);padding:6px 14px;border-radius:7px;font-size:13px;font-weight:600;color:#fff}
+.review-body{max-width:800px;margin:0 auto;padding:28px 20px;display:flex;flex-direction:column;gap:20px}
+.review-card{background:#fff;border-radius:14px;padding:22px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.review-card .rc-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.review-card .rc-subject{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g3)}
+.review-card .rc-status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px}
+.rc-status.correct{background:#dcfce7;color:#15803d}
+.rc-status.wrong{background:#fee2e2;color:#991b1b}
+.rc-status.skipped{background:#f3f4f6;color:var(--muted)}
+.review-card .rc-text{font-size:15px;font-weight:500;line-height:1.7;margin-bottom:14px}
+.review-card .rc-options{display:flex;flex-direction:column;gap:7px}
+.rc-option{display:flex;gap:10px;padding:10px 14px;border-radius:8px;font-size:13px;border:1.5px solid transparent}
+.rc-option.correct{background:#dcfce7;border-color:#86efac;color:#14532d}
+.rc-option.your-wrong{background:#fee2e2;border-color:#fca5a5;color:#7f1d1d}
+.rc-option.neutral{background:var(--bg);border-color:var(--border);color:var(--muted)}
+.rc-option .ol{font-weight:700;min-width:18px;font-family:var(--mono);font-size:12px}
+.rc-passage{background:#fffdf0;border:1px solid #fde68a;border-left:3px solid #d97706;border-radius:8px;padding:12px 16px;font-size:12.5px;line-height:1.75;color:#3a2e00;margin-bottom:10px}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  .palette-sidebar{display:none}
+  .palette-sidebar.open{display:flex;position:fixed;left:0;top:54px;bottom:0;z-index:150;width:204px;box-shadow:4px 0 24px rgba(0,0,0,.25)}
+  .mob-pal-btn{display:flex}
+  .exam-body{height:calc(100vh - 54px)}
+  .question-main{padding:14px}
+  .q-card{padding:18px}
+  .q-text{font-size:14px}
+  .setup-card{padding:28px 22px}
+  .result-card{padding:28px 20px}
+  .result-stats{grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .stat-box .sv{font-size:20px}
+}
+@media(min-width:641px){.mob-pal-btn{display:none}}
+.mob-pal-btn{padding:5px 10px;border-radius:7px;background:rgba(255,255,255,.18);font-size:12px;font-weight:700;color:#fff;border:none}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:140;backdrop-filter:blur(2px)}
+.overlay.active{display:block}
+</style>
+</head>
+<body>
+
+<!-- PWA Install Banner -->
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#006400;color:#fff;padding:12px 20px;z-index:999;align-items:center;gap:12px;box-shadow:0 -4px 16px rgba(0,0,0,.2)">
+  <span style="font-size:13px;font-weight:600;flex:1">📲 Install JAMB CBT for offline practice!</span>
+  <button onclick="installApp()" style="background:#fff;color:#006400;border:none;padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer">Install</button>
+  <button onclick="dismissInstall()" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer">✕</button>
+</div>
+
+<!-- ═══════════════ SETUP SCREEN ═══════════════ -->
+<div class="screen active" id="setup">
+  <div class="setup-card">
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg>
+      </div>
+      <div class="logo-text">
+        <h1>JAMB CBT<br>Practice</h1>
+        <p>Smart Exam Simulation</p>
+      </div>
+    </div>
+
+    <!-- Personalization -->
+    <div id="profilePill" class="profile-pill" style="display:none">
+      <div class="avatar" id="avatarInitial">?</div>
+      <div class="info">
+        <div class="name" id="profileName">Student</div>
+        <div class="meta" id="profileMeta">Welcome back!</div>
+      </div>
+      <button class="edit-btn" onclick="editProfile()">Edit</button>
+    </div>
+    <div id="nameGroup" class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="studentName" class="name-input" placeholder="Enter your name to personalise your experience" maxlength="40"/>
+    </div>
+
+    <div class="form-group">
+      <label>Select Subjects (up to 4)</label>
+      <div class="subject-chips" id="subjectChips">
+        <div class="subject-chip selected locked" data-value="English">Use of English</div>
+        <div class="subject-chip selected" data-value="Mathematics">Mathematics</div>
+        <div class="subject-chip selected" data-value="Physics">Physics</div>
+        <div class="subject-chip selected" data-value="Chemistry">Chemistry</div>
+        <div class="subject-chip" data-value="Biology">Biology</div>
+        <div class="subject-chip" data-value="Economics">Economics</div>
+        <div class="subject-chip" data-value="Government">Government</div>
+        <div class="subject-chip" data-value="Literature">Literature</div>
+        <div class="subject-chip" data-value="Geography">Geography</div>
+        <div class="subject-chip" data-value="AccountsPrinciples">Principles of Acct.</div>
+        <div class="subject-chip" data-value="Commerce">Commerce</div>
+        <div class="subject-chip" data-value="FurtherMaths">Further Maths</div>
+        <div class="subject-chip" data-value="CRS">Christian R.S.</div>
+        <div class="subject-chip" data-value="IRS">Islamic R.S.</div>
+      </div>
+      <small class="chip-hint">Use of English is compulsory. Tap to select/deselect others (max 4 total)</small>
+    </div>
+    <div class="form-group">
+      <label>Questions per Subject</label>
+      <select id="qCountSelect">
+        <option value="10">10 Questions — Quick Practice</option>
+        <option value="20">20 Questions — Standard</option>
+        <option value="40" selected>40 Questions — JAMB Standard</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Time Limit</label>
+      <select id="timeSelect">
+        <option value="30">30 minutes — Practice Mode</option>
+        <option value="60">60 minutes</option>
+        <option value="90">90 minutes</option>
+        <option value="120" selected>120 minutes — JAMB Standard</option>
+      </select>
+    </div>
+    <button class="start-btn" onclick="goInstructions()">View Instructions &amp; Begin →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ INSTRUCTIONS SCREEN ═══════════════ -->
+<div class="screen" id="instructions">
+  <div class="inst-header">
+    <h2>Examination Instructions</h2>
+    <span style="font-size:13px;opacity:.75">Read carefully before starting</span>
+  </div>
+  <div class="inst-body">
+    <h3>JAMB CBT — General Instructions</h3>
+    <ul class="inst-list">
+      <li><span class="num">1</span><span>This is a Computer-Based Test (CBT). Your answers are recorded automatically as you click each option.</span></li>
+      <li><span class="num">2</span><span>The examination starts immediately when you click "Start Examination". The timer counts down from your set time limit.</span></li>
+      <li><span class="num">3</span><span>Use the question palette to navigate. <b style="color:#16a34a">Green</b> = answered, <b style="color:#d97706">Yellow</b> = flagged, Grey = unanswered.</span></li>
+      <li><span class="num">4</span><span>You may flag any question to revisit later using the flag button on each question.</span></li>
+      <li><span class="num">5</span><span><b>Use of English</b> has 60 questions covering: Comprehension Passages, Cloze Test, Lexis &amp; Structure, Oral English, and Reading Text (The Lekki Headmaster). Passages are shown above each question.</span></li>
+      <li><span class="num">6</span><span>A scientific calculator is available via the ⊞ button at the bottom-right corner (useful for Mathematics/Further Maths).</span></li>
+      <li><span class="num">7</span><span>When satisfied with your answers, click "Submit Exam" to see your score. You can review all answers after submission.</span></li>
+      <li><span class="num">8</span><span>The exam ends automatically when the timer reaches zero. All saved answers are submitted.</span></li>
+    </ul>
+    <div class="ai-feature-box">
+      <div class="icon">📊</div>
+      <div>
+        <h4>Personalised Performance Tracking</h4>
+        <p>Your scores and subject performance are saved automatically. After submission, review all answers to see what you got right and where you went wrong.</p>
+      </div>
+    </div>
+    <button class="inst-proceed" onclick="startExam()">Start Examination →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ EXAM SCREEN ═══════════════ -->
+<div class="screen" id="exam">
+  <div class="exam-topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="mob-pal-btn" onclick="togglePalette()">☰ Palette</button>
+      <span class="brand">JAMB CBT</span>
+    </div>
+    <div id="subjectTag" class="subject-tag"></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="nav-user" id="navUser" style="display:none">
+        <div class="nav-avatar" id="navAvatar">?</div>
+        <span class="nav-username" id="navUsername"></span>
+      </div>
+      <div id="timerDisplay" class="timer">02:00:00</div>
+    </div>
+  </div>
+  <div class="overlay" id="palOverlay" onclick="closePalette()"></div>
+  <div class="exam-body">
+    <div class="palette-sidebar" id="paletteSidebar">
+      <div class="pal-header">Question Palette</div>
+      <div class="pal-legend">
+        <div class="pal-legend-item"><div class="pal-dot answered"></div>Answered</div>
+        <div class="pal-legend-item"><div class="pal-dot flagged"></div>Flagged</div>
+        <div class="pal-legend-item"><div class="pal-dot current"></div>Current</div>
+        <div class="pal-legend-item"><div class="pal-dot unanswered"></div>Not visited</div>
+      </div>
+      <div class="pal-grid" id="paletteGrid"></div>
+      <div class="pal-stats">
+        <div class="pal-stat"><div class="sv" id="palAnswered">0</div><div class="sl">Answered</div></div>
+        <div class="pal-stat"><div class="sv" id="palRemaining" style="color:#dc2626">0</div><div class="sl">Remaining</div></div>
+      </div>
+      <div class="pal-submit-wrap">
+        <button class="pal-submit" onclick="confirmSubmit()">Submit Exam</button>
+      </div>
+    </div>
+    <div class="question-main" id="questionMain"></div>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<button class="calc-toggle" id="calcToggle" onclick="toggleCalc()" style="display:none" title="Calculator">⊞</button>
+<div class="calc-panel hidden" id="calcPanel">
+  <div class="calc-display" id="calcDisplay">0</div>
+  <div class="calc-grid">
+    <button class="calc-btn clr" onclick="calcInput('C')">C</button>
+    <button class="calc-btn op" onclick="calcInput('±')">±</button>
+    <button class="calc-btn op" onclick="calcInput('%')">%</button>
+    <button class="calc-btn op" onclick="calcInput('÷')">÷</button>
+    <button class="calc-btn" onclick="calcInput('7')">7</button>
+    <button class="calc-btn" onclick="calcInput('8')">8</button>
+    <button class="calc-btn" onclick="calcInput('9')">9</button>
+    <button class="calc-btn op" onclick="calcInput('×')">×</button>
+    <button class="calc-btn" onclick="calcInput('4')">4</button>
+    <button class="calc-btn" onclick="calcInput('5')">5</button>
+    <button class="calc-btn" onclick="calcInput('6')">6</button>
+    <button class="calc-btn op" onclick="calcInput('−')">−</button>
+    <button class="calc-btn" onclick="calcInput('1')">1</button>
+    <button class="calc-btn" onclick="calcInput('2')">2</button>
+    <button class="calc-btn" onclick="calcInput('3')">3</button>
+    <button class="calc-btn op" onclick="calcInput('+')">+</button>
+    <button class="calc-btn zero" onclick="calcInput('0')">0</button>
+    <button class="calc-btn" onclick="calcInput('.')">.</button>
+    <button class="calc-btn eq" onclick="calcInput('=')">=</button>
+  </div>
+</div>
+
+<!-- ═══════════════ RESULT SCREEN ═══════════════ -->
+<div class="screen" id="result">
+  <div class="result-card">
+    <div class="result-title" id="resultTitle">Examination Complete</div>
+    <div class="result-subtitle">Your performance summary</div>
+    <div class="score-ring">
+      <svg viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="60" fill="none" stroke="#e2e8e0" stroke-width="12"/>
+        <circle id="scoreArc" cx="75" cy="75" r="60" fill="none" stroke="#006400" stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="377" stroke-dashoffset="377" transform="rotate(-90 75 75)" style="transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)"/>
+      </svg>
+      <div class="score-ring-text">
+        <div class="score-ring-pct" id="scorePct">0%</div>
+        <div class="score-ring-lbl">Score</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-bottom:6px">
+      <div class="grade-badge" id="gradeBadge">--</div>
+    </div>
+    <div class="result-bar"><div class="result-bar-fill" id="resultBarFill" style="width:0%"></div></div>
+    <div class="result-stats">
+      <div class="stat-box green"><div class="sv" id="statCorrect">0</div><div class="sl">Correct</div></div>
+      <div class="stat-box red"><div class="sv" id="statWrong">0</div><div class="sl">Wrong</div></div>
+      <div class="stat-box gray"><div class="sv" id="statSkipped">0</div><div class="sl">Skipped</div></div>
+    </div>
+    <div class="subj-perf" id="subjPerf"></div>
+    <div class="result-actions">
+      <button class="btn-retake" onclick="retake()">Retake Exam</button>
+      <button class="btn-review-all" onclick="goReview()">Review Answers</button>
+      <button class="btn-setup" onclick="goSetup()">New Setup</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ REVIEW SCREEN ═══════════════ -->
+<div class="screen" id="review">
+  <div class="review-header">
+    <button class="review-back" onclick="show('result')">← Back</button>
+    <h2>Answer Review</h2>
+  </div>
+  <div class="review-body" id="reviewBody"></div>
+</div>
+
+<!-- ═══════════════ SUBMIT MODAL ═══════════════ -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modalIcon">⚠️</div>
+    <div class="modal-title" id="modalTitle">Submit Examination?</div>
+    <div id="modalCountWrap" style="display:none"><span class="modal-count" id="modalCount"></span></div>
+    <div class="modal-msg" id="modalMsg">This action cannot be undone. Your answers will be submitted for scoring.</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">← Go Back</button>
+      <button class="modal-btn confirm" onclick="closeModal();window.submitExam()">Submit Now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// QUESTION BANK (full original bank preserved)
+// ═══════════════════════════════════════════════
+const QUESTION_BANK = {
+  English:[
+    /* ── SECTION 1: COMPREHENSION (Passage A — Environment & Deforestation) ── */
+    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"According to the passage, which of the following is NOT mentioned as a cause of deforestation?",opts:["Agriculture","Logging","Mining","Urban development"],ans:2},
+    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"As used in the passage, the word 'dire' most nearly means:",opts:["Slight","Severe","Temporary","Unusual"],ans:1},
+    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"The writer implies that government reforestation efforts have failed mainly because of:",opts:["Lack of funding","Weak enforcement and corruption","Community resistance","Absence of legislation"],ans:1},
+    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"The best title for this passage is:",opts:["Government and the Environment","Nigeria's Vanishing Forests: A Call for Action","Agriculture in Southern Nigeria","The Effects of Urbanisation"],ans:1},
+    {section:"Comprehension",passage:"Nigeria's forests are disappearing at an alarming rate. Every year, thousands of hectares of forest are cleared for agriculture, logging, and urban development. The consequences are dire: soil erosion increases, rivers dry up, and countless plant and animal species vanish forever. The government has made several attempts to reverse this trend through reforestation programmes and legislation, but enforcement remains weak and corruption undermines these efforts. Local communities, who depend on forests for firewood, food, and medicine, find themselves trapped between immediate survival needs and long-term ecological destruction. Without a radical change in policy and community education, Nigeria risks turning its fertile south into a barren landscape within decades.",q:"The writer's attitude towards the current situation is best described as:",opts:["Optimistic","Indifferent","Concerned","Celebratory"],ans:2},
+    /* ── COMPREHENSION (Passage B — Youth and Education) ── */
+    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"What is the main idea of the passage?",opts:["Rural communities resist education","The UBE programme has fully solved Nigeria's education crisis","Education access and quality in Nigeria require urgent attention","Girls are the main barrier to educational progress"],ans:2},
+    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"As used in the passage, 'demographic dividend' refers to:",opts:["Government funds for education","Economic benefits from a large, educated youth population","Cultural heritage of young people","Rural development projects"],ans:1},
+    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"It can be inferred from the passage that the UBE programme:",opts:["Has completely failed","Has improved access but not quality","Has no effect on enrolment","Only targets girls"],ans:1},
+    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"Which of the following is NOT listed as a barrier to education in the passage?",opts:["Child labour","Language barriers","Poverty","Early marriage"],ans:1},
+    {section:"Comprehension",passage:"Education remains the most powerful tool for transforming society, yet millions of Nigerian youths are denied access to quality schooling each year. Poverty, early marriage, child labour, and inadequate school infrastructure combine to keep children out of classrooms. The situation is particularly acute in the rural North, where cultural norms and economic hardship clash with the demands of modern education. While the government's Universal Basic Education (UBE) programme has expanded access, quality remains a persistent challenge—overcrowded classrooms, undertrained teachers, and outdated curricula undermine outcomes. If Nigeria is to harness its demographic dividend, it must invest massively and urgently in education, particularly for girls and children in underserved communities.",q:"The word 'acute' as used in the passage means:",opts:["Mild","Irrelevant","Severe and pressing","Widespread"],ans:2},
+    /* ── CLOZE TEST (Passage C) ── */
+    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (11):",opts:["exaggerated","overstated","understated","eliminated"],ans:1},
+    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (12):",opts:["habit","problem","luxury","danger"],ans:0},
+    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (13):",opts:["poor","limited","wider","broken"],ans:2},
+    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (14):",opts:["ignore","avoid","embrace","reject"],ans:2},
+    {section:"Comprehension (Cloze)",passage:"The importance of reading cannot be __(11)__. In an age where social media dominates communication, many young people have abandoned the __(12)__ of reading books. Yet research consistently shows that regular readers develop __(13)__ vocabulary, sharper analytical skills, and greater empathy. Schools must therefore encourage students not only to read textbooks but also to __(14)__ fiction, poetry, and non-fiction. A nation of readers is ultimately a nation __(15)__ of progress.",q:"Choose the word that best fills gap (15):",opts:["incapable","unworthy","capable","ignorant"],ans:2},
+    /* ── SECTION 2: LEXIS AND STRUCTURE (20 questions) ── */
+    {section:"Lexis & Structure",q:"Choose the word most nearly OPPOSITE in meaning to BELLIGERENT:",opts:["Peaceful","Aggressive","Warlike","Hostile"],ans:0},
+    {section:"Lexis & Structure",q:"The word 'LOQUACIOUS' means:",opts:["Silent","Talkative","Angry","Wise"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the antonym of BENEVOLENT:",opts:["Kind","Generous","Malevolent","Charitable"],ans:2},
+    {section:"Lexis & Structure",q:"The word UBIQUITOUS means:",opts:["Rare","Found everywhere","Ancient","Transparent"],ans:1},
+    {section:"Lexis & Structure",q:"'SANGUINE' most nearly means:",opts:["Pessimistic","Optimistic","Realistic","Confused"],ans:1},
+    {section:"Lexis & Structure",q:"The word ACRIMONIOUS relates to:",opts:["Sweetness","Bitterness and hostility","Joy","Wisdom"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the grammatically correct sentence:",opts:["He don't know anything","He doesn't knows anything","He doesn't know anything","He do not knows anything"],ans:2},
+    {section:"Lexis & Structure",q:"Identify the tense: 'By next year, she will have graduated.'",opts:["Simple Future","Future Perfect","Future Continuous","Present Perfect"],ans:1},
+    {section:"Lexis & Structure",q:"'Despite the rain, the match continued.' What grammatical function is 'Despite the rain'?",opts:["Noun Clause","Adverbial Phrase","Relative Clause","Prepositional Phrase"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the correct phrasal verb: She _____ the opportunity to travel.",opts:["took off","took in","took up","took out"],ans:2},
+    {section:"Lexis & Structure",q:"Identify the passive voice sentence:",opts:["The teacher taught the students","The students were taught by the teacher","Teaching students is fun","Students learn from teachers"],ans:1},
+    {section:"Lexis & Structure",q:"Which sentence uses the apostrophe correctly?",opts:["The dog's bone","The dogs' bone's","The dog's bones","Both A and C"],ans:3},
+    {section:"Lexis & Structure",q:"Choose the correct form: If I _____ rich, I would travel the world.",opts:["am","were","will be","would be"],ans:1},
+    {section:"Lexis & Structure",q:"The plural of 'criterion' is:",opts:["Criterions","Criterias","Criteria","Criterion"],ans:2},
+    {section:"Lexis & Structure",q:"Select the correct sentence:",opts:["Neither the students nor the teacher were present","Neither the students nor the teacher was present","Neither the students nor the teacher are present","Neither the students nor the teacher is present"],ans:3},
+    {section:"Lexis & Structure",q:"Choose the correct article: He is _____ honest man.",opts:["a","an","the","no article"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the correct preposition: She is good _____ mathematics.",opts:["in","at","on","about"],ans:1},
+    {section:"Lexis & Structure",q:"Identify the correct sentence:",opts:["I have went to the market","I have gone to the market","I had went to the market","I has gone to the market"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the adverb in: 'She sang beautifully at the concert.'",opts:["She","sang","beautifully","concert"],ans:2},
+    {section:"Lexis & Structure",q:"'He kicked the bucket' is an example of:",opts:["Irony","Idiom","Simile","Metaphor"],ans:1},
+    /* ── SECTION 3: ORAL ENGLISH (15 questions) ── */
+    {section:"Oral English",q:"In which of the following words is the underlined part pronounced differently? c__au__tion, __au__thority, __au__tumn, be__cau__se",opts:["caution","authority","autumn","because"],ans:2},
+    {section:"Oral English",q:"Which of these words has the same vowel sound as in 'feet'?",opts:["met","fit","seat","set"],ans:2},
+    {section:"Oral English",q:"Which word has its stress on the SECOND syllable?",opts:["PREsent (noun)","preSENT (verb)","COMfort","TAble"],ans:1},
+    {section:"Oral English",q:"The /θ/ sound as in 'think' is found in which word?",opts:["then","those","though","thought"],ans:3},
+    {section:"Oral English",q:"'I told him to GO, not STAY.' The word in uppercase that carries emphatic stress is:",opts:["told","him","GO","STAY"],ans:2},
+    {section:"Oral English",q:"Which of the following pairs are MINIMAL PAIRS?",opts:["bat/bad","cat/cart","bit/beat","ship/shop"],ans:2},
+    {section:"Oral English",q:"The word 'photograph' is stressed on which syllable?",opts:["First","Second","Third","Equal stress"],ans:0},
+    {section:"Oral English",q:"Which of these words contains a diphthong?",opts:["cup","pen","coin","bit"],ans:2},
+    {section:"Oral English",q:"In connected speech, 'Did you eat?' is most naturally pronounced as:",opts:["Did you eat","Didjueat","Did-you-eat","Didyoueat"],ans:1},
+    {section:"Oral English",q:"Which word rhymes with 'through'?",opts:["cough","though","flew","bow"],ans:2},
+    {section:"Oral English",q:"The consonant sound /ŋ/ appears in which word?",opts:["knife","gnome","sing","genre"],ans:2},
+    {section:"Oral English",q:"'She BOUGHT it, not BORROWED it.' Which word carries the contrastive stress?",opts:["She","BOUGHT","not","BORROWED"],ans:1},
+    {section:"Oral English",q:"Which of the following words is pronounced with a silent letter?",opts:["lamp","wrap","trap","drip"],ans:1},
+    {section:"Oral English",q:"In which of the following is the '-ed' ending pronounced as /ɪd/?",opts:["walked","played","wanted","kissed"],ans:2},
+    {section:"Oral English",q:"Which word has THREE syllables?",opts:["beautiful","wonder","happy","school"],ans:0},
+    /* ── SECTION 4: READING TEXT / NOVEL — The Lekki Headmaster (10 questions) ── */
+    {section:"Reading Text (Novel)",q:"'The Lekki Headmaster' was written by:",opts:["Chinua Achebe","Wole Soyinka","Kabir Alabi Garba","Ben Okri"],ans:2},
+    {section:"Reading Text (Novel)",q:"The central character in 'The Lekki Headmaster' is a headmaster who struggles primarily with:",opts:["Political ambition","Maintaining discipline and values in a corrupt society","Religious extremism","Urban poverty"],ans:1},
+    {section:"Reading Text (Novel)",q:"The setting of 'The Lekki Headmaster' is best described as:",opts:["A rural village in the North","A Lagos coastal suburb (Lekki)","An Abuja boarding school","A remote missionary school"],ans:1},
+    {section:"Reading Text (Novel)",q:"A major theme in 'The Lekki Headmaster' is:",opts:["The futility of education","The conflict between integrity and corruption","Romantic love in modern Nigeria","Colonial oppression"],ans:1},
+    {section:"Reading Text (Novel)",q:"The headmaster's relationship with his students can best be described as:",opts:["Hostile and authoritarian","Caring but firm","Distant and bureaucratic","Permissive and lenient"],ans:1},
+    {section:"Reading Text (Novel)",q:"Which literary device does the author primarily use to portray societal decay in the novel?",opts:["Flashback","Symbolism","Dramatic irony","Foreshadowing"],ans:1},
+    {section:"Reading Text (Novel)",q:"The phrase 'making bricks without straw' as it might apply to the novel's headmaster means:",opts:["Working industriously on a building project","Attempting an impossible task without adequate resources","Teaching students to make handicrafts","Accepting bribes to fund the school"],ans:1},
+    {section:"Reading Text (Novel)",q:"The headmaster's conflict with the school board in the novel represents:",opts:["A personal grudge","The struggle of principled individuals against institutional corruption","A disagreement about curriculum","A cultural clash between tradition and modernity"],ans:1},
+    {section:"Reading Text (Novel)",q:"What does the title 'The Lekki Headmaster' primarily suggest about the novel?",opts:["A story set entirely on Lekki beach","A character-driven narrative rooted in a specific community","A historical account of Lekki's development","A mystery novel about a missing headmaster"],ans:1},
+    {section:"Reading Text (Novel)",q:"The novel ultimately suggests that the solution to Nigeria's educational challenges lies in:",opts:["Foreign intervention","Abolishing the current school system","Individual moral courage and community commitment","Government funding alone"],ans:2},
+  ],
+  Mathematics:[
+    {q:"Evaluate: 3² + 4² = ?",opts:["25","7","14","49"],ans:0},
+    {q:"If 2x + 5 = 13, find x.",opts:["4","6","3","9"],ans:0},
+    {q:"The LCM of 12 and 18 is:",opts:["6","36","24","72"],ans:1},
+    {q:"Find the area of a circle with radius 7cm. (π = 22/7)",opts:["44 cm²","154 cm²","49 cm²","22 cm²"],ans:1},
+    {q:"Simplify: (2³ × 2⁴) ÷ 2⁵",opts:["4","8","2","16"],ans:0},
+    {q:"A train travels 360km in 4 hours. What is its speed?",opts:["80 km/h","90 km/h","100 km/h","72 km/h"],ans:1},
+    {q:"The roots of x² − 5x + 6 = 0 are:",opts:["2 and 3","1 and 6","-2 and -3","2 and -3"],ans:0},
+    {q:"Find 15% of 240.",opts:["36","24","40","48"],ans:0},
+    {q:"If log₁₀(100) = x, find x.",opts:["1","10","2","20"],ans:2},
+    {q:"The sum of angles in a triangle is:",opts:["90°","180°","270°","360°"],ans:1},
+    {q:"Simplify: (x² − 9) ÷ (x − 3)",opts:["x − 3","x + 3","x² − 3","x − 9"],ans:1},
+    {q:"Convert 0.375 to a fraction in lowest terms.",opts:["3/8","3/7","3/4","1/3"],ans:0},
+    {q:"A rectangle has length 12cm and width 5cm. Find its diagonal.",opts:["13 cm","17 cm","11 cm","7 cm"],ans:0},
+    {q:"If f(x) = 2x² − 3x + 1, find f(2).",opts:["3","7","6","5"],ans:0},
+    {q:"The probability of getting a head in one coin toss is:",opts:["1","0","1/2","1/4"],ans:2},
+    {q:"Solve for y: 3y − 7 = 2y + 5",opts:["12","2","-12","5"],ans:0},
+    {q:"The HCF of 36 and 48 is:",opts:["6","12","18","24"],ans:1},
+    {q:"In a GP with first term 2 and common ratio 3, what is the 4th term?",opts:["54","18","27","162"],ans:0},
+    {q:"Find the gradient of the line 2y = 4x − 6.",opts:["4","2","-3","6"],ans:1},
+    {q:"Evaluate: ²√(144)",opts:["12","11","13","14"],ans:0},
+    {q:"If tan θ = 3/4, what is sin θ?",opts:["3/5","4/5","3/4","5/3"],ans:0},
+    {q:"The volume of a cube with side 4cm is:",opts:["16 cm³","64 cm³","32 cm³","48 cm³"],ans:1},
+    {q:"An arithmetic sequence has first term 5 and common difference 3. What is the 8th term?",opts:["26","29","24","32"],ans:0},
+    {q:"Simplify: 3√48",opts:["12√3","6√3","4√3","9√3"],ans:0},
+    {q:"What is the value of ⁵C₂?",opts:["10","5","20","15"],ans:0},
+    {q:"If y ∝ x² and y = 36 when x = 3, find y when x = 5.",opts:["100","60","75","45"],ans:0},
+    {q:"The circumference of a circle with diameter 14cm is: (π = 22/7)",opts:["44 cm","88 cm","22 cm","154 cm"],ans:0},
+    {q:"Solve: |2x − 3| = 7",opts:["x = 5 or x = -2","x = 5 or x = 2","x = -5 or x = 2","x = 5 only"],ans:0},
+    {q:"A car depreciates from N500,000 to N400,000. What is the percentage decrease?",opts:["20%","25%","10%","15%"],ans:0},
+    {q:"The mean of 4, 7, 9, 11, 14 is:",opts:["9","8","10","11"],ans:0},
+    {q:"If P = {1,2,3,4} and Q = {2,4,6}, find P ∩ Q.",opts:["{2,4}","{1,3}","{6}","{}"],ans:0},
+    {q:"Differentiate: f(x) = 5x³ − 2x + 7",opts:["15x² − 2","15x² + 7","5x² − 2","15x³ − 2"],ans:0},
+    {q:"A bag has 5 red and 3 blue balls. What is P(red)?",opts:["5/8","3/8","5/3","8/5"],ans:0},
+    {q:"What is 2⁻³?",opts:["1/8","-8","8","-1/8"],ans:0},
+    {q:"The median of: 3, 5, 7, 9, 11, 13 is:",opts:["8","7","9","10"],ans:0},
+    {q:"If 3ˣ = 81, find x.",opts:["3","4","5","6"],ans:1},
+    {q:"The equation of a circle with center (0,0) and radius 5 is:",opts:["x²+y²=25","x²+y²=5","x+y=5","x²+y²=10"],ans:0},
+    {q:"Find the range of: 12, 7, 3, 19, 5, 8.",opts:["16","12","14","19"],ans:0},
+    {q:"Express 0.0045 in standard form:",opts:["4.5×10⁻³","45×10⁻⁴","4.5×10⁻⁴","0.45×10⁻²"],ans:0},
+    {q:"If sin 30° = 0.5, what is cos 60°?",opts:["0.5","1","0.866","0.25"],ans:0},
+  ],
+  Physics:[
+    {q:"The SI unit of force is the:",opts:["Joule","Newton","Pascal","Watt"],ans:1},
+    {q:"Which law states: For every action, there is an equal and opposite reaction?",opts:["Newton's 1st Law","Newton's 2nd Law","Newton's 3rd Law","Law of Gravitation"],ans:2},
+    {q:"The speed of light in vacuum is approximately:",opts:["3×10⁶ m/s","3×10⁸ m/s","3×10¹⁰ m/s","3×10⁴ m/s"],ans:1},
+    {q:"Which type of wave does NOT require a medium to travel?",opts:["Sound wave","Seismic wave","Electromagnetic wave","Water wave"],ans:2},
+    {q:"The phenomenon of splitting of white light into spectrum is called:",opts:["Reflection","Refraction","Dispersion","Diffraction"],ans:2},
+    {q:"Work done = Force × ?",opts:["Time","Mass","Distance","Velocity"],ans:2},
+    {q:"The unit of electrical resistance is the:",opts:["Ampere","Volt","Ohm","Farad"],ans:2},
+    {q:"A body of mass 5kg moving at 4m/s has kinetic energy of:",opts:["10 J","20 J","40 J","80 J"],ans:2},
+    {q:"The angle of incidence equals the angle of reflection. This is the law of:",opts:["Refraction","Reflection","Diffraction","Dispersion"],ans:1},
+    {q:"Which of the following is NOT a scalar quantity?",opts:["Speed","Time","Force","Temperature"],ans:2},
+    {q:"Ohm's Law states that V is directly proportional to:",opts:["R","I","P","W"],ans:1},
+    {q:"The frequency of a wave with period 0.5s is:",opts:["0.5 Hz","1 Hz","2 Hz","5 Hz"],ans:2},
+    {q:"An object thrown upward with velocity u reaches max height when:",opts:["v = 0","v = u","a = 0","t = 0"],ans:0},
+    {q:"Heat flows from a body of higher temperature to lower temperature. This is:",opts:["Zeroth Law","First Law","Second Law","Third Law"],ans:2},
+    {q:"The process of change from liquid to gas at the surface is:",opts:["Boiling","Condensation","Evaporation","Sublimation"],ans:2},
+    {q:"Power = ?",opts:["Work×Time","Work/Time","Force×Time","Energy/Force"],ans:1},
+    {q:"In a series circuit, the total resistance is:",opts:["Sum of all resistances","Product of resistances","Smallest resistance","Half of sum"],ans:0},
+    {q:"A convex lens is also called a:",opts:["Diverging lens","Converging lens","Concave lens","Plane lens"],ans:1},
+    {q:"The unit of electric charge is the:",opts:["Coulomb","Ampere","Volt","Ohm"],ans:0},
+    {q:"When a body is in free fall, the acceleration is approximately:",opts:["5 m/s²","9.8 m/s²","10.2 m/s²","8.9 m/s²"],ans:1},
+    {q:"Electromagnetic induction was discovered by:",opts:["Newton","Einstein","Faraday","Ohm"],ans:2},
+    {q:"Sound cannot travel through:",opts:["Air","Water","Steel","Vacuum"],ans:3},
+    {q:"Which of these is a renewable energy source?",opts:["Coal","Crude oil","Solar energy","Natural gas"],ans:2},
+    {q:"The change in velocity per unit time is:",opts:["Speed","Momentum","Acceleration","Force"],ans:2},
+    {q:"In which state of matter do particles have the most energy?",opts:["Solid","Liquid","Gas","Plasma"],ans:3},
+    {q:"A machine with 75% efficiency does 1500J of useful work. Find energy input.",opts:["1000 J","1125 J","2000 J","1800 J"],ans:2},
+    {q:"The nuclear particle that has no charge is called:",opts:["Proton","Electron","Neutron","Positron"],ans:2},
+    {q:"Which mirror always gives a virtual, erect, and diminished image?",opts:["Concave mirror","Convex mirror","Plane mirror","Parabolic mirror"],ans:1},
+    {q:"The pressure at depth h in a liquid is given by:",opts:["P = ρg/h","P = ρgh","P = ρh/g","P = g/ρh"],ans:1},
+    {q:"Which wave property is responsible for the formation of a rainbow?",opts:["Reflection","Diffraction","Dispersion","Interference"],ans:2},
+    {q:"The half-life of a radioactive element is 20 years. After 60 years, what fraction remains?",opts:["1/4","1/8","1/6","1/3"],ans:1},
+    {q:"Transformer works on the principle of:",opts:["Self-induction","Mutual induction","Electrolysis","Ohm's law"],ans:1},
+    {q:"A current of 2A flows through a 5Ω resistor. The power dissipated is:",opts:["10 W","20 W","2.5 W","7 W"],ans:1},
+    {q:"The image formed by a plane mirror is:",opts:["Real and inverted","Virtual and erect","Real and erect","Virtual and inverted"],ans:1},
+    {q:"Boyle's Law states that at constant temperature, volume is _____ to pressure.",opts:["Directly proportional","Inversely proportional","Equal","Unrelated"],ans:1},
+    {q:"The focal length of a concave mirror is 10cm. Its radius of curvature is:",opts:["5 cm","10 cm","20 cm","15 cm"],ans:2},
+    {q:"An electric bell uses which effect of current?",opts:["Heating effect","Chemical effect","Magnetic effect","Lighting effect"],ans:2},
+    {q:"Newton's second law: F = ?",opts:["mv","ma","m/a","v/t"],ans:1},
+    {q:"The unit of frequency is:",opts:["Second","Hertz","Meter","Pascal"],ans:1},
+    {q:"A body weighs 600N on earth. Its mass is (g = 10m/s²):",opts:["60 kg","600 kg","6 kg","6000 kg"],ans:0},
+  ],
+  Chemistry:[
+    {q:"The atomic number of Carbon is:",opts:["6","12","8","14"],ans:0},
+    {q:"Which gas is produced when zinc reacts with dilute HCl?",opts:["Oxygen","Carbon dioxide","Hydrogen","Chlorine"],ans:2},
+    {q:"The pH of a neutral solution is:",opts:["0","7","14","3"],ans:1},
+    {q:"Which of these is NOT a noble gas?",opts:["Helium","Neon","Nitrogen","Argon"],ans:2},
+    {q:"The process of a solid turning directly to gas is called:",opts:["Evaporation","Sublimation","Condensation","Melting"],ans:1},
+    {q:"Which type of bond involves sharing of electrons?",opts:["Ionic bond","Metallic bond","Covalent bond","Hydrogen bond"],ans:2},
+    {q:"The relative atomic mass of Sodium (Na) is:",opts:["11","23","12","24"],ans:1},
+    {q:"Avogadro's number is approximately:",opts:["6.02×10²³","6.02×10¹⁰","3.01×10²³","6.02×10³"],ans:0},
+    {q:"What is the product of burning magnesium in air?",opts:["MgO","Mg₂O","MgO₂","Mg(OH)₂"],ans:0},
+    {q:"Haber process is used to manufacture:",opts:["Sulfuric acid","Nitric acid","Ammonia","Ethanol"],ans:2},
+    {q:"The chemical symbol for Gold is:",opts:["Go","Gd","Au","Ag"],ans:2},
+    {q:"Which of the following is a mixture?",opts:["Water","Sodium chloride","Air","Carbon dioxide"],ans:2},
+    {q:"Rusting of iron requires both:",opts:["Water only","Oxygen only","Water and Oxygen","Oxygen and CO₂"],ans:2},
+    {q:"The molar mass of H₂SO₄ is:",opts:["98 g/mol","96 g/mol","100 g/mol","49 g/mol"],ans:0},
+    {q:"Which gas is used in fire extinguishers?",opts:["Oxygen","Nitrogen","Carbon dioxide","Argon"],ans:2},
+    {q:"An acid-base neutralization produces:",opts:["Acid and water","Salt and water","Base and gas","Salt and gas"],ans:1},
+    {q:"The electronic configuration of Chlorine (Cl, Z=17) is:",opts:["2,8,7","2,8,8","2,7,8","2,8,6"],ans:0},
+    {q:"Which of these is a strong acid?",opts:["Ethanoic acid","Carbonic acid","Hydrochloric acid","Citric acid"],ans:2},
+    {q:"Electrolysis of brine produces NaOH, Cl₂ and:",opts:["H₂","O₂","Na","HCl"],ans:0},
+    {q:"The IUPAC name for CH₃CH₂OH is:",opts:["Methanol","Ethanol","Propanol","Butanol"],ans:1},
+    {q:"Which element has the highest electronegativity?",opts:["Oxygen","Chlorine","Fluorine","Nitrogen"],ans:2},
+    {q:"Contact process is used to manufacture:",opts:["HCl","H₂SO₄","HNO₃","NH₃"],ans:1},
+    {q:"An atom has 17 protons and 18 neutrons. Its mass number is:",opts:["17","18","35","1"],ans:2},
+    {q:"Which is the odd one out?",opts:["Diamond","Graphite","Coal","Sand"],ans:3},
+    {q:"Fermentation of glucose produces ethanol and:",opts:["O₂","CO₂","H₂O","H₂"],ans:1},
+    {q:"What type of reaction is: 2H₂ + O₂ → 2H₂O?",opts:["Decomposition","Synthesis","Single displacement","Double displacement"],ans:1},
+    {q:"The lightest element in the periodic table is:",opts:["Helium","Hydrogen","Lithium","Carbon"],ans:1},
+    {q:"Soap is manufactured by saponification, which involves:",opts:["Hydrolysis of ester","Reduction of fats","Oxidation of alcohol","Polymerization"],ans:0},
+    {q:"Which of the following has the highest boiling point?",opts:["Water","Ethanol","Petrol","Methane"],ans:0},
+    {q:"An indicator that turns red in acid and blue in base is:",opts:["Litmus","Phenolphthalein","Methyl orange","Universal indicator"],ans:0},
+    {q:"The molecular formula of glucose is:",opts:["C₆H₁₂O₆","C₁₂H₂₂O₁₁","C₆H₆","CH₃COOH"],ans:0},
+    {q:"Which of these is a physical change?",opts:["Burning wood","Rusting iron","Melting ice","Fermentation"],ans:2},
+    {q:"The law of conservation of mass states that:",opts:["Mass is created in reactions","Mass is destroyed in reactions","Mass is neither created nor destroyed","Mass changes with temperature"],ans:2},
+    {q:"What is produced at the cathode during electrolysis of CuSO₄ solution using copper electrodes?",opts:["Oxygen","Copper","Hydrogen","Sulfate"],ans:1},
+    {q:"Which allotrope of carbon conducts electricity?",opts:["Diamond","Graphite","Buckminsterfullerene","Coal"],ans:1},
+    {q:"A catalyst in a chemical reaction:",opts:["Is consumed","Increases activation energy","Speeds up reaction without being consumed","Changes equilibrium"],ans:2},
+    {q:"The periodic table was arranged by:",opts:["Dalton","Faraday","Mendeleev","Bohr"],ans:2},
+    {q:"Isotopes are atoms of the same element with different:",opts:["Atomic numbers","Proton numbers","Mass numbers","Electron numbers"],ans:2},
+    {q:"The pH of stomach acid is approximately:",opts:["7","2","10","4"],ans:1},
+    {q:"Which gas is used in making fertilizers?",opts:["Oxygen","Nitrogen","Ammonia","Hydrogen"],ans:2},
+  ],
+  Biology:[
+    {q:"The powerhouse of the cell is the:",opts:["Nucleus","Ribosome","Mitochondria","Chloroplast"],ans:2},
+    {q:"Which blood group is the universal donor?",opts:["A","B","AB","O"],ans:3},
+    {q:"Photosynthesis takes place in the:",opts:["Mitochondria","Nucleus","Chloroplast","Ribosome"],ans:2},
+    {q:"DNA stands for:",opts:["Deoxyribose Nucleic Acid","Deoxyribonucleic Acid","Dextrose Nucleic Acid","Deoxyribose Nicotinic Acid"],ans:1},
+    {q:"The organ responsible for detoxification in the body is the:",opts:["Kidney","Liver","Spleen","Pancreas"],ans:1},
+    {q:"Which of the following is NOT a function of the skeleton?",opts:["Support","Protection","Digestion","Movement"],ans:2},
+    {q:"The process of cell division that produces gametes is:",opts:["Mitosis","Binary fission","Meiosis","Budding"],ans:2},
+    {q:"Insulin is produced by the:",opts:["Liver","Pituitary gland","Pancreas","Adrenal gland"],ans:2},
+    {q:"Which of these is a viral disease?",opts:["Malaria","Cholera","HIV/AIDS","Tuberculosis"],ans:2},
+    {q:"The basic unit of life is the:",opts:["Atom","Molecule","Organ","Cell"],ans:3},
+    {q:"Osmosis is the movement of water from:",opts:["High to low concentration","Low to high solute concentration","High solute to low solute","Low to high pressure"],ans:1},
+    {q:"Which vitamin is produced when skin is exposed to sunlight?",opts:["Vitamin A","Vitamin C","Vitamin D","Vitamin K"],ans:2},
+    {q:"The human heart has _____ chambers.",opts:["2","3","4","6"],ans:2},
+    {q:"Which gas do plants absorb during photosynthesis?",opts:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],ans:2},
+    {q:"The site of protein synthesis in a cell is the:",opts:["Nucleus","Ribosome","Mitochondria","Golgi apparatus"],ans:1},
+    {q:"Blood type is controlled by:",opts:["Dominant gene only","Multiple alleles","X-linked gene","Recessive gene only"],ans:1},
+    {q:"Peristalsis is the wave-like contraction of:",opts:["Blood vessels","Muscles of the gut","Heart muscles","Lung tissue"],ans:1},
+    {q:"Which organism is responsible for malaria?",opts:["Bacteria","Virus","Protozoa","Fungus"],ans:2},
+    {q:"The outer layer of skin is called the:",opts:["Dermis","Epidermis","Hypodermis","Endodermis"],ans:1},
+    {q:"Which part of the brain controls balance?",opts:["Cerebrum","Medulla","Cerebellum","Hypothalamus"],ans:2},
+    {q:"The process of photosynthesis can be summarized as:",opts:["C₆H₁₂O₆ + O₂ → CO₂ + H₂O","CO₂ + H₂O → C₆H₁₂O₆ + O₂","O₂ → CO₂ + H₂O","H₂O + CO₂ → O₂"],ans:1},
+    {q:"Which of these is NOT a component of blood?",opts:["Red blood cells","White blood cells","Platelets","Neurons"],ans:3},
+    {q:"Transpiration is the loss of water from plants through the:",opts:["Roots","Stomata","Bark","Stem"],ans:1},
+    {q:"Which mineral is essential for bone formation?",opts:["Iron","Calcium","Potassium","Sodium"],ans:1},
+    {q:"The scientific study of heredity is called:",opts:["Ecology","Evolution","Genetics","Anatomy"],ans:2},
+    {q:"Which enzyme breaks down starch?",opts:["Lipase","Protease","Amylase","Trypsin"],ans:2},
+    {q:"The human genome contains approximately how many genes?",opts:["1,000","20,000","500,000","1 million"],ans:1},
+    {q:"Kwashiorkor is caused by deficiency of:",opts:["Carbohydrates","Proteins","Vitamins","Minerals"],ans:1},
+    {q:"Which organelle is known as the 'suicide bag' of the cell?",opts:["Ribosome","Lysosome","Vacuole","Peroxisome"],ans:1},
+    {q:"The exchange of gases in the lungs occurs at the:",opts:["Bronchi","Trachea","Alveoli","Bronchioles"],ans:2},
+    {q:"Which of the following is an example of a reflex action?",opts:["Writing a letter","Pulling hand from hot object","Solving a math problem","Reading a book"],ans:1},
+    {q:"Darwin's theory of evolution is based on:",opts:["Inheritance of acquired traits","Natural selection","Genetic mutation","Environmental adaptation"],ans:1},
+    {q:"Which vitamin prevents scurvy?",opts:["Vitamin A","Vitamin B","Vitamin C","Vitamin D"],ans:2},
+    {q:"The process by which organisms maintain a stable internal environment is:",opts:["Adaptation","Homeostasis","Metabolism","Respiration"],ans:1},
+    {q:"Which organ produces bile?",opts:["Pancreas","Stomach","Liver","Gallbladder"],ans:2},
+    {q:"Anaerobic respiration in yeast produces:",opts:["CO₂ and water","Lactic acid","Ethanol and CO₂","ATP only"],ans:2},
+    {q:"The carrying capacity of an ecosystem refers to:",opts:["Total mass of organisms","Maximum sustainable population","Rate of reproduction","Energy flow"],ans:1},
+    {q:"Which type of reproduction does NOT require two parents?",opts:["Sexual reproduction","Asexual reproduction","Cross-fertilization","Pollination"],ans:1},
+    {q:"The functional unit of the kidney is the:",opts:["Ureter","Nephron","Glomerulus","Bowman's capsule"],ans:1},
+    {q:"Which of the following is a characteristic of living organisms?",opts:["They are all visible to the naked eye","They all reproduce","They all have a nucleus","They all photosynthesize"],ans:1},
+  ],
+  Economics:[
+    {q:"The law of demand states that, all things being equal, as price increases, quantity demanded:",opts:["Increases","Decreases","Stays the same","Doubles"],ans:1},
+    {q:"What is GDP?",opts:["Gross Domestic Product","General Development Policy","Government Debt Plan","Gross Debt Payment"],ans:0},
+    {q:"When the government spends more than it earns, this is called:",opts:["Trade surplus","Budget deficit","Trade deficit","Budget surplus"],ans:1},
+    {q:"Which of these is a factor of production?",opts:["Money","Shares","Labour","GDP"],ans:2},
+    {q:"Inflation refers to:",opts:["Rise in production","General increase in price levels","Decrease in money supply","Decrease in government spending"],ans:1},
+    {q:"In a perfect competition, firms are:",opts:["Price makers","Price takers","Monopolists","Oligopolists"],ans:1},
+    {q:"The supply curve normally slopes:",opts:["Downward","Upward","Horizontal","Vertical"],ans:1},
+    {q:"Utility in economics means:",opts:["Usefulness of a product","Total goods produced","Price of goods","Government services"],ans:0},
+    {q:"What does PPC stand for?",opts:["Production Possibility Curve","Product Price Control","Public Policy Committee","Price and Production Chart"],ans:0},
+    {q:"A decrease in money supply leads to:",opts:["Inflation","Deflation","Stagflation","Hyperinflation"],ans:1},
+    {q:"The Central Bank of Nigeria is responsible for:",opts:["Collecting taxes","Printing money only","Monetary policy","Fiscal policy"],ans:2},
+    {q:"Which of the following is an example of fiscal policy?",opts:["Setting interest rates","Changing tax rates","Controlling money supply","Setting exchange rates"],ans:1},
+    {q:"When demand equals supply, the market is in:",opts:["Surplus","Deficit","Equilibrium","Monopoly"],ans:2},
+    {q:"A market with one seller and many buyers is called a:",opts:["Oligopoly","Monopoly","Perfect competition","Duopoly"],ans:1},
+    {q:"Which of these is a direct tax?",opts:["VAT","Excise duty","Custom duty","Income tax"],ans:3},
+    {q:"The term 'elasticity of demand' measures:",opts:["How fast goods are produced","Responsiveness of demand to price change","Total market demand","Consumer satisfaction"],ans:1},
+    {q:"Import duties are imposed to:",opts:["Encourage imports","Raise government revenue and protect local industries","Reduce exports","Increase foreign exchange"],ans:1},
+    {q:"What is opportunity cost?",opts:["The price of a product","Cost of the next best alternative foregone","Total production cost","Government subsidies"],ans:1},
+    {q:"Foreign exchange rate refers to:",opts:["Interest rates","Price of one currency in terms of another","Bank lending rate","Import price"],ans:1},
+    {q:"Which institution promotes international trade?",opts:["IMF","WHO","UNESCO","WTO"],ans:3},
+    {q:"The concept of 'scarcity' in economics means:",opts:["Resources are unlimited","Resources are insufficient relative to needs","All goods are expensive","There is no production"],ans:1},
+    {q:"A firm maximizes profit when:",opts:["MC = MR","TC = TR","AC = AR","FC = VC"],ans:0},
+    {q:"Subsistence agriculture means:",opts:["Commercial farming for export","Farming mainly for personal consumption","Large-scale mechanized farming","Corporate farming"],ans:1},
+    {q:"Which of the following best describes monetary policy?",opts:["Government borrowing","Central bank control of money supply and interest rates","Tax collection policies","Government spending plans"],ans:1},
+    {q:"The Gini coefficient measures:",opts:["Economic growth","Income inequality","Inflation rate","Unemployment rate"],ans:1},
+    {q:"Comparative advantage means a country should produce goods:",opts:["It can produce at lower opportunity cost","Others cannot produce","Using the most labor","With the highest price"],ans:0},
+    {q:"What is microeconomics primarily concerned with?",opts:["National output","Individual markets and decision-making","International trade","Government budgets"],ans:1},
+    {q:"Stagflation is a combination of:",opts:["Growth and inflation","Inflation and unemployment","Growth and deflation","Trade surplus and deficit"],ans:1},
+    {q:"An increase in income leads to increased demand for normal goods. This shows:",opts:["Law of supply","Income effect","Substitution effect","Inferior good behavior"],ans:1},
+    {q:"Which of these countries is NOT a member of ECOWAS?",opts:["Nigeria","Ghana","Cameroon","Senegal"],ans:2},
+    {q:"National income can be calculated using which method?",opts:["Output method only","Expenditure method only","Income method only","All three methods"],ans:3},
+    {q:"A natural monopoly exists when:",opts:["Government owns a firm","One firm can supply the market more efficiently than many","There are barriers to entry","A firm patents its product"],ans:1},
+    {q:"The multiplier effect in economics refers to:",opts:["Increase in investment only","The magnified effect of an initial change in spending on total income","Government spending on infrastructure","Export-led growth"],ans:1},
+    {q:"Which of the following best describes balance of payments?",opts:["Government budget position","Record of all economic transactions between a country and the rest of the world","Total foreign debt","Trade in goods only"],ans:1},
+    {q:"Price discrimination involves:",opts:["Selling the same product at different prices to different consumers","Reducing production costs","Fixing prices with competitors","Government price controls"],ans:0},
+    {q:"The term 'recession' is generally defined as:",opts:["One quarter of negative GDP growth","Two consecutive quarters of negative GDP growth","Rising unemployment","Falling stock prices"],ans:1},
+    {q:"Which of these is a characteristic of a developing economy?",opts:["High per capita income","Low dependence on agriculture","High levels of industrialization","Low per capita income"],ans:3},
+    {q:"External economies of scale occur when:",opts:["A firm grows in size","The whole industry grows and benefits all firms","A firm reduces wages","Government subsidizes production"],ans:1},
+    {q:"Privatization means:",opts:["Government taking over private firms","Transfer of state-owned enterprises to private ownership","Creating new public enterprises","Increasing government control"],ans:1},
+    {q:"The term 'barter' refers to:",opts:["Trade using money","Exchange of goods without money","Government grants","Foreign trade"],ans:1},
+  ],
+  Government:[
+    {q:"The principle of separation of powers was developed by:",opts:["John Locke","Karl Marx","Montesquieu","Jean Rousseau"],ans:2},
+    {q:"What is a constitution?",opts:["A type of court","The fundamental laws governing a state","A political party","A type of government"],ans:1},
+    {q:"The Nigerian Constitution in force is dated:",opts:["1960","1979","1989","1999"],ans:3},
+    {q:"Federalism means:",opts:["Power concentrated at the centre","Division of power between central and state governments","One-party rule","Power held by the military"],ans:1},
+    {q:"A presidential system of government is characterized by:",opts:["Fusion of powers","Separation of powers","Parliamentary supremacy","Collective responsibility"],ans:1},
+    {q:"Which organ of the United Nations maintains international peace?",opts:["General Assembly","Economic Council","Security Council","Secretariat"],ans:2},
+    {q:"Judicial review is the power of courts to:",opts:["Make laws","Declare laws unconstitutional","Execute policies","Appoint ministers"],ans:1},
+    {q:"Sovereignty means:",opts:["Military power","Supreme authority of the state","Economic strength","International recognition"],ans:1},
+    {q:"A unicameral legislature means:",opts:["Two chambers","One chamber","Three chambers","No legislature"],ans:1},
+    {q:"Which of these is an example of a pressure group?",opts:["A political party","A government ministry","A trade union","An election commission"],ans:2},
+    {q:"Proportional representation in elections aims to ensure:",opts:["Majority rule","Each party gets seats proportional to votes received","Two-party system","Winner takes all"],ans:1},
+    {q:"The concept of 'rule of law' means:",opts:["The military rules","All persons are equal before the law","The president is above the law","Laws apply only to civilians"],ans:1},
+    {q:"Which of these is NOT a source of the Nigerian Constitution?",opts:["Acts of the National Assembly","Judicial decisions","The Bible","Customary law"],ans:2},
+    {q:"The Nigerian Senate consists of how many members?",opts:["360","109","120","150"],ans:1},
+    {q:"What is totalitarianism?",opts:["Limited government control","Complete government control over all aspects of life","Democratic government","Federal government"],ans:1},
+    {q:"The ECOWAS was established in:",opts:["1960","1963","1975","1981"],ans:2},
+    {q:"A referendum is:",opts:["An election for parliament","A vote by the public on a specific issue","A court hearing","A budget proposal"],ans:1},
+    {q:"The principle of checks and balances ensures:",opts:["The president has maximum power","No branch of government becomes too powerful","The judiciary controls everything","States control the federal government"],ans:1},
+    {q:"Impeachment is the process of:",opts:["Electing a president","Removing an official from office through formal proceedings","Appointing ministers","Passing a budget"],ans:1},
+    {q:"Suffrage refers to:",opts:["Freedom of speech","The right to vote","The right to protest","Freedom of religion"],ans:1},
+    {q:"Which Nigerian institution is responsible for conducting elections?",opts:["EFCC","INEC","NPC","NJC"],ans:1},
+    {q:"A military government that seizes power forcefully is called a:",opts:["Democracy","Oligarchy","Junta","Theocracy"],ans:2},
+    {q:"Public opinion refers to:",opts:["The government's official position","Views of the majority on public issues","Media reports","Academic research"],ans:1},
+    {q:"A coalition government is formed when:",opts:["One party wins majority","Several parties combine to form a government","The military takes over","The president dissolves parliament"],ans:1},
+    {q:"Nationalism is best described as:",opts:["Love for a foreign country","Devotion to the interests of one's nation","Rejection of government authority","Economic competition between nations"],ans:1},
+    {q:"The concept of 'representative government' means:",opts:["The people govern directly","Elected officials govern on behalf of citizens","Only wealthy people can vote","Government by a single party"],ans:1},
+    {q:"Which body interprets the Nigerian Constitution?",opts:["The National Assembly","The Presidency","The Supreme Court","The Council of State"],ans:2},
+    {q:"Bureaucracy in government refers to:",opts:["Military control","Administrative system of officials carrying out government functions","Elected parliament","Presidential cabinet"],ans:1},
+    {q:"An electoral college is:",opts:["A school for politicians","A body of electors chosen to elect a president","A research institution","A voting booth"],ans:1},
+    {q:"Constitutional monarchy means:",opts:["The king has absolute power","The monarch's powers are limited by a constitution","There is no constitution","The military controls the king"],ans:1},
+    {q:"Which of these is a merit of democracy?",opts:["Quick decision-making","Government by elite","Protection of individual rights","One-party rule"],ans:2},
+    {q:"The theory of social contract is associated with:",opts:["Karl Marx","John Locke, Hobbes, Rousseau","Mao Tse-tung","Benito Mussolini"],ans:1},
+    {q:"Gerrymander means:",opts:["Drawing electoral boundaries to favor a particular party","Forming a coalition government","Military coup","Removing corrupt officials"],ans:0},
+    {q:"The African Union (AU) headquarters is located in:",opts:["Lagos","Nairobi","Addis Ababa","Cairo"],ans:2},
+    {q:"Local government serves the purpose of:",opts:["Making federal laws","Bringing governance closer to grassroots level","Controlling the military","Setting national policies"],ans:1},
+    {q:"Which type of government allows citizens to participate directly in decision-making?",opts:["Representative democracy","Direct democracy","Oligarchy","Theocracy"],ans:1},
+    {q:"Anocracy is a government that mixes:",opts:["Democracy and theocracy","Democratic and autocratic features","Military and civilian rule","Federal and unitary features"],ans:1},
+    {q:"The first military coup in Nigeria occurred in:",opts:["1960","1966","1975","1983"],ans:1},
+    {q:"A bicameral legislature has:",opts:["One house","Two houses","Three houses","No fixed number"],ans:1},
+    {q:"The concept of 'lame duck' in politics refers to:",opts:["A weak politician","An official whose term is ending with diminished power","A corrupt official","A foreign diplomat"],ans:1},
+  ],
+  Literature:[
+    {q:"Who wrote 'Things Fall Apart'?",opts:["Wole Soyinka","Chinua Achebe","Ngugi wa Thiong'o","Ben Okri"],ans:1},
+    {q:"A sonnet has how many lines?",opts:["10","12","14","16"],ans:2},
+    {q:"The term 'protagonist' refers to:",opts:["The villain","The main character","The narrator","The author"],ans:1},
+    {q:"Which of these is NOT a genre of literature?",opts:["Poetry","Drama","Prose","Photography"],ans:3},
+    {q:"Dramatic irony occurs when:",opts:["Two characters say the same thing","The audience knows something the characters don't","The author speaks directly to readers","Events happen unexpectedly"],ans:1},
+    {q:"'Arrow of God' was written by:",opts:["Ama Ata Aidoo","Chinua Achebe","Cyprian Ekwensi","Flora Nwapa"],ans:1},
+    {q:"A metaphor is different from a simile because it:",opts:["Is longer","Uses 'like' or 'as'","Directly states a comparison without 'like' or 'as'","Is used only in poetry"],ans:2},
+    {q:"The term 'denouement' refers to:",opts:["Rising action","Climax","Resolution/conclusion","Exposition"],ans:2},
+    {q:"'Romeo and Juliet' is a play by:",opts:["George Bernard Shaw","Oscar Wilde","William Shakespeare","John Donne"],ans:2},
+    {q:"Which literary device is: 'It was the best of times, it was the worst of times'?",opts:["Parallelism","Antithesis","Anaphora","Oxymoron"],ans:1},
+    {q:"'Oya' in Yoruba literary tradition is the goddess of:",opts:["Water","Storm and lightning","Love","Fertility"],ans:1},
+    {q:"Haiku is a form of poetry originating from:",opts:["China","Korea","Japan","Vietnam"],ans:2},
+    {q:"The narrative technique where the story is told from inside a character's mind is called:",opts:["Third person omniscient","Stream of consciousness","Flashback","Frame narrative"],ans:1},
+    {q:"'Weep Not, Child' was written by:",opts:["Chinua Achebe","Ngugi wa Thiong'o","Ama Ata Aidoo","Cyprian Ekwensi"],ans:1},
+    {q:"What is the term for a speech given by one character alone on stage?",opts:["Monologue","Dialogue","Soliloquy","Apostrophe"],ans:2},
+    {q:"The climax of a story is:",opts:["The introduction","The turning point of highest tension","The resolution","The falling action"],ans:1},
+    {q:"Which of these is a traditional African literary form?",opts:["Sonnet","Folktale","Limerick","Epic poem"],ans:1},
+    {q:"The use of words that sound like what they describe is:",opts:["Alliteration","Onomatopoeia","Assonance","Consonance"],ans:1},
+    {q:"'Purple Hibiscus' was written by:",opts:["Buchi Emecheta","Chimamanda Ngozi Adichie","Flora Nwapa","Ama Ata Aidoo"],ans:1},
+    {q:"A dirge is a type of:",opts:["Comedy","Mournful song or poem","Epic poem","Love story"],ans:1},
+    {q:"The hero who has a major flaw leading to downfall is called a:",opts:["Tragic hero","Comic hero","Anti-hero","Romantic hero"],ans:0},
+    {q:"What is an 'ode' in literature?",opts:["A long narrative poem","A lyric poem addressing a subject with praise","A short comic poem","A dramatic monologue"],ans:1},
+    {q:"Foreshadowing in a narrative means:",opts:["Looking back at past events","Hints of events to come","The author's direct commentary","The moral of the story"],ans:1},
+    {q:"Who wrote 'Death and the King's Horseman'?",opts:["Chinua Achebe","Wole Soyinka","Ben Okri","Ngugi wa Thiong'o"],ans:1},
+    {q:"A first-person narrator uses which pronoun primarily?",opts:["He/She","They","I","You"],ans:2},
+    {q:"Which of these describes a 'flat character'?",opts:["A character who changes significantly","A character with one dominant trait who doesn't change","The main character","The narrator"],ans:1},
+    {q:"The term 'catharsis' refers to:",opts:["A type of villain","Emotional purging through art","A narrative technique","A form of poetry"],ans:1},
+    {q:"'Season of Migration to the North' was written by:",opts:["Chinua Achebe","Tayeb Salih","Ngugi wa Thiong'o","Ama Ata Aidoo"],ans:1},
+    {q:"Which poetic device uses the repetition of consonant sounds at the start of words?",opts:["Assonance","Alliteration","Rhyme","Onomatopoeia"],ans:1},
+    {q:"Literature that teaches a lesson using animals as characters is called:",opts:["Epic","Elegy","Fable","Ballad"],ans:2},
+    {q:"Magical realism combines:",opts:["Science fiction and fantasy","Realistic narrative with magical elements","Horror and comedy","Drama and poetry"],ans:1},
+    {q:"An unreliable narrator is one who:",opts:["Tells the story from outside","Cannot be fully trusted to give accurate account","Knows everything","Is the main character"],ans:1},
+    {q:"Which of these is an example of an epistolary novel?",opts:["Things Fall Apart","Frankenstein (letters format)","Hamlet","The Odyssey"],ans:1},
+    {q:"The ABAB rhyme scheme means:",opts:["Lines 1,2,3,4 all rhyme","Alternate lines rhyme","Only last lines rhyme","No rhyme pattern"],ans:1},
+    {q:"Post-colonial literature often deals with:",opts:["Ancient mythology","Effects of colonization and identity","Romantic love stories","Scientific exploration"],ans:1},
+    {q:"A bildungsroman is a novel about:",opts:["War and conflict","The coming-of-age and growth of a protagonist","Mystery and crime","Historical events"],ans:1},
+    {q:"Which figure of speech attributes human qualities to non-human things?",opts:["Metaphor","Simile","Personification","Hyperbole"],ans:2},
+    {q:"'The Lion and the Jewel' was written by:",opts:["Chinua Achebe","Wole Soyinka","Ngugi wa Thiong'o","J.P. Clark"],ans:1},
+    {q:"A paradox in literature is a statement that:",opts:["Makes no sense","Seems contradictory but contains truth","Uses exaggeration","Compares two things"],ans:1},
+    {q:"Which of these refers to the time and place of a story?",opts:["Theme","Setting","Plot","Tone"],ans:1},
+  ],
+  Geography:[
+    {q:"The longest river in Africa is the:",opts:["Niger","Congo","Nile","Zambezi"],ans:2},
+    {q:"Which of these is a metamorphic rock?",opts:["Granite","Limestone","Marble","Sandstone"],ans:2},
+    {q:"The Tropic of Cancer is at latitude:",opts:["23.5°N","23.5°S","66.5°N","0°"],ans:0},
+    {q:"What type of climate does Nigeria's coastal region experience?",opts:["Desert","Mediterranean","Tropical rainforest","Semi-arid"],ans:2},
+    {q:"The Greenwich Meridian is at longitude:",opts:["90°E","180°","0°","45°W"],ans:2},
+    {q:"Which gas makes up the largest proportion of the atmosphere?",opts:["Oxygen","Carbon dioxide","Nitrogen","Argon"],ans:2},
+    {q:"Lagos is located in which geopolitical zone of Nigeria?",opts:["North West","South East","South West","South South"],ans:2},
+    {q:"Erosion by wind is called:",opts:["Corrasion","Attrition","Deflation","Hydraulic action"],ans:2},
+    {q:"The harmattan wind in West Africa originates from:",opts:["The Atlantic Ocean","The Sahara Desert","The Gulf of Guinea","The Mediterranean Sea"],ans:1},
+    {q:"Which of these is an example of a fold mountain?",opts:["The Rockies","The Alps","The Himalayas","All of the above"],ans:3},
+    {q:"Population density is calculated as:",opts:["Total population × Area","Total population ÷ Area","Area ÷ Population","Birth rate − Death rate"],ans:1},
+    {q:"The process by which rocks are broken down in their original location is called:",opts:["Erosion","Weathering","Transportation","Deposition"],ans:1},
+    {q:"Lake Chad is shared by Nigeria and which other countries?",opts:["Ghana and Togo","Niger, Chad and Cameroon","Benin and Niger","Ghana and Cameroon"],ans:1},
+    {q:"Which scale on a map means 1cm represents 1km?",opts:["1:10,000","1:100,000","1:1,000","1:1,000,000"],ans:1},
+    {q:"The rain shadow effect occurs on the _____ side of a mountain.",opts:["Windward","Leeward","Northern","Southern"],ans:1},
+    {q:"Which continent has the highest number of countries?",opts:["Asia","Europe","Africa","South America"],ans:2},
+    {q:"The Amazon River is located in:",opts:["Africa","Australia","South America","North America"],ans:2},
+    {q:"Urbanisation refers to:",opts:["Rural development","Movement of people from rural to urban areas","Agricultural expansion","Forest conservation"],ans:1},
+    {q:"Which of these is a push factor for migration?",opts:["Better job opportunities","Good healthcare","Political instability","Quality education"],ans:2},
+    {q:"The Sahara Desert is located in which part of Africa?",opts:["Southern Africa","East Africa","North Africa","Central Africa"],ans:2},
+    {q:"Contour lines on a map that are close together indicate:",opts:["Flat terrain","Gentle slope","Steep slope","Valley"],ans:2},
+    {q:"Which energy resource is formed from the remains of dead organisms over millions of years?",opts:["Solar energy","Wind energy","Fossil fuels","Hydroelectric power"],ans:2},
+    {q:"The term 'birth rate' refers to:",opts:["Number of deaths per 1000 people per year","Number of births per 1000 people per year","Total population growth","Infant mortality rate"],ans:1},
+    {q:"Which of these countries is landlocked?",opts:["Ghana","Nigeria","Niger","Togo"],ans:2},
+    {q:"The process by which water vapour turns into liquid is called:",opts:["Evaporation","Transpiration","Condensation","Precipitation"],ans:2},
+    {q:"Abuja became Nigeria's capital in:",opts:["1960","1975","1991","2000"],ans:2},
+    {q:"A watershed is:",opts:["A body of water","An area drained by a river system","A dam","A water storage facility"],ans:1},
+    {q:"Which of these is NOT a renewable energy source?",opts:["Solar","Wind","Coal","Tidal"],ans:2},
+    {q:"The Equator passes through which African country?",opts:["Nigeria","Ghana","Kenya","Egypt"],ans:2},
+    {q:"The relief of a place refers to its:",opts:["Climate","Vegetation","Topography/shape of land","Soil type"],ans:2},
+    {q:"Which ocean lies to the west of Africa?",opts:["Indian Ocean","Pacific Ocean","Arctic Ocean","Atlantic Ocean"],ans:3},
+    {q:"Delta formation occurs at the:",opts:["Source of a river","Middle course","Mouth of a river","Watershed"],ans:2},
+    {q:"The ozone layer is found in the:",opts:["Troposphere","Stratosphere","Mesosphere","Thermosphere"],ans:1},
+    {q:"What is the International Date Line?",opts:["0° longitude","180° longitude","23.5° latitude","66.5° latitude"],ans:1},
+    {q:"The process of planting trees to restore forests is called:",opts:["Deforestation","Afforestation","Desertification","Lumbering"],ans:1},
+    {q:"Agriculture that involves growing one crop for sale is called:",opts:["Subsistence farming","Mixed farming","Monoculture","Pastoral farming"],ans:2},
+    {q:"Which of these is an effect of deforestation?",opts:["Increased biodiversity","Reduced soil erosion","Flooding and desertification","Improved water cycle"],ans:2},
+    {q:"The term 'megalopolis' refers to:",opts:["A single city","A chain of conurbations forming a massive urban region","A small village","A capital city"],ans:1},
+    {q:"Longitude is used to determine:",opts:["Latitude","Time zones","Temperature","Rainfall"],ans:1},
+    {q:"The Jos Plateau in Nigeria is known for its production of:",opts:["Crude oil","Tin and columbite","Gold","Cocoa"],ans:1},
+  ],
+  AccountsPrinciples:[
+    {q:"The accounting equation is:",opts:["Assets = Liabilities + Owner's Equity","Liabilities = Assets + Owner's Equity","Owner's Equity = Assets + Liabilities","Assets + Owner's Equity = Revenue"],ans:0},
+    {q:"Which of these is a current asset?",opts:["Land","Machinery","Inventory","Goodwill"],ans:2},
+    {q:"A credit entry in the books represents:",opts:["An increase in assets","A decrease in liabilities","An increase in liabilities or equity","A decrease in revenue"],ans:2},
+    {q:"The gross profit is calculated as:",opts:["Net Sales − Cost of Goods Sold","Net Sales − All Expenses","Revenue − Net Profit","Cost of Sales + Operating Expenses"],ans:0},
+    {q:"Which financial statement shows a company's financial position at a specific date?",opts:["Income Statement","Statement of Cash Flows","Balance Sheet","Trial Balance"],ans:2},
+    {q:"Depreciation is charged on:",opts:["Current assets","Fixed/non-current assets","Current liabilities","Owner's equity"],ans:1},
+    {q:"The double-entry principle states that:",opts:["Every transaction is recorded once","Every debit must have a corresponding credit","All accounts must balance","Revenue equals expenses"],ans:1},
+    {q:"What is a ledger?",opts:["A book of original entry","A summary of transactions in account form","A bank statement","A list of debtors"],ans:1},
+    {q:"Trade discount is deducted from:",opts:["Invoice price before recording","Cash received","Gross profit","Net profit"],ans:0},
+    {q:"Which of the following is a liability?",opts:["Debtors","Bank balance","Creditors","Stock"],ans:2},
+    {q:"The going concern concept assumes that:",opts:["Business will end soon","Business will continue indefinitely","Assets are recorded at market value","All debts will be paid immediately"],ans:1},
+    {q:"Net profit is calculated as:",opts:["Gross profit + Expenses","Gross profit − Expenses","Revenue − Cost of sales","Total assets − Total liabilities"],ans:1},
+    {q:"A trial balance is used to:",opts:["Prepare tax returns","Check the arithmetic accuracy of ledger entries","Calculate profit","Record daily transactions"],ans:1},
+    {q:"Which of these is recorded in the cash book?",opts:["Credit purchases","Cash and bank transactions","Capital transactions","Depreciation"],ans:1},
+    {q:"The accruals concept means:",opts:["Record transactions when cash is received/paid","Record revenues and expenses when they occur","Always use historical cost","Record only realised gains"],ans:1},
+    {q:"Carriage inwards is treated as:",opts:["Income","An addition to cost of purchases","A selling expense","Profit"],ans:1},
+    {q:"What is the purpose of a petty cash book?",opts:["Record large payments","Record small day-to-day expenses","Record bank transactions","Prepare financial statements"],ans:1},
+    {q:"Owner's equity equals:",opts:["Assets − Revenue","Assets − Liabilities","Liabilities + Revenue","Revenue − Expenses"],ans:1},
+    {q:"Which of these is an intangible asset?",opts:["Cash","Machinery","Goodwill","Inventory"],ans:2},
+    {q:"The straight-line method of depreciation gives:",opts:["Varying annual charges","Equal annual charges","Reducing charges each year","Charges based on usage"],ans:1},
+    {q:"Bad debts written off are recorded in the:",opts:["Sales account","Purchases account","Profit and Loss account","Capital account"],ans:2},
+    {q:"A bank reconciliation statement reconciles:",opts:["Cash book and ledger","Cash book balance and bank statement balance","Income and expenses","Assets and liabilities"],ans:1},
+    {q:"The source document for a credit sale is a:",opts:["Receipt","Purchase order","Sales invoice","Debit note"],ans:2},
+    {q:"Capital expenditure is spending on:",opts:["Day-to-day running costs","Long-term assets","Wages","Rent"],ans:1},
+    {q:"Revenue expenditure includes:",opts:["Purchase of machinery","Building extension","Payment of salaries","Buying a new vehicle"],ans:2},
+    {q:"Closing stock appears in:",opts:["Only the Trading account","Only the Balance Sheet","Both Trading account and Balance Sheet","Only Profit & Loss account"],ans:2},
+    {q:"The consistency concept requires:",opts:["Different methods each year","Same accounting methods each year","Recording assets at market value","Prudent estimates"],ans:1},
+    {q:"Which of these would reduce gross profit?",opts:["Increase in sales","Decrease in purchases","Increase in returns inwards","Decrease in returns outwards"],ans:2},
+    {q:"Prepaid expenses are:",opts:["Accrued liabilities","Current assets","Long-term liabilities","Capital"],ans:1},
+    {q:"A profit and loss account is prepared to determine:",opts:["Cash position","Net profit or loss for a period","Financial position at a date","Value of assets"],ans:1},
+    {q:"The purchase of office furniture should be debited to:",opts:["Purchases account","Office expenses account","Furniture account","Capital account"],ans:2},
+    {q:"What is meant by 'liquidity'?",opts:["Profitability of a business","Ability to meet short-term obligations","Total value of assets","Long-term solvency"],ans:1},
+    {q:"Which of these represents a debit balance?",opts:["Creditors","Sales revenue","Bank overdraft","Capital"],ans:2},
+    {q:"The realisation concept states:",opts:["Record income only when earned/realised","Record all anticipated profits","Use market values","Record expenses only when paid"],ans:0},
+    {q:"Interest on capital is paid to the:",opts:["Creditor","Bank","Owner/Partner","Government"],ans:2},
+    {q:"A debit note is sent by a buyer to a seller to:",opts:["Confirm payment","Request a credit note for returned goods","Record a sale","Confirm delivery"],ans:1},
+    {q:"Partnership appropriation account distributes:",opts:["Gross profit","Net profit among partners","Expenses","Revenue"],ans:1},
+    {q:"Which of these is a non-current liability?",opts:["Creditors","Bank overdraft","Long-term loan","Accrued expenses"],ans:2},
+    {q:"The money measurement concept means:",opts:["Only monetary transactions are recorded","All assets are valued at market price","Currency must always be in Naira","Profit is measured in money"],ans:0},
+    {q:"Drawings by the owner reduce:",opts:["Liabilities","Revenue","Owner's equity","Assets only"],ans:2},
+  ],
+  Commerce:[
+    {q:"Commerce can be defined as all activities concerned with:",opts:["Manufacturing goods","Buying, selling, and distribution of goods and services","Growing agricultural products","Industrial production"],ans:1},
+    {q:"Which of these is a function of a retailer?",opts:["Producing goods","Buying in bulk and selling in small quantities to consumers","Transporting goods overseas","Exporting goods"],ans:1},
+    {q:"Hire purchase is a form of:",opts:["Cash sale","Gift","Credit purchase","Barter"],ans:2},
+    {q:"A bill of lading is a document used in:",opts:["Banking","Home trade","Foreign trade","Retail trade"],ans:2},
+    {q:"The main function of a central bank is:",opts:["Accepting deposits from individuals","Controlling monetary policy","Financing imports","Providing insurance"],ans:1},
+    {q:"An entrepôt is:",opts:["A type of currency","A port where goods are imported and re-exported","A trade barrier","A type of insurance"],ans:1},
+    {q:"Which of these is an invisible export?",opts:["Crude oil","Cocoa","Banking services","Textiles"],ans:2},
+    {q:"A cheque is a:",opts:["Promissory note","Bill of exchange drawn on a bank payable on demand","Letter of credit","Receipt of payment"],ans:1},
+    {q:"The term 'caveat emptor' means:",opts:["Seller beware","Let the buyer beware","Price is fixed","Quality is guaranteed"],ans:1},
+    {q:"Which of these is NOT a function of money?",opts:["Medium of exchange","Store of value","Unit of account","Production of goods"],ans:3},
+    {q:"Warehousing creates _____ utility.",opts:["Place","Time","Form","Possession"],ans:1},
+    {q:"Insurance operates on the principle of:",opts:["Profit maximisation","Pooling of risks","Individual savings","Government subsidy"],ans:1},
+    {q:"A franchise is:",opts:["A type of tax","Permission granted to sell a company's products under its brand","A government loan","A type of warehouse"],ans:1},
+    {q:"Which document is sent by a seller to inform the buyer that goods have been dispatched?",opts:["Invoice","Advice note","Debit note","Statement of account"],ans:1},
+    {q:"E-commerce refers to:",opts:["Electronic manufacturing","Buying and selling using the internet","Computer programming","Electronic communication"],ans:1},
+    {q:"The most liquid asset is:",opts:["Land","Machinery","Cash","Stocks"],ans:2},
+    {q:"A co-operative society is owned and controlled by:",opts:["The government","Private shareholders","Its members","A board of directors"],ans:2},
+    {q:"Export promotion means:",opts:["Restricting exports","Encouraging and increasing exports","Taxing exports","Banning exports"],ans:1},
+    {q:"Which of these is a barrier to international trade?",opts:["Free trade agreements","Tariffs and quotas","Open borders","Common currency"],ans:1},
+    {q:"The document that authorises an agent to act on behalf of a principal is called:",opts:["Bill of lading","Letter of credit","Power of attorney","Proxy"],ans:2},
+    {q:"What is dumping in international trade?",opts:["Throwing goods away","Selling goods in a foreign market below their production cost","Restricting imports","Refusing to trade"],ans:1},
+    {q:"Which of these is a function of the Stock Exchange?",opts:["Manufacturing shares","Providing a market for buying and selling securities","Collecting taxes","Printing money"],ans:1},
+    {q:"An indent is:",opts:["A type of loan","An order placed by an importer to purchase foreign goods","A trade agreement","A tariff"],ans:1},
+    {q:"Containerisation in trade helps to:",opts:["Reduce the number of ships","Facilitate fast and secure transportation of goods","Increase tariffs","Reduce competition"],ans:1},
+    {q:"What is the role of a forwarding agent?",opts:["Lending money for trade","Arranging transport, documentation, and customs clearance for exporters/importers","Insuring goods","Producing goods"],ans:1},
+    {q:"A supermarket is an example of a:",opts:["Wholesaler","Large-scale retailer","Department store","Market stall"],ans:1},
+    {q:"Which of these best describes a monopoly in commerce?",opts:["Many sellers, many buyers","One seller dominating the market","Government-owned business","Two firms controlling a market"],ans:1},
+    {q:"Debentures are:",opts:["Types of shares","Long-term loans raised by companies","Government bonds","Bank deposits"],ans:1},
+    {q:"What is the purpose of a proforma invoice?",opts:["Confirm delivery","Sent before goods are dispatched to confirm price and terms","Record actual payment","Request credit"],ans:1},
+    {q:"Which body regulates the Nigerian Stock Exchange?",opts:["CBN","FIRS","SEC","NAFDAC"],ans:2},
+    {q:"A letter of credit is issued by:",opts:["The exporter","The importer's bank","The shipping company","The government"],ans:1},
+    {q:"Visible trade involves the exchange of:",opts:["Services","Intangible items","Physical goods","Financial instruments"],ans:2},
+    {q:"Which of these is an example of a public corporation in Nigeria?",opts:["Dangote Group","NNPC (Nigerian National Petroleum Corporation)","GTBank","MTN Nigeria"],ans:1},
+    {q:"The break-even point is where:",opts:["Revenue exceeds costs","Total revenue equals total cost","Profit is maximised","Costs exceed revenue"],ans:1},
+    {q:"Market research is used to:",opts:["Produce goods faster","Gather information to guide business decisions","Reduce taxes","Increase imports"],ans:1},
+    {q:"A sole trader business is owned by:",opts:["Two or more persons","The government","One individual","Shareholders"],ans:2},
+    {q:"Advertising has the primary aim of:",opts:["Reducing production costs","Informing and persuading consumers to buy a product","Increasing taxes","Training workers"],ans:1},
+    {q:"Which of these is a disadvantage of the barter system?",opts:["Easy exchange","Double coincidence of wants problem","No need for money","Quick transactions"],ans:1},
+    {q:"The chain of distribution refers to:",opts:["Producer → Wholesaler → Retailer → Consumer","Producer → Consumer","Retailer → Consumer","Consumer → Producer"],ans:0},
+    {q:"A deed of partnership includes:",opts:["Tax rates","Terms and conditions governing the partnership","Company shares","Government regulations"],ans:1},
+  ],
+  FurtherMaths:[
+    {q:"If z = 3 + 4i, find |z|.",opts:["7","5","1","25"],ans:1},
+    {q:"The derivative of sin(x) is:",opts:["cos(x)","-cos(x)","sec(x)","-sin(x)"],ans:0},
+    {q:"Find the value of ∫(2x dx) from 0 to 3.",opts:["9","6","3","18"],ans:0},
+    {q:"Solve: 2ˣ = 32",opts:["4","5","6","3"],ans:1},
+    {q:"The sum to infinity of a GP with a=4 and r=1/2 is:",opts:["8","4","2","16"],ans:0},
+    {q:"If A = [[1,2],[3,4]], the determinant of A is:",opts:["10","-2","2","-10"],ans:1},
+    {q:"The general solution of dy/dx = y is:",opts:["y = eˣ + C","y = Ceˣ","y = x + C","y = Cxeˣ"],ans:1},
+    {q:"What is the locus of points equidistant from two fixed points?",opts:["A circle","A parabola","The perpendicular bisector","An ellipse"],ans:2},
+    {q:"Find the value of ⁸P₃.",opts:["56","336","40320","8"],ans:1},
+    {q:"The equation of an ellipse with semi-major axis a and semi-minor axis b is:",opts:["x²/a² − y²/b² = 1","x²/a² + y²/b² = 1","x² + y² = r²","y = mx + c"],ans:1},
+    {q:"If f(x) = x³ − 3x² + 2, find f'(x).",opts:["3x² − 6x","x² − 3x","3x² − 6x + 2","3x³ − 6x"],ans:0},
+    {q:"What is the range of f(x) = sin(x)?",opts:["[0,1]","(-∞,∞)","[-1,1]","[0,∞)"],ans:2},
+    {q:"Evaluate: log₂(64)",opts:["8","6","32","4"],ans:1},
+    {q:"The graph of y = x² is:",opts:["A straight line","A circle","A parabola","An ellipse"],ans:2},
+    {q:"If the complex numbers z₁ = 1+2i and z₂ = 3−i, find z₁ × z₂.",opts:["5+5i","3−2i","5+5i","3+5i"],ans:0},
+    {q:"The sum of the first n terms of an AP is given by:",opts:["Sn = n/2(a+l)","Sn = a(1−rⁿ)/(1−r)","Sn = aⁿ","Sn = n(a+l)"],ans:0},
+    {q:"The inverse of the matrix [[2,0],[0,3]] is:",opts:["[[1/2,0],[0,1/3]]","[[3,0],[0,2]]","[[2,0],[0,3]]","[[0,2],[3,0]]"],ans:0},
+    {q:"Which of these is a conic section?",opts:["Sphere","Hyperbola","Cylinder","Prism"],ans:1},
+    {q:"Differentiate: y = eˣ·sin(x)",opts:["eˣcos(x)","eˣ(sin(x)+cos(x))","eˣsin(x)","sin(x)−eˣcos(x)"],ans:1},
+    {q:"The number of ways of arranging 5 different books on a shelf is:",opts:["25","120","60","720"],ans:1},
+    {q:"If P(A) = 0.4 and P(B) = 0.3 and they are independent, find P(A and B).",opts:["0.7","0.1","0.12","0.04"],ans:2},
+    {q:"Solve the equation: x² + 4x + 5 = 0 using the quadratic formula.",opts:["x = −2±i","x = 2±i","x = −4±i","x = 1±i"],ans:0},
+    {q:"What is the period of y = cos(2x)?",opts:["π","2π","π/2","4π"],ans:0},
+    {q:"The integral of 1/x is:",opts:["x²/2","ln|x| + C","eˣ + C","1/x² + C"],ans:1},
+    {q:"A parabola with equation y² = 4ax has focus at:",opts:["(0,a)","(a,0)","(-a,0)","(0,-a)"],ans:1},
+    {q:"Which test is used to determine if a series converges?",opts:["Binomial theorem","Ratio test","Chain rule","Product rule"],ans:1},
+    {q:"If tan(θ) = 1, find θ (in degrees, 0° ≤ θ ≤ 90°).",opts:["30°","45°","60°","90°"],ans:1},
+    {q:"The coefficient of x³ in the expansion of (1+x)⁵ is:",opts:["5","10","15","20"],ans:1},
+    {q:"What is the gradient of the curve y = x³ at x = 2?",opts:["6","8","12","4"],ans:2},
+    {q:"The mean of a binomial distribution with n trials and probability p is:",opts:["np","npq","√(npq)","n/p"],ans:0},
+    {q:"Find the stationary points of f(x) = x³ − 3x.",opts:["x = ±1","x = ±3","x = 0","x = ±√3"],ans:0},
+    {q:"The matrix product of A×B requires that:",opts:["A and B are square","Columns of A = Rows of B","Rows of A = Rows of B","A and B are identical"],ans:1},
+    {q:"Evaluate: sin(30°) + cos(60°)",opts:["0","1","√3/2","1/2"],ans:1},
+    {q:"The standard deviation measures:",opts:["Central tendency","Spread/dispersion of data","Frequency","Skewness"],ans:1},
+    {q:"What is the maximum value of f(x) = −x² + 4x − 1?",opts:["3","4","1","5"],ans:0},
+    {q:"A geometric sequence has first term 6 and ratio 2. What is the sum of the first 5 terms?",opts:["96","186","192","62"],ans:1},
+    {q:"If f(x) = (x²+1)⁴, find f'(x) using chain rule.",opts:["4(x²+1)³","8x(x²+1)³","4x(x²+1)⁴","2x(x²+1)³"],ans:1},
+    {q:"The perpendicular distance from point (3,4) to the line x + y = 1 is:",opts:["√2","3√2","3/√2","6/√2"],ans:1},
+    {q:"If z = a + bi, then z̄ (conjugate) equals:",opts:["a − bi","−a + bi","a + bi","−a − bi"],ans:0},
+    {q:"The probability that at least one head appears in 3 coin tosses is:",opts:["1/8","3/8","7/8","6/8"],ans:2},
+  ],
+  CRS:[
+    {q:"In the Bible, the first book is:",opts:["Exodus","Genesis","Leviticus","Numbers"],ans:1},
+    {q:"According to the Bible, God created the world in how many days?",opts:["3","5","6","7"],ans:2},
+    {q:"The Ten Commandments were given to:",opts:["Abraham","Moses","David","Solomon"],ans:1},
+    {q:"Who was the first king of Israel?",opts:["David","Solomon","Saul","Samuel"],ans:2},
+    {q:"The Golden Rule in Christianity is:",opts:["Love your enemies","Do unto others as you would have them do to you","Honor your father and mother","Pray without ceasing"],ans:1},
+    {q:"Which river was Jesus baptized in?",opts:["Nile","Euphrates","Jordan","Tigris"],ans:2},
+    {q:"The Sermon on the Mount is found in the Gospel of:",opts:["Mark","Luke","John","Matthew"],ans:3},
+    {q:"Who betrayed Jesus Christ?",opts:["Peter","John","Judas Iscariot","Thomas"],ans:2},
+    {q:"The fruit of the Spirit in Galatians 5:22 includes all EXCEPT:",opts:["Love","Joy","Pride","Peace"],ans:2},
+    {q:"The book of Psalms contains how many psalms?",opts:["100","120","150","180"],ans:2},
+    {q:"Joseph was sold to the Ishmaelites for:",opts:["10 pieces of silver","20 pieces of silver","30 pieces of silver","50 pieces of silver"],ans:1},
+    {q:"The parable of the Prodigal Son is found in the Gospel of:",opts:["Matthew","Mark","Luke","John"],ans:2},
+    {q:"Who was the mother of Jesus?",opts:["Elizabeth","Mary","Martha","Esther"],ans:1},
+    {q:"Which prophet was swallowed by a great fish?",opts:["Elijah","Elisha","Jonah","Isaiah"],ans:2},
+    {q:"The New Testament has how many books?",opts:["27","39","66","33"],ans:0},
+    {q:"'The Lord is my shepherd' begins which psalm?",opts:["Psalm 1","Psalm 23","Psalm 91","Psalm 100"],ans:1},
+    {q:"Who built the ark?",opts:["Abraham","Moses","Noah","Jacob"],ans:2},
+    {q:"The greatest commandment according to Jesus is to:",opts:["Keep the Sabbath","Love God with all your heart","Give tithes","Build a temple"],ans:1},
+    {q:"Which disciple doubted the resurrection of Jesus?",opts:["Peter","John","Philip","Thomas"],ans:3},
+    {q:"The miracle of feeding 5000 people involved:",opts:["5 loaves and 3 fish","7 loaves and 5 fish","5 loaves and 2 fish","3 loaves and 2 fish"],ans:2},
+    {q:"King Solomon built the Temple in:",opts:["Bethlehem","Jerusalem","Nazareth","Jericho"],ans:1},
+    {q:"The book of Job deals primarily with the theme of:",opts:["Love","Suffering and faith","War","Prophecy"],ans:1},
+    {q:"Pentecost is associated with the coming of:",opts:["Jesus Christ","The Holy Spirit","The angels","Moses"],ans:1},
+    {q:"Paul's letter to the Romans emphasizes the doctrine of:",opts:["Baptism","Justification by faith","Church governance","Spiritual gifts"],ans:1},
+    {q:"Who was the first Christian martyr?",opts:["Peter","Paul","Stephen","James"],ans:2},
+    {q:"The Passover commemorates:",opts:["Creation of the world","The Exodus of Israel from Egypt","The birth of Moses","Building the Temple"],ans:1},
+    {q:"Abraham was originally called:",opts:["Abram","Isaac","Jacob","Aaron"],ans:0},
+    {q:"The prophet who confronted King Ahab about Naboth's vineyard was:",opts:["Isaiah","Elijah","Amos","Micah"],ans:1},
+    {q:"Jesus performed His first miracle at:",opts:["Jerusalem","Bethlehem","Cana","Nazareth"],ans:2},
+    {q:"What is the meaning of 'Emmanuel'?",opts:["Prince of Peace","God with us","God is strong","Chosen of God"],ans:1},
+    {q:"The Christian Sacrament of the Lord's Supper was instituted:",opts:["On Palm Sunday","At the Last Supper","At the Baptism of Jesus","On Pentecost Day"],ans:1},
+    {q:"Which council addressed the issue of circumcision of Gentiles in the early church?",opts:["Council of Nicaea","Jerusalem Council","Council of Trent","Antioch Council"],ans:1},
+    {q:"The concept of the Trinity in Christianity means:",opts:["Three Gods","One God in three persons: Father, Son and Holy Spirit","Three separate beings","God appears in three forms only"],ans:1},
+    {q:"The book of Revelation was written by:",opts:["Paul","John","Peter","Luke"],ans:1},
+    {q:"Which of the following is NOT one of the Ten Commandments?",opts:["You shall not kill","Honor your father and mother","Love your neighbor as yourself","You shall not steal"],ans:2},
+    {q:"The concept of atonement in Christianity means:",opts:["Prayer and fasting","Reconciliation between God and humanity through Christ's death","Baptism with water","Building churches"],ans:1},
+    {q:"Elisha received a double portion of whose spirit?",opts:["Moses","Samuel","Elijah","Isaiah"],ans:2},
+    {q:"The Beatitudes begin with the words:",opts:["Blessed are the poor in spirit","Thou shalt love the Lord","In the beginning was the Word","For God so loved the world"],ans:0},
+    {q:"Which New Testament letter discusses faith and works?",opts:["Romans","Philippians","James","Hebrews"],ans:2},
+    {q:"The city of Nineveh is associated with which prophet?",opts:["Micah","Jonah","Nahum","Both Jonah and Nahum"],ans:3},
+  ],
+  IRS:[
+    {q:"The first pillar of Islam (Shahadah) means:",opts:["Prayer","Declaration of faith","Fasting","Pilgrimage"],ans:1},
+    {q:"The Quran was revealed to the Prophet Muhammad over how many years?",opts:["10","20","23","30"],ans:2},
+    {q:"The Islamic month of fasting is called:",opts:["Shawwal","Ramadan","Dhul Hijjah","Muharram"],ans:1},
+    {q:"Salah (prayer) is performed how many times daily?",opts:["3","4","5","7"],ans:2},
+    {q:"The pilgrimage to Makkah (Hajj) is compulsory for Muslims who are:",opts:["Under 40 years","Able physically and financially","Male only","Arab only"],ans:1},
+    {q:"Zakat (almsgiving) is given at the rate of:",opts:["5% of savings","2.5% of savings held for one year","10% of income","1% of wealth"],ans:1},
+    {q:"The first revelation to Prophet Muhammad occurred in:",opts:["Cave Hira","the Ka'bah","Madinah","Cave Thaur"],ans:0},
+    {q:"The Hijrah refers to the migration of the Prophet from:",opts:["Makkah to Jerusalem","Makkah to Madinah","Madinah to Makkah","Makkah to Yemen"],ans:1},
+    {q:"The holy city of Islam where the Ka'bah is located is:",opts:["Madinah","Jerusalem","Baghdad","Makkah"],ans:3},
+    {q:"How many chapters (Surahs) are in the Quran?",opts:["99","100","114","120"],ans:2},
+    {q:"Tawhid in Islam means:",opts:["Prophethood","Oneness/Unity of God","Accountability","Predestination"],ans:1},
+    {q:"The Night of Power (Laylat al-Qadr) falls in the last:",opts:["10 days of Ramadan","10 days of Dhul Hijjah","Days of Muharram","Days of Shawwal"],ans:0},
+    {q:"The Islamic declaration of faith (Shahadah) states there is no god but Allah and that:",opts:["The Quran is holy","Muhammad is His prophet","Prayer is obligatory","Makkah is the holy city"],ans:1},
+    {q:"The successor (Caliph) of Prophet Muhammad was:",opts:["Ali ibn Abi Talib","Uthman ibn Affan","Umar ibn Khattab","Abu Bakr al-Siddiq"],ans:3},
+    {q:"In Islam, Riba refers to:",opts:["Charity","Interest/usury (forbidden)","Prayer","Pilgrimage"],ans:1},
+    {q:"The Eid celebrated after Ramadan is called:",opts:["Eid al-Adha","Eid al-Fitr","Mawlid","Laylat al-Miraj"],ans:1},
+    {q:"Which angel is believed to have brought revelation to Prophet Muhammad?",opts:["Mikail","Israfil","Jibril (Gabriel)","Azrael"],ans:2},
+    {q:"The Quran is written in which language?",opts:["Swahili","Persian","Arabic","Urdu"],ans:2},
+    {q:"Muslims face which direction when praying?",opts:["East","Jerusalem","Makkah (Ka'bah)","Madinah"],ans:2},
+    {q:"The Battle of Badr occurred in the year:",opts:["610 CE","622 CE","624 CE","630 CE"],ans:2},
+    {q:"What is Wudu?",opts:["Islamic prayer","Ritual purification before prayer","Fasting","Charity"],ans:1},
+    {q:"In Islamic law (Sharia), Halal means:",opts:["Forbidden","Permitted/lawful","Makruh (disliked)","Compulsory"],ans:1},
+    {q:"The concept of Akhirah in Islam refers to:",opts:["This worldly life","The afterlife","Angels","The Quran"],ans:1},
+    {q:"Masjid al-Nabawi is located in:",opts:["Makkah","Jerusalem","Madinah","Baghdad"],ans:2},
+    {q:"Who was the first woman to embrace Islam?",opts:["Fatimah","Aisha","Khadijah","Maryam"],ans:2},
+    {q:"The concept of Jihad primarily means:",opts:["Holy war only","Striving/struggling in the way of Allah","Pilgrimage","Prayer"],ans:1},
+    {q:"Muslims believe the Quran is the literal word of:",opts:["Prophet Muhammad","The angel Jibril","Allah (God)","The Companions"],ans:2},
+    {q:"The month of Dhul Hijjah is significant for:",opts:["Fasting","Eid al-Fitr","Hajj (pilgrimage)","Zakat payment"],ans:2},
+    {q:"Islamic law prohibits the consumption of:",opts:["Chicken","Fish","Pork","Dates"],ans:2},
+    {q:"The Sunnah refers to:",opts:["The Quran","The sayings and practices of Prophet Muhammad","Islamic jurisprudence","The five pillars"],ans:1},
+    {q:"Which Surah is called 'the heart of the Quran'?",opts:["Al-Fatihah","Al-Baqarah","Yasin","Al-Ikhlas"],ans:2},
+    {q:"The concept of Tawbah means:",opts:["Gratitude","Repentance and returning to Allah","Prayer","Fasting"],ans:1},
+    {q:"Islam teaches that humans are accountable for their deeds on:",opts:["Fridays","The Day of Judgement","The Night of Power","Eid day"],ans:1},
+    {q:"The Companions of the Prophet are called:",opts:["Awliya","Sahaba","Ulama","Ummah"],ans:1},
+    {q:"The Islamic New Year begins with the month of:",opts:["Ramadan","Dhul Hijjah","Muharram","Safar"],ans:2},
+    {q:"Which prophet is considered the father of the prophets in Islam?",opts:["Musa","Ibrahim (Abraham)","Isa","Nuh"],ans:1},
+    {q:"The Eid al-Adha commemorates:",opts:["Migration of the Prophet","Ibrahim's willingness to sacrifice his son","Breaking of the Ramadan fast","Birth of the Prophet"],ans:1},
+    {q:"Islamic marriage contract is called:",opts:["Talaq","Nikah","Mahr","Iddat"],ans:1},
+    {q:"The concept of Qadar in Islam means:",opts:["Prayer","Divine decree/predestination","Angels","Charity"],ans:1},
+    {q:"The first Surah of the Quran is:",opts:["Al-Baqarah","Al-Ikhlas","Al-Fatihah","Al-Nas"],ans:2},
+  ]
+};
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let questions=[], answers={}, flagged={}, currentIdx=0;
+let timerInterval, timeLeft=7200, totalTime=7200;
+let lastExamQuestions=[], lastExamAnswers={};
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const ct=document.getElementById('calcToggle');
+  const cp=document.getElementById('calcPanel');
+  if(id==='exam'){ct.style.display='flex'}else{ct.style.display='none';cp.classList.add('hidden')}
+}
+
+function goInstructions(){
+  let selected=Array.from(document.querySelectorAll('.subject-chip.selected')).map(c=>c.dataset.value);
+  // English is always included
+  if(!selected.includes('English'))selected=['English',...selected];
+  if(selected.length<1){alert('Please select at least one subject!');return}
+
+  // Save name & personalization
+  const nameInput=document.getElementById('studentName');
+  if(nameInput&&nameInput.value.trim()){
+    const name=nameInput.value.trim();
+    localStorage.setItem('jambStudentName',name);
+    window._studentName=name;
+    // Refresh profile pill
+    initPersonalization();
+  }
+  // Require a name
+  const name=window._studentName||localStorage.getItem('jambStudentName');
+  if(!name){
+    document.getElementById('studentName').focus();
+    document.getElementById('studentName').style.borderColor='#dc2626';
+    document.getElementById('studentName').placeholder='Please enter your name first!';
+    return;
+  }
+
+  window._selectedSubjects=selected;
+  window._qCount=parseInt(document.getElementById('qCountSelect').value);
+  window._timeLimit=parseInt(document.getElementById('timeSelect').value)*60;
+  show('instructions');
+}
+
+// Track used question indices per subject to avoid repetition across sessions
+const usedIndices={};
+
+function getFreshQuestions(sub, count){
+  const bank=QUESTION_BANK[sub]||[];
+  if(!bank.length)return [];
+  if(!usedIndices[sub])usedIndices[sub]=[];
+
+  // If we've used all questions, reset the pool for this subject
+  if(usedIndices[sub].length+count>bank.length){
+    usedIndices[sub]=[];
+  }
+
+  // Get available indices (not yet used)
+  const available=bank.map((_,i)=>i).filter(i=>!usedIndices[sub].includes(i));
+
+  // Fisher-Yates shuffle of available
+  for(let i=available.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [available[i],available[j]]=[available[j],available[i]];
+  }
+
+  const picked=available.slice(0,count);
+  usedIndices[sub].push(...picked);
+  return picked.map(i=>bank[i]);
+}
+
+function getEnglishQuestions(count){
+  // Group English questions by section to ensure variety
+  const bank=QUESTION_BANK['English']||[];
+  const sections={};
+  bank.forEach((q,i)=>{
+    const sec=q.section||'General';
+    if(!sections[sec])sections[sec]=[];
+    sections[sec].push({...q,_origIdx:i});
+  });
+
+  // Track used per section
+  if(!usedIndices['English_sections'])usedIndices['English_sections']={};
+  const usedSec=usedIndices['English_sections'];
+
+  const result=[];
+  const sectionOrder=['Comprehension','Comprehension (Cloze)','Lexis & Structure','Oral English','Reading Text (Novel)'];
+  // Distribution: Comp=5, Cloze=5, Lexis=20, Oral=15, Novel=10 but scaled to count
+  const totalBank=bank.length;
+  const ratio=count/totalBank;
+
+  sectionOrder.forEach(sec=>{
+    const pool=sections[sec]||[];
+    if(!pool.length)return;
+    let want=Math.max(1,Math.round(pool.length*ratio));
+    if(!usedSec[sec])usedSec[sec]=[];
+    // Reset if needed
+    if(usedSec[sec].length+want>pool.length)usedSec[sec]=[];
+    const avail=pool.filter(q=>!usedSec[sec].includes(q._origIdx));
+    // Shuffle avail
+    for(let i=avail.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[avail[i],avail[j]]=[avail[j],avail[i]];}
+    const take=avail.slice(0,want);
+    take.forEach(q=>usedSec[sec].push(q._origIdx));
+    result.push(...take);
+  });
+
+  // Trim/pad to count
+  return result.slice(0,count);
+}
+
+function startExam(){
+  const subjects=window._selectedSubjects;
+  const qPerSubject=window._qCount;
+  questions=[];
+
+  subjects.forEach(sub=>{
+    let picked;
+    if(sub==='English'){
+      picked=getEnglishQuestions(qPerSubject);
+    }else{
+      picked=getFreshQuestions(sub,qPerSubject);
+    }
+    picked.forEach((q,i)=>{questions.push({...q,id:`${sub}_${Date.now()}_${i}`,subject:sub})});
+  });
+
+  answers={}; flagged={}; currentIdx=0;
+  timeLeft=window._timeLimit; totalTime=timeLeft;
+
+  // Update navbar with user name
+  const name=window._studentName||localStorage.getItem('jambStudentName');
+  if(name){
+    const navUser=document.getElementById('navUser');
+    const navAvatar=document.getElementById('navAvatar');
+    const navUsername=document.getElementById('navUsername');
+    if(navUser){navUser.style.display='flex';}
+    if(navAvatar)navAvatar.textContent=name.charAt(0).toUpperCase();
+    if(navUsername)navUsername.textContent=name.split(' ')[0];
+  }
+
+  show('exam');
+  renderPalette();
+  renderQuestion();
+  startTimer();
+  document.getElementById('subjectTag').textContent=questions[0]?.subject||'';
+}
+
+// TIMER
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    timeLeft--;
+    if(timeLeft<=0){clearInterval(timerInterval);window.submitExam();return}
+    updateTimerDisplay();
+  },1000);
+  updateTimerDisplay();
+}
+function updateTimerDisplay(){
+  const h=Math.floor(timeLeft/3600),m=Math.floor((timeLeft%3600)/60),s=timeLeft%60;
+  const el=document.getElementById('timerDisplay');
+  el.textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+  el.className='timer'+(timeLeft<300?' urgent':'');
+}
+function pad(n){return n<10?'0'+n:''+n}
+
+// PALETTE
+function renderPalette(){
+  const grid=document.getElementById('paletteGrid');
+  grid.innerHTML='';
+  questions.forEach((q,i)=>{
+    const btn=document.createElement('button');
+    btn.className='pal-btn';
+    btn.textContent=i+1;
+    btn.title=`Q${i+1}: ${q.subject}`;
+    if(i===currentIdx)btn.classList.add('current');
+    else if(flagged[q.id])btn.classList.add('flagged');
+    else if(answers[q.id]!==undefined)btn.classList.add('answered');
+    btn.onclick=()=>goTo(i);
+    grid.appendChild(btn);
+  });
+  const answered=Object.keys(answers).length;
+  document.getElementById('palAnswered').textContent=answered;
+  document.getElementById('palRemaining').textContent=questions.length-answered;
+}
+
+// QUESTION RENDER
+function renderQuestion(){
+  const q=questions[currentIdx];
+  if(!q)return;
+  document.getElementById('subjectTag').textContent=q.subject+(q.section?' — '+q.section:'');
+  const letters=['A','B','C','D'];
+  const optHtml=q.opts.map((opt,i)=>`
+    <button class="q-option${answers[q.id]===i?' selected':''}" onclick="selectAnswer(${i})">
+      <span class="opt-letter">${letters[i]}.</span>
+      <span>${opt}</span>
+    </button>
+  `).join('');
+
+  const passageHtml=q.passage?`<div class="q-passage">${q.passage}</div>`:'';
+
+  document.getElementById('questionMain').innerHTML=`
+    <div class="q-header">
+      <span class="q-progress">Question ${currentIdx+1} of ${questions.length}</span>
+      <button class="q-flag-btn${flagged[q.id]?' flagged':''}" onclick="toggleFlag()">
+        ${flagged[q.id]?'★ Flagged':'☆ Flag'}
+      </button>
+    </div>
+    ${passageHtml}
+    <div class="q-card">
+      <div class="q-subject">${q.section||q.subject}</div>
+      <div class="q-number">Question ${currentIdx+1}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-options">${optHtml}</div>
+    </div>
+    <div class="q-nav">
+      <button class="q-nav-btn" onclick="prevQ()" ${currentIdx===0?'disabled':''}>← Previous</button>
+      <span style="font-size:12px;color:var(--muted)">${Object.keys(answers).length}/${questions.length} answered</span>
+      ${currentIdx===questions.length-1
+        ?`<button class="q-nav-btn next" onclick="confirmSubmit()">Submit Exam</button>`
+        :`<button class="q-nav-btn next" onclick="nextQ()">Next →</button>`}
+    </div>
+  `;
+}
+
+function selectAnswer(optIdx){
+  const q=questions[currentIdx];
+  answers[q.id]=optIdx;
+  renderPalette();
+  renderQuestion();
+}
+function toggleFlag(){
+  const q=questions[currentIdx];
+  if(flagged[q.id])delete flagged[q.id];else flagged[q.id]=true;
+  renderPalette();renderQuestion();
+}
+function nextQ(){if(currentIdx<questions.length-1){currentIdx++;renderPalette();renderQuestion();}}
+function prevQ(){if(currentIdx>0){currentIdx--;renderPalette();renderQuestion();}}
+function goTo(i){currentIdx=i;renderPalette();renderQuestion();closePalette();}
+function togglePalette(){
+  const sb=document.getElementById('paletteSidebar'),ov=document.getElementById('palOverlay');
+  sb.classList.toggle('open');ov.classList.toggle('active');
+}
+function closePalette(){
+  document.getElementById('paletteSidebar').classList.remove('open');
+  document.getElementById('palOverlay').classList.remove('active');
+}
+
+function confirmSubmit(){
+  const unanswered=questions.length-Object.keys(answers).length;
+  const icon=document.getElementById('modalIcon');
+  const title=document.getElementById('modalTitle');
+  const msg=document.getElementById('modalMsg');
+  const countWrap=document.getElementById('modalCountWrap');
+  const countEl=document.getElementById('modalCount');
+  if(unanswered>0){
+    icon.textContent='⚠️';
+    title.textContent='Unanswered Questions!';
+    countWrap.style.display='block';
+    countEl.textContent=`${unanswered} question${unanswered!==1?'s':''} unanswered`;
+    msg.textContent='You still have unanswered questions. Are you sure you want to submit? Unanswered questions will be marked as skipped.';
+  }else{
+    icon.textContent='✅';
+    title.textContent='Submit Examination?';
+    countWrap.style.display='none';
+    msg.textContent='All questions answered. Ready to submit? This action cannot be undone.';
+  }
+  document.getElementById('submitModal').classList.add('active');
+}
+function closeModal(){document.getElementById('submitModal').classList.remove('active');}
+
+function goReview(){
+  const letters=['A','B','C','D'];
+  const cards=lastExamQuestions.map((q,idx)=>{
+    const userAns=lastExamAnswers[q.id];
+    const isCorrect=userAns===q.ans;
+    const isSkipped=userAns===undefined;
+    const status=isSkipped?'skipped':isCorrect?'correct':'wrong';
+    const statusLabel=isSkipped?'Skipped':isCorrect?'✓ Correct':'✗ Wrong';
+    const opts=q.opts.map((opt,i)=>{
+      let cls='neutral';
+      if(i===q.ans)cls='correct';
+      else if(i===userAns&&!isCorrect)cls='your-wrong';
+      return `<div class="rc-option ${cls}">
+        <span class="ol">${letters[i]}.</span>
+        <span>${opt}</span>
+        ${i===q.ans?'<span style="margin-left:auto;font-size:11px;font-weight:700;color:#16a34a">✓ Correct</span>':''}
+        ${i===userAns&&!isCorrect?'<span style="margin-left:auto;font-size:11px;font-weight:700;color:#dc2626">✗ Your answer</span>':''}
+      </div>`;
+    }).join('');
+    const passageHtml=q.passage?`<div class="rc-passage">${q.passage}</div>`:'';
+    return `<div class="review-card">
+      <div class="rc-meta">
+        <span class="rc-subject">${q.subject}${q.section?' · '+q.section:''}</span>
+        <span class="rc-status ${status}">${statusLabel}</span>
+      </div>
+      ${passageHtml}
+      <div class="rc-text"><strong>Q${idx+1}.</strong> ${q.q}</div>
+      <div class="rc-options">${opts}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('reviewBody').innerHTML=cards;
+  show('review');
+}
+
+function retake(){clearInterval(timerInterval);startExam();}
+function goSetup(){clearInterval(timerInterval);show('setup');}
+
+// CALCULATOR
+let calcStr='',calcHasResult=false;
+function toggleCalc(){document.getElementById('calcPanel').classList.toggle('hidden')}
+function calcInput(v){
+  const d=document.getElementById('calcDisplay');
+  if(v==='C'){calcStr='';d.textContent='0';calcHasResult=false;return}
+  if(v==='='){
+    try{
+      let expr=calcStr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-');
+      let res=Function('"use strict";return('+expr+')')();
+      res=parseFloat(res.toFixed(10));
+      d.textContent=res;calcStr=String(res);calcHasResult=true;
+    }catch{d.textContent='Error';calcStr='';calcHasResult=false;}
+    return;
+  }
+  if(v==='±'){calcStr=calcStr.startsWith('-')?calcStr.slice(1):'-'+calcStr;d.textContent=calcStr||'0';return}
+  if(v==='%'){try{let r=parseFloat(calcStr)/100;calcStr=String(r);d.textContent=calcStr;}catch{}return}
+  if(calcHasResult&&!isNaN(v)){calcStr=v;calcHasResult=false;}else{calcStr+=v}
+  d.textContent=calcStr||'0';
+}
+
+// ═══════ SUBJECT CHIPS ═══════
+document.querySelectorAll('.subject-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    // English chip is locked — cannot be deselected
+    if(chip.classList.contains('locked'))return;
+    const isSelected=chip.classList.contains('selected');
+    // Count selected non-locked chips
+    const selectedNonLocked=Array.from(document.querySelectorAll('.subject-chip.selected:not(.locked)')).length;
+    if(isSelected){
+      chip.classList.remove('selected');
+    } else {
+      // Max 3 non-locked (English locked = 1, so total max = 4)
+      if(selectedNonLocked>=3){
+        const firstNonLocked=document.querySelector('.subject-chip.selected:not(.locked)');
+        if(firstNonLocked)firstNonLocked.classList.remove('selected');
+      }
+      chip.classList.add('selected');
+    }
+  });
+});
+
+// ═══════ PERSONALIZATION ENGINE ═══════
+function initPersonalization(){
+  const name=localStorage.getItem('jambStudentName');
+  const examCount=parseInt(localStorage.getItem('jambExamCount')||'0');
+  const bestScore=localStorage.getItem('jambBestScore');
+  const lastSubjects=localStorage.getItem('jambLastSubjects');
+
+  if(name){
+    window._studentName=name;
+    const pill=document.getElementById('profilePill');
+    const nameGroup=document.getElementById('nameGroup');
+    const avatarEl=document.getElementById('avatarInitial');
+    const profileNameEl=document.getElementById('profileName');
+    const profileMetaEl=document.getElementById('profileMeta');
+    if(pill)pill.style.display='flex';
+    if(nameGroup)nameGroup.style.display='none';
+    if(avatarEl)avatarEl.textContent=name.charAt(0).toUpperCase();
+    if(profileNameEl)profileNameEl.textContent=name;
+    let meta=`${examCount} exam${examCount!==1?'s':''} taken`;
+    if(bestScore)meta+=` · Best: ${bestScore}%`;
+    if(profileMetaEl)profileMetaEl.textContent=meta;
+
+    // Restore last subjects — always keep English locked+selected
+    if(lastSubjects){
+      const lastArr=JSON.parse(lastSubjects);
+      document.querySelectorAll('.subject-chip:not(.locked)').forEach(c=>c.classList.remove('selected'));
+      lastArr.filter(v=>v!=='English').forEach(v=>{
+        const chip=document.querySelector(`.subject-chip[data-value="${v}"]`);
+        if(chip)chip.classList.add('selected');
+      });
+    }
+  }
+  // Always ensure English is selected+locked regardless
+  const englishChip=document.querySelector('.subject-chip[data-value="English"]');
+  if(englishChip){englishChip.classList.add('selected','locked');}
+}
+
+function editProfile(){
+  localStorage.removeItem('jambStudentName');
+  const pill=document.getElementById('profilePill');
+  const nameGroup=document.getElementById('nameGroup');
+  pill.style.display='none';
+  nameGroup.style.display='block';
+  document.getElementById('studentName').focus();
+}
+
+// ═══════ SUBMIT EXAM ═══════
+window.submitExam=function(){
+  // Save last subjects played
+  const selectedSubjects=Array.from(document.querySelectorAll('.subject-chip.selected')).map(c=>c.dataset.value);
+  if(selectedSubjects.length)localStorage.setItem('jambLastSubjects',JSON.stringify(selectedSubjects));
+
+  clearInterval(timerInterval);
+  lastExamQuestions=[...questions];
+  lastExamAnswers={...answers};
+  let correct=0,wrong=0,skipped=0;
+  const subjectMap={};
+  questions.forEach(q=>{
+    if(!subjectMap[q.subject])subjectMap[q.subject]={correct:0,total:0};
+    subjectMap[q.subject].total++;
+    if(answers[q.id]===undefined)skipped++;
+    else if(answers[q.id]===q.ans){correct++;subjectMap[q.subject].correct++;}
+    else wrong++;
+  });
+  const total=questions.length,pct=Math.round((correct/total)*100);
+
+  // Save best score
+  const prevBest=parseInt(localStorage.getItem('jambBestScore')||'0');
+  if(pct>prevBest)localStorage.setItem('jambBestScore',pct);
+  // Increment exam count
+  const examCount=parseInt(localStorage.getItem('jambExamCount')||'0')+1;
+  localStorage.setItem('jambExamCount',examCount);
+
+  document.getElementById('scorePct').textContent=pct+'%';
+  document.getElementById('statCorrect').textContent=correct;
+  document.getElementById('statWrong').textContent=wrong;
+  document.getElementById('statSkipped').textContent=skipped;
+  document.getElementById('resultBarFill').style.width='0%';
+
+  // Personalized result title
+  const name=window._studentName||localStorage.getItem('jambStudentName');
+  const titleEl=document.getElementById('resultTitle');
+  if(titleEl&&name)titleEl.textContent=`Well done, ${name.split(' ')[0]}!`;
+
+  const arc=document.getElementById('scoreArc');
+  const circumference=2*Math.PI*60;
+  const offset=circumference*(1-pct/100);
+  arc.style.strokeDasharray=circumference;
+  arc.style.strokeDashoffset=circumference;
+  arc.style.stroke=pct>=50?'#006400':'#dc2626';
+
+  let grade,gradeClass;
+  if(pct>=70){grade='Excellent — A';gradeClass='grade-A'}
+  else if(pct>=60){grade='Good — B';gradeClass='grade-B'}
+  else if(pct>=50){grade='Average — C';gradeClass='grade-C'}
+  else{grade='Below Average — F';gradeClass='grade-F'}
+  const gb=document.getElementById('gradeBadge');
+  gb.textContent=grade;gb.className='grade-badge '+gradeClass;
+
+  const sp=document.getElementById('subjPerf');
+  const subjEntries=Object.entries(subjectMap);
+  if(subjEntries.length>1){
+    sp.innerHTML=`<h4>Performance by Subject</h4>${
+      subjEntries.map(([sub,d])=>{
+        const p=Math.round((d.correct/d.total)*100);
+        const color=p>=70?'var(--g3)':p>=50?'#d97706':'#dc2626';
+        return `<div class="subj-row">
+          <span class="name">${sub}</span>
+          <div class="subj-bar-wrap"><div class="subj-bar-fill" data-w="${p}" style="width:0%;background:${color}"></div></div>
+          <span class="pct">${p}%</span>
+        </div>`;
+      }).join('')
+    }`;
+  }else{sp.innerHTML=''}
+
+  show('result');
+  setTimeout(()=>{
+    document.getElementById('resultBarFill').style.width=pct+'%';
+    arc.style.strokeDashoffset=offset;
+    document.querySelectorAll('.subj-bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%'});
+  },150);
+};
+
+// ═══════ PWA SETUP ═══════
+(function initPWA(){
+  // Inline manifest via blob
+  const manifest={
+    name:'JAMB CBT Practice',
+    short_name:'JAMB CBT',
+    start_url:'.',
+    display:'standalone',
+    background_color:'#f8faf7',
+    theme_color:'#006400',
+    description:'Simulate real JAMB CBT exams with 14 subjects, timer, and performance analytics.',
+    icons:[
+      {src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="32" fill="%23006400"/><text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-size="100" font-family="serif" fill="white">J</text></svg>',sizes:'192x192',type:'image/svg+xml'},
+    ]
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const link=document.getElementById('pwaManifest');
+  if(link)link.href=url;
+
+  // Register inline service worker
+  if('serviceWorker' in navigator){
+    const swCode=`
+      const CACHE='jamb-cbt-v1';
+      self.addEventListener('install',e=>{
+        e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/'])));
+        self.skipWaiting();
+      });
+      self.addEventListener('activate',e=>{
+        e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+        self.clients.claim();
+      });
+      self.addEventListener('fetch',e=>{
+        e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+          if(res.ok){const clone=res.clone();caches.open(CACHE).then(c=>c.put(e.request,clone));}
+          return res;
+        }).catch(()=>caches.match('/'))));
+      });
+    `;
+    const swBlob=new Blob([swCode],{type:'application/javascript'});
+    const swUrl=URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(()=>{});
+  }
+
+  // Install prompt banner
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    const banner=document.getElementById('installBanner');
+    if(banner)banner.style.display='flex';
+  });
+  window.installApp=function(){
+    if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.waitUserChoice().then(()=>{deferredPrompt=null;const b=document.getElementById('installBanner');if(b)b.style.display='none';});}
+  };
+  window.dismissInstall=function(){const b=document.getElementById('installBanner');if(b)b.style.display='none';};
+})();
+
+// Init on load
+initPersonalization();
+</script>
+</body>
+</html>
