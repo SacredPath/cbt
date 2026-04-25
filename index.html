@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="JAMB CBT"/>
 <link rel="manifest" id="pwaManifest"/>
-<link rel="icon" type="image/svg+xml" id="faviconLink"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23004d00'/%3E%3Cstop offset='100%25' stop-color='%2316a34a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='24' font-family='Georgia,serif' font-size='12' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EJAMB%3C/text%3E%3Crect x='8' y='30' width='48' height='2' rx='1' fill='rgba(255,255,255,0.4)'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='14' font-weight='700' fill='%23f59e0b' text-anchor='middle' dominant-baseline='middle'%3ECBT%3C/text%3E%3C/svg%3E"/>
 <link rel="apple-touch-icon" id="appleTouchIcon"/>
 <title>JAMB CBT Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -354,6 +354,7 @@ input,select{font-family:inherit}
       </select>
     </div>
     <button class="start-btn" onclick="goInstructions()">View Instructions &amp; Begin →</button>
+    <button id="setupInstallBtn" onclick="window._triggerPWAInstall&&window._triggerPWAInstall()" style="display:none;width:100%;padding:11px;background:transparent;border:1.5px solid #16a34a;color:#006400;font-size:13px;font-weight:700;border-radius:10px;margin-top:8px;cursor:pointer;letter-spacing:.2px">📲 Install App for Offline Use</button>
   </div>
 </div>
 
@@ -1637,145 +1638,202 @@ window.submitExam=function(){
 
 // ═══════ PWA SETUP ═══════
 (function initPWA(){
-  // ── SVG Favicon ──
-  const faviconSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-    <defs>
-      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#004d00"/>
-        <stop offset="100%" stop-color="#16a34a"/>
-      </linearGradient>
-    </defs>
-    <rect width="64" height="64" rx="14" fill="url(%23bg)"/>
-    <text x="32" y="26" font-family="Georgia,serif" font-size="13" font-weight="900" fill="%23fff" text-anchor="middle" dominant-baseline="middle" letter-spacing="0.5">JAMB</text>
-    <rect x="10" y="30" width="44" height="2" rx="1" fill="rgba(255,255,255,0.4)"/>
-    <text x="32" y="45" font-family="Georgia,serif" font-size="11" font-weight="700" fill="%23f59e0b" text-anchor="middle" dominant-baseline="middle" letter-spacing="1">CBT</text>
-    <circle cx="52" cy="12" r="5" fill="%23f59e0b"/>
-    <text x="52" y="12.5" font-family="Georgia,serif" font-size="7" font-weight="900" fill="%23004d00" text-anchor="middle" dominant-baseline="middle">✓</text>
-  </svg>`;
 
-  const faviconBlob = new Blob([faviconSVG], {type:'image/svg+xml'});
-  const faviconUrl = URL.createObjectURL(faviconBlob);
-  const faviconLink = document.getElementById('faviconLink');
-  if(faviconLink) faviconLink.href = faviconUrl;
+  /* ── 1. Apple touch icon via canvas ── */
+  try{
+    const cv=document.createElement('canvas');
+    cv.width=180;cv.height=180;
+    const cx=cv.getContext('2d');
+    const gr=cx.createLinearGradient(0,0,180,180);
+    gr.addColorStop(0,'#004d00');gr.addColorStop(1,'#16a34a');
+    cx.fillStyle=gr;
+    const rr=36;
+    cx.beginPath();cx.moveTo(rr,0);cx.lineTo(180-rr,0);cx.quadraticCurveTo(180,0,180,rr);
+    cx.lineTo(180,180-rr);cx.quadraticCurveTo(180,180,180-rr,180);
+    cx.lineTo(rr,180);cx.quadraticCurveTo(0,180,0,180-rr);
+    cx.lineTo(0,rr);cx.quadraticCurveTo(0,0,rr,0);cx.closePath();cx.fill();
+    cx.fillStyle='#fff';cx.font='bold 36px Georgia,serif';cx.textAlign='center';
+    cx.fillText('JAMB',90,70);
+    cx.fillStyle='rgba(255,255,255,.35)';cx.fillRect(20,82,140,3);
+    cx.fillStyle='#f59e0b';cx.font='bold 30px Georgia,serif';
+    cx.fillText('CBT',90,118);
+    const ati=document.getElementById('appleTouchIcon');
+    if(ati)ati.href=cv.toDataURL('image/png');
+  }catch(e){}
 
-  // Apple touch icon (PNG-like via canvas)
-  try {
-    const canvas = document.createElement('canvas');
-    canvas.width = 180; canvas.height = 180;
-    const ctx = canvas.getContext('2d');
-    // Background
-    const grad = ctx.createLinearGradient(0,0,180,180);
-    grad.addColorStop(0,'#004d00'); grad.addColorStop(1,'#16a34a');
-    ctx.fillStyle = grad;
-    const r = 36;
-    ctx.beginPath();
-    ctx.moveTo(r,0); ctx.lineTo(180-r,0); ctx.quadraticCurveTo(180,0,180,r);
-    ctx.lineTo(180,180-r); ctx.quadraticCurveTo(180,180,180-r,180);
-    ctx.lineTo(r,180); ctx.quadraticCurveTo(0,180,0,180-r);
-    ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
-    ctx.closePath(); ctx.fill();
-    // JAMB text
-    ctx.fillStyle='#fff'; ctx.font='bold 38px Georgia,serif'; ctx.textAlign='center';
-    ctx.fillText('JAMB',90,72);
-    // Divider
-    ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.fillRect(20,82,140,3);
-    // CBT text
-    ctx.fillStyle='#f59e0b'; ctx.font='bold 32px Georgia,serif';
-    ctx.fillText('CBT',90,122);
-    const pngUrl = canvas.toDataURL('image/png');
-    const touchIcon = document.getElementById('appleTouchIcon');
-    if(touchIcon) touchIcon.href = pngUrl;
-  } catch(e){}
-
-  // ── Inline manifest via blob ──
-  const iconSVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%23004d00'/><stop offset='100%25' stop-color='%2316a34a'/></linearGradient></defs><rect width='192' height='192' rx='40' fill='url(%23g)'/><text x='96' y='80' font-family='Georgia,serif' font-size='38' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'>JAMB</text><rect x='24' y='94' width='144' height='4' rx='2' fill='rgba(255,255,255,0.35)'/><text x='96' y='130' font-family='Georgia,serif' font-size='34' font-weight='700' fill='%23f59e0b' text-anchor='middle' dominant-baseline='middle'>CBT</text></svg>`;
-
-  const manifest={
+  /* ── 2. Manifest via data URI (works cross-origin, no blob issues) ── */
+  const iconDataURI="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23004d00'/%3E%3Cstop offset='100%25' stop-color='%2316a34a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='100' fill='url(%23g)'/%3E%3Ctext x='256' y='200' font-family='Georgia,serif' font-size='120' font-weight='900' fill='white' text-anchor='middle' dominant-baseline='middle'%3EJAMB%3C/text%3E%3Crect x='60' y='265' width='392' height='10' rx='5' fill='rgba(255,255,255,0.35)'/%3E%3Ctext x='256' y='360' font-family='Georgia,serif' font-size='110' font-weight='700' fill='%23f59e0b' text-anchor='middle' dominant-baseline='middle'%3ECBT%3C/text%3E%3C/svg%3E";
+  const manifestObj={
     name:'JAMB CBT Practice',
     short_name:'JAMB CBT',
-    start_url:'.',
+    description:'Simulate real JAMB CBT exams with timed sessions and analytics.',
+    start_url:location.href,
+    scope:location.href,
     display:'standalone',
-    orientation:'portrait',
+    orientation:'portrait-primary',
     background_color:'#004d00',
     theme_color:'#006400',
-    description:'Simulate real JAMB CBT exams with 14 subjects, timer, and performance analytics.',
     categories:['education'],
     icons:[
-      {src:`data:image/svg+xml,${iconSVG}`,sizes:'192x192',type:'image/svg+xml'},
-      {src:`data:image/svg+xml,${iconSVG}`,sizes:'512x512',type:'image/svg+xml','purpose':'any maskable'},
+      {src:iconDataURI,sizes:'192x192',type:'image/svg+xml'},
+      {src:iconDataURI,sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}
     ]
   };
-  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const link=document.getElementById('pwaManifest');
-  if(link)link.href=url;
+  const manifestStr=JSON.stringify(manifestObj);
+  const manifestB64='data:application/manifest+json;base64,'+btoa(unescape(encodeURIComponent(manifestStr)));
+  const mlink=document.getElementById('pwaManifest');
+  if(mlink)mlink.href=manifestB64;
 
-  // ── Service Worker ──
+  /* ── 3. Service Worker via data URI (avoids blob scope restriction) ── */
   if('serviceWorker' in navigator){
-    const CACHE_VER = 'jamb-cbt-v4';
-    const swCode=`
-      const CACHE='${CACHE_VER}';
-      const ASSETS=['/'];
-      self.addEventListener('install',e=>{
-        e.waitUntil(
-          caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())
-        );
+    const swSrc=`
+const CACHE='jamb-cbt-v5';
+self.addEventListener('install',e=>{
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c=>{
+    return c.add(new Request(self.location.origin,{cache:'reload'})).catch(()=>{});
+  }));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET')return;
+  e.respondWith(
+    caches.open(CACHE).then(cache=>
+      fetch(e.request).then(res=>{
+        if(res&&res.status===200){cache.put(e.request,res.clone());}
+        return res;
+      }).catch(()=>caches.match(e.request))
+    )
+  );
+});`;
+    // Encode SW as data URI — works from any page origin
+    const swDataURI='data:application/javascript;charset=utf-8,'+encodeURIComponent(swSrc);
+    navigator.serviceWorker.register(swDataURI,{scope:'./'})
+      .then(reg=>{
+        // Trigger background sync if available
+        if(reg.active){console.log('[JAMB PWA] SW active');}
+      })
+      .catch(err=>{
+        // data: URI SW may fail in some browsers — try blob fallback
+        try{
+          const swBlob=new Blob([swSrc],{type:'application/javascript'});
+          navigator.serviceWorker.register(URL.createObjectURL(swBlob),{scope:'./'}).catch(()=>{});
+        }catch(e){}
       });
-      self.addEventListener('activate',e=>{
-        e.waitUntil(
-          caches.keys().then(keys=>Promise.all(
-            keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))
-          )).then(()=>self.clients.claim())
-        );
-      });
-      self.addEventListener('fetch',e=>{
-        // Network-first for navigation, cache-first for assets
-        if(e.request.mode==='navigate'){
-          e.respondWith(
-            fetch(e.request).then(res=>{
-              if(res.ok){const c=res.clone();caches.open(CACHE).then(ca=>ca.put(e.request,c));}
-              return res;
-            }).catch(()=>caches.match('/'))
-          );
-        } else {
-          e.respondWith(
-            caches.match(e.request).then(cached=>cached||fetch(e.request).then(res=>{
-              if(res.ok&&e.request.url.startsWith('https://fonts')){
-                const c=res.clone();caches.open(CACHE).then(ca=>ca.put(e.request,c));
-              }
-              return res;
-            }))
-          );
-        }
-      });
-    `;
-    const swBlob=new Blob([swCode],{type:'application/javascript'});
-    const swUrl=URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl,{scope:'./'}).catch(()=>{});
   }
 
-  // ── Install prompt banner ──
-  let deferredPrompt;
+  /* ── 4. Detect platform ── */
+  const ua=navigator.userAgent;
+  const isIOS=/iphone|ipad|ipod/i.test(ua);
+  const isAndroid=/android/i.test(ua);
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const dismissed=sessionStorage.getItem('pwaPromptDismissed');
+
+  /* ── 5. Android/Chrome: capture beforeinstallprompt ── */
+  let deferredPrompt=null;
   window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();
     deferredPrompt=e;
-    const banner=document.getElementById('installBanner');
-    if(banner)banner.style.display='flex';
+    // Show the inline install button on setup screen
+    const sib=document.getElementById('setupInstallBtn');
+    if(sib)sib.style.display='block';
+    if(!isStandalone&&!dismissed){
+      setTimeout(()=>showInstallModal('android'),800);
+    }
   });
-  window.installApp=function(){
+
+  /* ── 6. iOS: show instructions after short delay ── */
+  if(isIOS&&!isStandalone&&!dismissed){
+    const sib=document.getElementById('setupInstallBtn');
+    if(sib){sib.style.display='block';sib.onclick=()=>showInstallModal('ios');}
+    setTimeout(()=>showInstallModal('ios'),1500);
+  }
+
+  /* ── 7. Build install modal ── */
+  function showInstallModal(platform){
+    if(document.getElementById('pwaInstallModal'))return;
+    const modal=document.createElement('div');
+    modal.id='pwaInstallModal';
+    modal.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);animation:pwaFadeIn .25s ease';
+    const isIosMode=platform==='ios';
+    modal.innerHTML=`
+<style>
+@keyframes pwaFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pwaSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+#pwaInstallSheet{background:#fff;border-radius:22px 22px 0 0;padding:28px 24px 36px;width:100%;max-width:480px;animation:pwaSlideUp .3s cubic-bezier(.34,1.1,.64,1);position:relative}
+#pwaInstallSheet .pwa-close{position:absolute;top:14px;right:16px;background:#f0f0f0;border:none;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#555}
+#pwaInstallSheet .pwa-icon{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#004d00,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;flex-direction:column;gap:2px}
+#pwaInstallSheet .pwa-icon span:first-child{font-family:Georgia,serif;font-size:16px;font-weight:900;color:#fff;line-height:1}
+#pwaInstallSheet .pwa-icon span:last-child{font-family:Georgia,serif;font-size:14px;font-weight:700;color:#f59e0b;line-height:1}
+#pwaInstallSheet h3{font-family:Georgia,serif;font-size:20px;font-weight:800;color:#0f1a0e;text-align:center;margin-bottom:6px}
+#pwaInstallSheet p{font-size:13px;color:#5a7060;text-align:center;line-height:1.6;margin-bottom:20px}
+#pwaInstallSheet .pwa-steps{background:#f0faf4;border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;flex-direction:column;gap:10px}
+#pwaInstallSheet .pwa-step{display:flex;align-items:center;gap:12px;font-size:13px;color:#0f1a0e}
+#pwaInstallSheet .pwa-step .snum{width:24px;height:24px;border-radius:50%;background:#006400;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#pwaInstallSheet .pwa-step .sicon{font-size:18px}
+#pwaInstallBtn{width:100%;padding:15px;background:linear-gradient(135deg,#004d00,#16a34a);color:#fff;font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 16px rgba(0,100,0,.35);letter-spacing:.3px}
+#pwaInstallBtn:hover{opacity:.92}
+#pwaMaybeLater{width:100%;padding:10px;background:transparent;border:none;color:#5a7060;font-size:13px;cursor:pointer;margin-top:8px}
+</style>
+<div id="pwaInstallSheet">
+  <button class="pwa-close" onclick="document.getElementById('pwaInstallModal').remove();sessionStorage.setItem('pwaPromptDismissed','1')">✕</button>
+  <div class="pwa-icon"><span>JAMB</span><span>CBT</span></div>
+  <h3>Install JAMB CBT</h3>
+  <p>Add to your home screen for instant offline access — no app store needed!</p>
+  ${isIosMode?`
+  <div class="pwa-steps">
+    <div class="pwa-step"><span class="snum">1</span><span>Tap the <span class="sicon">⎋</span> <strong>Share</strong> button at the bottom of Safari</span></div>
+    <div class="pwa-step"><span class="snum">2</span><span>Scroll down and tap <strong>"Add to Home Screen"</strong></span></div>
+    <div class="pwa-step"><span class="snum">3</span><span>Tap <strong>Add</strong> — done! 🎉</span></div>
+  </div>
+  <button id="pwaMaybeLater" onclick="document.getElementById('pwaInstallModal').remove();sessionStorage.setItem('pwaPromptDismissed','1')">Got it, maybe later</button>
+  `:`
+  <button id="pwaInstallBtn" onclick="window._triggerPWAInstall()">📲 Install App — It's Free!</button>
+  <button id="pwaMaybeLater" onclick="document.getElementById('pwaInstallModal').remove();sessionStorage.setItem('pwaPromptDismissed','1')">Maybe later</button>
+  `}
+</div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click',e=>{if(e.target===modal){modal.remove();sessionStorage.setItem('pwaPromptDismissed','1');}});
+  }
+
+  window._triggerPWAInstall=function(){
     if(deferredPrompt){
       deferredPrompt.prompt();
-      deferredPrompt.waitUserChoice().then(()=>{
+      deferredPrompt.waitUserChoice().then(choice=>{
         deferredPrompt=null;
-        const b=document.getElementById('installBanner');
-        if(b)b.style.display='none';
+        const m=document.getElementById('pwaInstallModal');
+        if(m)m.remove();
+        if(choice.outcome==='accepted'){
+          // Show a brief success toast
+          const t=document.createElement('div');
+          t.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 24px;border-radius:40px;font-size:13px;font-weight:700;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25)';
+          t.textContent='✓ JAMB CBT installed!';
+          document.body.appendChild(t);
+          setTimeout(()=>t.remove(),3000);
+        }
       });
     }
   };
+
+  /* ── 8. Keep old banner wired up as fallback ── */
+  window.installApp=window._triggerPWAInstall;
   window.dismissInstall=function(){
     const b=document.getElementById('installBanner');
     if(b)b.style.display='none';
+    sessionStorage.setItem('pwaPromptDismissed','1');
   };
+
+  /* ── 9. appinstalled event ── */
+  window.addEventListener('appinstalled',()=>{
+    const m=document.getElementById('pwaInstallModal');
+    if(m)m.remove();
+    const b=document.getElementById('installBanner');
+    if(b)b.style.display='none';
+    deferredPrompt=null;
+  });
+
 })();
 
 // Init on load
