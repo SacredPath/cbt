@@ -90,26 +90,26 @@ input,select{font-family:inherit}
 .exam-body{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px)}
 
 /* ── PALETTE ── */
-.palette-sidebar{width:216px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
-.pal-header{padding:12px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px}
-.pal-legend{display:flex;flex-wrap:wrap;gap:5px;padding:9px 12px;border-bottom:1px solid var(--border)}
+.palette-sidebar{width:216px;background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;height:100%}
+.pal-header{padding:12px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.pal-legend{display:flex;flex-wrap:wrap;gap:5px;padding:9px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
 .pal-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
 .pal-dot{width:10px;height:10px;border-radius:2px}
 .pal-dot.answered{background:#16a34a}
 .pal-dot.current{background:var(--text)}
 .pal-dot.flagged{background:var(--y)}
 .pal-dot.unanswered{background:#e2e8e0;border:1px solid #c8d5c4}
-.pal-grid{padding:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;overflow-y:auto;flex:1}
+.pal-grid{padding:10px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;overflow-y:auto;flex:1;min-height:0}
 .pal-btn{aspect-ratio:1;border-radius:7px;font-size:11px;font-weight:700;background:#e8f0e5;color:var(--muted);border:1.5px solid transparent;transition:transform .1s,background .1s}
 .pal-btn:hover{transform:scale(1.08)}
 .pal-btn.answered{background:#16a34a;color:#fff;border-color:#15803d}
 .pal-btn.current{background:var(--g1);color:#fff;border-color:#003800}
 .pal-btn.flagged{background:#fef3c7;color:#92400e;border-color:var(--y)}
-.pal-stats{padding:10px 12px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pal-stats{padding:10px 12px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0}
 .pal-stat{background:var(--bg);border-radius:7px;padding:7px 8px;text-align:center}
 .pal-stat .sv{font-size:16px;font-weight:700;color:var(--g2)}
 .pal-stat .sl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
-.pal-submit-wrap{padding:10px 12px;border-top:1px solid var(--border)}
+.pal-submit-wrap{padding:10px 12px;border-top:1px solid var(--border);flex-shrink:0}
 .pal-submit{width:100%;padding:10px;background:#dc2626;color:#fff;font-size:12px;font-weight:700;border-radius:8px;letter-spacing:.3px}
 .pal-submit:hover{background:#b91c1c}
 
@@ -278,6 +278,27 @@ input,select{font-family:inherit}
 .mob-pal-btn{padding:5px 10px;border-radius:7px;background:rgba(255,255,255,.18);font-size:12px;font-weight:700;color:#fff;border:none}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:140;backdrop-filter:blur(2px)}
 .overlay.active{display:block}
+
+/* ── LOGIN SCREEN ── */
+#login{background:linear-gradient(160deg,#001a00 0%,#003300 40%,#004d00 70%,#006400 100%);align-items:center;justify-content:center;position:relative;overflow:hidden}
+#login::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 20%,rgba(22,163,74,.18) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 10% 90%,rgba(245,158,11,.08) 0%,transparent 50%);pointer-events:none}
+.login-card{background:#fff;border-radius:20px;padding:44px 40px;max-width:420px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.08);position:relative;z-index:1;text-align:center}
+.login-logo{width:70px;height:70px;background:linear-gradient(135deg,var(--g1),var(--g3));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;flex-direction:column;gap:2px}
+.login-logo span:first-child{font-family:var(--serif);font-size:18px;font-weight:900;color:#fff;line-height:1}
+.login-logo span:last-child{font-family:var(--serif);font-size:15px;font-weight:700;color:#f59e0b;line-height:1}
+.login-title{font-family:var(--serif);font-size:24px;font-weight:900;color:var(--g1);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
+.pin-dots{display:flex;justify-content:center;gap:14px;margin-bottom:28px}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--border);background:#fff;transition:all .2s}
+.pin-dot.filled{background:var(--g2);border-color:var(--g2);transform:scale(1.1)}
+.pin-dot.error{background:#dc2626;border-color:#dc2626;animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:240px;margin:0 auto}
+.pin-key{aspect-ratio:1;border-radius:50%;border:2px solid var(--border);background:#fff;font-size:20px;font-weight:700;color:var(--text);font-family:var(--mono);box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .15s}
+.pin-key:hover{background:#f0faf0;border-color:var(--g3);color:var(--g2)}
+.pin-key:active{transform:scale(.93);background:#dcfce7}
+.pin-key.del{font-size:16px;color:#dc2626;border-color:#fca5a5}
+.pin-error-msg{font-size:13px;color:#dc2626;font-weight:600;margin-top:14px;min-height:20px}
 </style>
 </head>
 <body>
@@ -289,8 +310,38 @@ input,select{font-family:inherit}
   <button onclick="dismissInstall()" style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:13px;cursor:pointer">✕</button>
 </div>
 
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div class="screen active" id="login">
+  <div class="login-card">
+    <div class="login-logo"><span>JAMB</span><span>CBT</span></div>
+    <div class="login-title">Welcome Back</div>
+    <div class="login-sub">Enter your 4-digit PIN to continue</div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-grid">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key" style="visibility:hidden"></button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+    </div>
+    <div class="pin-error-msg" id="pinError"></div>
+  </div>
+</div>
+
 <!-- ═══════════════ SETUP SCREEN ═══════════════ -->
-<div class="screen active" id="setup">
+<div class="screen" id="setup">
   <div class="setup-card">
     <div class="logo-row">
       <div class="logo-icon">
@@ -571,6 +622,51 @@ const QUESTION_BANK = {
     {section:"Oral English",q:"Which of the following words is pronounced with a silent letter?",opts:["lamp","wrap","trap","drip"],ans:1},
     {section:"Oral English",q:"In which of the following is the '-ed' ending pronounced as /ɪd/?",opts:["walked","played","wanted","kissed"],ans:2},
     {section:"Oral English",q:"Which word has THREE syllables?",opts:["beautiful","wonder","happy","school"],ans:0},
+
+    /* ── COMPREHENSION (Passage C — Technology & Society) ── */
+    {section:"Comprehension",passage:"The rapid advancement of technology has fundamentally altered the way humans interact with one another and with information. The internet, once a luxury, has become an indispensable tool for education, commerce, and governance. In Nigeria, the proliferation of smartphones has brought banking, news, and social connection to millions who previously lacked access. Yet this digital revolution carries risks: misinformation spreads as quickly as facts, privacy is increasingly compromised, and young people face new psychological pressures from social media. Without digital literacy programmes, many Nigerians will remain vulnerable to exploitation in the online space. Government, schools, and civil society must collaborate to equip citizens with the critical skills needed to thrive in the digital age.",q:"According to the passage, which of the following is a BENEFIT of technology mentioned?",opts:["Misinformation","Psychological pressure","Access to banking and education","Loss of privacy"],ans:2},
+    {section:"Comprehension",passage:"The rapid advancement of technology has fundamentally altered the way humans interact with one another and with information. The internet, once a luxury, has become an indispensable tool for education, commerce, and governance. In Nigeria, the proliferation of smartphones has brought banking, news, and social connection to millions who previously lacked access. Yet this digital revolution carries risks: misinformation spreads as quickly as facts, privacy is increasingly compromised, and young people face new psychological pressures from social media. Without digital literacy programmes, many Nigerians will remain vulnerable to exploitation in the online space. Government, schools, and civil society must collaborate to equip citizens with the critical skills needed to thrive in the digital age.",q:"As used in the passage, 'proliferation' most nearly means:",opts:["Reduction","Rapid spread and increase","Control","Destruction"],ans:1},
+    {section:"Comprehension",passage:"The rapid advancement of technology has fundamentally altered the way humans interact with one another and with information. The internet, once a luxury, has become an indispensable tool for education, commerce, and governance. In Nigeria, the proliferation of smartphones has brought banking, news, and social connection to millions who previously lacked access. Yet this digital revolution carries risks: misinformation spreads as quickly as facts, privacy is increasingly compromised, and young people face new psychological pressures from social media. Without digital literacy programmes, many Nigerians will remain vulnerable to exploitation in the online space. Government, schools, and civil society must collaborate to equip citizens with the critical skills needed to thrive in the digital age.",q:"The writer's proposed solution to online vulnerability is:",opts:["Banning the internet","Digital literacy programmes","Restricting smartphones","Government control of all media"],ans:1},
+    {section:"Comprehension",passage:"The rapid advancement of technology has fundamentally altered the way humans interact with one another and with information. The internet, once a luxury, has become an indispensable tool for education, commerce, and governance. In Nigeria, the proliferation of smartphones has brought banking, news, and social connection to millions who previously lacked access. Yet this digital revolution carries risks: misinformation spreads as quickly as facts, privacy is increasingly compromised, and young people face new psychological pressures from social media. Without digital literacy programmes, many Nigerians will remain vulnerable to exploitation in the online space. Government, schools, and civil society must collaborate to equip citizens with the critical skills needed to thrive in the digital age.",q:"The internet is described in the passage as having changed from a:",opts:["Necessity to a luxury","Luxury to an indispensable tool","Tool to a luxury","Danger to a benefit"],ans:1},
+    {section:"Comprehension",passage:"The rapid advancement of technology has fundamentally altered the way humans interact with one another and with information. The internet, once a luxury, has become an indispensable tool for education, commerce, and governance. In Nigeria, the proliferation of smartphones has brought banking, news, and social connection to millions who previously lacked access. Yet this digital revolution carries risks: misinformation spreads as quickly as facts, privacy is increasingly compromised, and young people face new psychological pressures from social media. Without digital literacy programmes, many Nigerians will remain vulnerable to exploitation in the online space. Government, schools, and civil society must collaborate to equip citizens with the critical skills needed to thrive in the digital age.",q:"Which body does the writer say must NOT collaborate to help citizens thrive digitally?",opts:["Government","Schools","Civil society","None — all three are mentioned as needing to collaborate"],ans:3},
+    /* ── COMPREHENSION (Passage D — Environment & Climate) ── */
+    {section:"Comprehension",passage:"Climate change represents one of the greatest existential threats humanity has ever faced. Rising global temperatures, driven primarily by greenhouse gas emissions from burning fossil fuels, are causing sea levels to rise, rainfall patterns to shift, and extreme weather events to multiply. Africa, despite contributing least to global emissions, is predicted to suffer the most severe consequences. Nigeria's coastal cities face flooding, while its arid northern regions face desertification. The agricultural sector, employing the majority of Nigeria's workforce, is particularly at risk from unpredictable rainfall. Addressing climate change requires a dual approach: mitigation—reducing emissions—and adaptation—building resilience in vulnerable communities. Nigeria must invest in renewable energy, climate-smart agriculture, and disaster preparedness to safeguard its future.",q:"According to the passage, which of the following is NOT listed as a consequence of climate change?",opts:["Rising sea levels","Shifting rainfall patterns","Increase in earthquakes","Extreme weather events"],ans:2},
+    {section:"Comprehension",passage:"Climate change represents one of the greatest existential threats humanity has ever faced. Rising global temperatures, driven primarily by greenhouse gas emissions from burning fossil fuels, are causing sea levels to rise, rainfall patterns to shift, and extreme weather events to multiply. Africa, despite contributing least to global emissions, is predicted to suffer the most severe consequences. Nigeria's coastal cities face flooding, while its arid northern regions face desertification. The agricultural sector, employing the majority of Nigeria's workforce, is particularly at risk from unpredictable rainfall. Addressing climate change requires a dual approach: mitigation—reducing emissions—and adaptation—building resilience in vulnerable communities. Nigeria must invest in renewable energy, climate-smart agriculture, and disaster preparedness to safeguard its future.",q:"The word 'mitigation' as used in the passage means:",opts:["Increasing emissions","Making the problem worse","Reducing or lessening the severity","Ignoring the problem"],ans:2},
+    {section:"Comprehension",passage:"Climate change represents one of the greatest existential threats humanity has ever faced. Rising global temperatures, driven primarily by greenhouse gas emissions from burning fossil fuels, are causing sea levels to rise, rainfall patterns to shift, and extreme weather events to multiply. Africa, despite contributing least to global emissions, is predicted to suffer the most severe consequences. Nigeria's coastal cities face flooding, while its arid northern regions face desertification. The agricultural sector, employing the majority of Nigeria's workforce, is particularly at risk from unpredictable rainfall. Addressing climate change requires a dual approach: mitigation—reducing emissions—and adaptation—building resilience in vulnerable communities. Nigeria must invest in renewable energy, climate-smart agriculture, and disaster preparedness to safeguard its future.",q:"The writer argues that Africa's climate burden is unfair because:",opts:["Africa is the richest continent","Africa contributes least to global emissions but suffers most","Africa refuses to reduce emissions","Africa has no fossil fuels"],ans:1},
+    {section:"Comprehension",passage:"Climate change represents one of the greatest existential threats humanity has ever faced. Rising global temperatures, driven primarily by greenhouse gas emissions from burning fossil fuels, are causing sea levels to rise, rainfall patterns to shift, and extreme weather events to multiply. Africa, despite contributing least to global emissions, is predicted to suffer the most severe consequences. Nigeria's coastal cities face flooding, while its arid northern regions face desertification. The agricultural sector, employing the majority of Nigeria's workforce, is particularly at risk from unpredictable rainfall. Addressing climate change requires a dual approach: mitigation—reducing emissions—and adaptation—building resilience in vulnerable communities. Nigeria must invest in renewable energy, climate-smart agriculture, and disaster preparedness to safeguard its future.",q:"The writer recommends all the following EXCEPT:",opts:["Investment in renewable energy","Climate-smart agriculture","Returning to pre-industrial farming","Disaster preparedness"],ans:2},
+    {section:"Comprehension",passage:"Climate change represents one of the greatest existential threats humanity has ever faced. Rising global temperatures, driven primarily by greenhouse gas emissions from burning fossil fuels, are causing sea levels to rise, rainfall patterns to shift, and extreme weather events to multiply. Africa, despite contributing least to global emissions, is predicted to suffer the most severe consequences. Nigeria's coastal cities face flooding, while its arid northern regions face desertification. The agricultural sector, employing the majority of Nigeria's workforce, is particularly at risk from unpredictable rainfall. Addressing climate change requires a dual approach: mitigation—reducing emissions—and adaptation—building resilience in vulnerable communities. Nigeria must invest in renewable energy, climate-smart agriculture, and disaster preparedness to safeguard its future.",q:"The tone of the writer in this passage is best described as:",opts:["Indifferent","Comic","Urgently concerned","Optimistic"],ans:2},
+    /* ── COMPREHENSION (Passage E — Health & Wellbeing) ── */
+    {section:"Comprehension",passage:"Non-communicable diseases (NCDs) such as diabetes, hypertension, and cancer are increasingly prevalent in Nigeria, yet public health discourse remains focused on infectious diseases. Poor diet, physical inactivity, tobacco use, and excessive alcohol consumption are the primary risk factors driving this silent epidemic. Urban Nigerians, adopting sedentary lifestyles and processed food diets, are particularly vulnerable. The healthcare system, stretched by infectious disease burdens, is ill-equipped to manage the chronic nature of NCDs which require long-term management. Prevention through public health campaigns, healthy food policies, and accessible primary healthcare offers the most cost-effective response. Nigeria must urgently recognise NCDs as a national health emergency.",q:"According to the passage, Nigerian public health focus has largely been on:",opts:["NCDs","Diabetes","Infectious diseases","Mental health"],ans:2},
+    {section:"Comprehension",passage:"Non-communicable diseases (NCDs) such as diabetes, hypertension, and cancer are increasingly prevalent in Nigeria, yet public health discourse remains focused on infectious diseases. Poor diet, physical inactivity, tobacco use, and excessive alcohol consumption are the primary risk factors driving this silent epidemic. Urban Nigerians, adopting sedentary lifestyles and processed food diets, are particularly vulnerable. The healthcare system, stretched by infectious disease burdens, is ill-equipped to manage the chronic nature of NCDs which require long-term management. Prevention through public health campaigns, healthy food policies, and accessible primary healthcare offers the most cost-effective response. Nigeria must urgently recognise NCDs as a national health emergency.",q:"The phrase 'silent epidemic' as used in the passage refers to:",opts:["Infectious diseases","The spread of NCDs that is overlooked","A lack of hospitals","Mental health crises"],ans:1},
+    {section:"Comprehension",passage:"Non-communicable diseases (NCDs) such as diabetes, hypertension, and cancer are increasingly prevalent in Nigeria, yet public health discourse remains focused on infectious diseases. Poor diet, physical inactivity, tobacco use, and excessive alcohol consumption are the primary risk factors driving this silent epidemic. Urban Nigerians, adopting sedentary lifestyles and processed food diets, are particularly vulnerable. The healthcare system, stretched by infectious disease burdens, is ill-equipped to manage the chronic nature of NCDs which require long-term management. Prevention through public health campaigns, healthy food policies, and accessible primary healthcare offers the most cost-effective response. Nigeria must urgently recognise NCDs as a national health emergency.",q:"Which group is identified as MOST vulnerable to NCDs in the passage?",opts:["Rural Nigerians","Elderly citizens","Urban Nigerians","Children"],ans:2},
+    /* ── EXTRA LEXIS & STRUCTURE ── */
+    {section:"Lexis & Structure",q:"The word EPHEMERAL means:",opts:["Long-lasting","Short-lived","Bright","Ancient"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the correct sentence:",opts:["Each of the boys have a ball","Each of the boys has a ball","Each of the boys having a ball","Each of the boys had have a ball"],ans:1},
+    {section:"Lexis & Structure",q:"VERBOSE means:",opts:["Silent","Brief and concise","Using too many words","Logical"],ans:2},
+    {section:"Lexis & Structure",q:"The antonym of MAGNANIMOUS is:",opts:["Generous","Petty","Brave","Kind"],ans:1},
+    {section:"Lexis & Structure",q:"Identify the sentence with correct punctuation:",opts:["Its a fine day","It's a fine day","Its' a fine day","It,s a fine day"],ans:1},
+    {section:"Lexis & Structure",q:"'He has been working here since 2010.' The tense used is:",opts:["Simple past","Past perfect","Present perfect continuous","Past continuous"],ans:2},
+    {section:"Lexis & Structure",q:"The word TACITURN means a person who is:",opts:["Very talkative","Habitually silent","Angry","Generous"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the word closest in meaning to ENIGMATIC:",opts:["Clear","Mysterious","Angry","Ordinary"],ans:1},
+    {section:"Lexis & Structure",q:"Identify the indirect speech: 'She said she was tired.'",opts:["Direct speech","Indirect (reported) speech","Conditional sentence","Interrogative sentence"],ans:1},
+    {section:"Lexis & Structure",q:"Which of these is a collective noun?",opts:["Run","Quickly","Flock","Bright"],ans:2},
+    {section:"Lexis & Structure",q:"Choose the correct relative pronoun: 'The man _____ called you is my uncle.'",opts:["which","whom","who","whose"],ans:2},
+    {section:"Lexis & Structure",q:"'She works hard so that she can succeed.' The underlined clause is:",opts:["Noun clause","Adjective clause","Adverbial clause of purpose","Relative clause"],ans:2},
+    {section:"Lexis & Structure",q:"AMELIORATE means to:",opts:["Worsen","Improve","Destroy","Ignore"],ans:1},
+    {section:"Lexis & Structure",q:"The plural of 'phenomenon' is:",opts:["Phenomenons","Phenomena","Phenomenas","Phenomene"],ans:1},
+    {section:"Lexis & Structure",q:"Choose the correct form: 'He is one of the students who _____ passed.'",opts:["has","have","had","having"],ans:1},
+    /* ── EXTRA ORAL ENGLISH ── */
+    {section:"Oral English",q:"The word 'DESERT' (noun) and 'DESERT' (verb) are examples of:",opts:["Minimal pairs","Homophones","Homographs","Synonyms"],ans:2},
+    {section:"Oral English",q:"Which of these words has stress on the FIRST syllable?",opts:["reVEAL","reCORD (noun)","reCORD (verb)","beLIEVE"],ans:1},
+    {section:"Oral English",q:"The /dʒ/ sound is found in which word?",opts:["shop","chip","judge","thick"],ans:2},
+    {section:"Oral English",q:"In 'She DOES love him', the emphatic stress is used to:",opts:["Show surprise","Contradict a previous statement or emphasise truth","Express anger","Ask a question"],ans:1},
+    {section:"Oral English",q:"Which of the following pairs are homophones?",opts:["bear/bare","cat/cut","ship/sheep","bit/beat"],ans:0},
+    {section:"Oral English",q:"The vowel sound in 'BOOK' is a:",opts:["Long vowel","Short vowel","Diphthong","Triphthong"],ans:1},
+    {section:"Oral English",q:"Assimilation in phonology refers to:",opts:["Adding syllables","A sound changing due to a neighbouring sound","Stressing every syllable","Omitting vowels"],ans:1},
+    {section:"Oral English",q:"The word 'BEAUTIFUL' has how many phonemes?",opts:["9","8","7","6"],ans:1},
+    {section:"Oral English",q:"Which suffix changes the adjective 'happy' into a noun?",opts:["-ly","-ness","-ful","-less"],ans:1},
+    {section:"Oral English",q:"In 'I SAW him, not you', the contrastive stress falls on:",opts:["I","SAW","him","you"],ans:1},
+
     /* ── SECTION 4: READING TEXT / NOVEL — The Lekki Headmaster (10 questions) ── */
     {section:"Reading Text (Novel)",q:"'The Lekki Headmaster' was written by:",opts:["Chinua Achebe","Wole Soyinka","Kabir Alabi Garba","Ben Okri"],ans:2},
     {section:"Reading Text (Novel)",q:"The central character in 'The Lekki Headmaster' is a headmaster who struggles primarily with:",opts:["Political ambition","Maintaining discipline and values in a corrupt society","Religious extremism","Urban poverty"],ans:1},
@@ -624,6 +720,38 @@ const QUESTION_BANK = {
     {q:"Find the range of: 12, 7, 3, 19, 5, 8.",opts:["16","12","14","19"],ans:0},
     {q:"Express 0.0045 in standard form:",opts:["4.5×10⁻³","45×10⁻⁴","4.5×10⁻⁴","0.45×10⁻²"],ans:0},
     {q:"If sin 30° = 0.5, what is cos 60°?",opts:["0.5","1","0.866","0.25"],ans:0},
+
+    {q:"Find the value of x if log₃(x) = 4.",opts:["12","81","64","27"],ans:1},
+    {q:"Two angles of a triangle are 65° and 45°. Find the third angle.",opts:["80°","70°","90°","60°"],ans:1},
+    {q:"If the sum of 5 consecutive integers is 55, what is the smallest?",opts:["9","11","10","8"],ans:0},
+    {q:"A straight line passes through (2,3) and (4,7). Find its gradient.",opts:["1","2","3","4"],ans:1},
+    {q:"Factorise: 2x² + 7x + 3",opts:["(2x+1)(x+3)","(2x+3)(x+1)","(x+3)(2x-1)","(2x-1)(x+3)"],ans:0},
+    {q:"The exterior angle of a regular hexagon is:",opts:["45°","60°","72°","90°"],ans:1},
+    {q:"If P(A) = 2/5, what is P(A')?",opts:["2/5","3/5","1/5","4/5"],ans:1},
+    {q:"A man walks 3km North and 4km East. How far is he from start?",opts:["7km","5km","1km","12km"],ans:1},
+    {q:"Simplify: (3a²b)(2ab³)",opts:["6a³b⁴","5a³b⁴","6a²b³","5a²b⁴"],ans:0},
+    {q:"The nth term of an AP is 3n+2. What is the 5th term?",opts:["17","15","13","19"],ans:0},
+    {q:"Solve: (x-2)(x+5) = 0",opts:["x=2 or x=-5","x=-2 or x=5","x=2 or x=5","x=-2 or x=-5"],ans:0},
+    {q:"Convert 45° to radians.",opts:["π/2","π/4","π/3","π/6"],ans:1},
+    {q:"The interquartile range measures:",opts:["The total spread","The middle 50% of data","The average","The mode"],ans:1},
+    {q:"If 5! = 120, find 6!",opts:["720","620","840","600"],ans:0},
+    {q:"The equation of the line through (0,4) with gradient 2 is:",opts:["y = 2x","y = 2x + 4","y = 4x + 2","y = x + 4"],ans:1},
+    {q:"A circle has area 154cm². Find its radius. (π=22/7)",opts:["7cm","11cm","14cm","4cm"],ans:0},
+    {q:"If cos θ = 0.6, what is sin θ (first quadrant)?",opts:["0.8","0.6","0.4","1.0"],ans:0},
+    {q:"What is 3/4 as a percentage?",opts:["34%","70%","75%","80%"],ans:2},
+    {q:"The number of diagonals in a pentagon is:",opts:["3","4","5","6"],ans:2},
+    {q:"Simplify: (x³)² ÷ x⁴",opts:["x²","x³","x⁴","x⁵"],ans:0},
+    {q:"In a class of 40 students, 25 study Maths. What fraction does NOT study Maths?",opts:["3/8","5/8","1/4","3/4"],ans:0},
+    {q:"A bag contains 4 red, 3 blue and 5 green balls. A ball is drawn at random. P(not red) = ?",opts:["1/3","2/3","1/4","3/4"],ans:1},
+    {q:"The value of sin 90° is:",opts:["0","1","√2/2","√3/2"],ans:1},
+    {q:"Evaluate: 4³ − (2² × 3)",opts:["52","40","60","48"],ans:0},
+    {q:"A rectangle has perimeter 36cm and length 10cm. Its area is:",opts:["80 cm²","90 cm²","60 cm²","70 cm²"],ans:0},
+    {q:"The formula for compound interest is A = P(1 + r/n)^(nt). If P=1000, r=10%,n=1,t=2, find A.",opts:["1200","1100","1210","1250"],ans:2},
+    {q:"A map is drawn to scale 1:50,000. A distance of 5cm on map = _____ km in reality.",opts:["2.5","25","0.25","250"],ans:0},
+    {q:"If x : y = 3 : 5 and x + y = 40, find y.",opts:["15","25","20","30"],ans:1},
+    {q:"The volume of a cylinder with radius 3.5cm and height 10cm is: (π=22/7)",opts:["385 cm³","350 cm³","370 cm³","360 cm³"],ans:0},
+    {q:"Simplify: (2/3) ÷ (4/9)",opts:["3/2","8/27","2/3","1/6"],ans:0},
+
   ],
   Physics:[
     {q:"The SI unit of force is the:",opts:["Joule","Newton","Pascal","Watt"],ans:1},
@@ -666,6 +794,38 @@ const QUESTION_BANK = {
     {q:"Newton's second law: F = ?",opts:["mv","ma","m/a","v/t"],ans:1},
     {q:"The unit of frequency is:",opts:["Second","Hertz","Meter","Pascal"],ans:1},
     {q:"A body weighs 600N on earth. Its mass is (g = 10m/s²):",opts:["60 kg","600 kg","6 kg","6000 kg"],ans:0},
+
+    {q:"The principle of conservation of energy states that energy can be:",opts:["Created but not destroyed","Destroyed but not created","Neither created nor destroyed","Created and destroyed equally"],ans:2},
+    {q:"A moving object decelerates uniformly from 20m/s to rest in 5s. Its deceleration is:",opts:["2 m/s²","4 m/s²","5 m/s²","10 m/s²"],ans:1},
+    {q:"Hooke's Law states that extension is proportional to force, provided:",opts:["The object is metal","The elastic limit is not exceeded","Temperature is constant","Mass is constant"],ans:1},
+    {q:"The unit of power is the:",opts:["Joule","Newton","Watt","Pascal"],ans:2},
+    {q:"Which of these is an example of longitudinal waves?",opts:["Light","Radio waves","Sound","X-rays"],ans:2},
+    {q:"The critical angle of a medium is the angle at which:",opts:["Refraction occurs","Total internal reflection begins","Light is absorbed","The wave stops"],ans:1},
+    {q:"A 100W bulb is used for 5 hours. Electrical energy consumed is:",opts:["20 kWh","0.5 kWh","500 kWh","5 kWh"],ans:1},
+    {q:"Specific heat capacity of water is approximately:",opts:["1000 J/kg°C","4200 J/kg°C","2100 J/kg°C","840 J/kg°C"],ans:1},
+    {q:"In a parallel circuit, the voltage across each component is:",opts:["Divided equally","Different","The same","Zero"],ans:2},
+    {q:"The refractive index is defined as the ratio of:",opts:["Speed in vacuum to speed in medium","Speed in medium to speed in vacuum","Wavelength to frequency","Frequency to wavelength"],ans:0},
+    {q:"Which of these quantities has the same unit as energy?",opts:["Power","Force","Work","Pressure"],ans:2},
+    {q:"The phenomenon of bending of waves around obstacles is called:",opts:["Reflection","Refraction","Diffraction","Dispersion"],ans:2},
+    {q:"Momentum is defined as:",opts:["Mass × acceleration","Force × time","Mass × velocity","Weight × speed"],ans:2},
+    {q:"Alpha particles are:",opts:["High-energy electrons","High-energy protons","Helium nuclei","Electromagnetic radiation"],ans:2},
+    {q:"Latent heat is the heat required to:",opts:["Raise temperature","Change state at constant temperature","Cool an object","Expand a gas"],ans:1},
+    {q:"The SI unit of pressure is the:",opts:["Newton","Pascal","Bar","Joule"],ans:1},
+    {q:"Archimedes' principle states that an object in a fluid experiences an upthrust equal to:",opts:["Its weight","Weight of fluid displaced","Volume of fluid displaced","Mass of fluid"],ans:1},
+    {q:"The wavelength of visible light is in the range of:",opts:["1nm - 100nm","400nm - 700nm","1mm - 10mm","100nm - 400nm"],ans:1},
+    {q:"Which of these is an insulator of electricity?",opts:["Copper","Aluminium","Rubber","Iron"],ans:2},
+    {q:"The formula for gravitational potential energy is:",opts:["½mv²","mgh","Fd","PV"],ans:1},
+    {q:"Cathode rays are streams of:",opts:["Positive ions","Negative ions","Protons","Electrons"],ans:3},
+    {q:"Charles's Law states that at constant pressure, volume is _____ proportional to temperature.",opts:["Inversely","Directly","Not","Exponentially"],ans:1},
+    {q:"A fuse in an electrical circuit is used to:",opts:["Increase voltage","Decrease resistance","Protect against excessive current","Store energy"],ans:2},
+    {q:"The echo of sound is due to:",opts:["Refraction","Reflection","Diffraction","Absorption"],ans:1},
+    {q:"Beta particles are:",opts:["Helium nuclei","High-energy electrons or positrons","Electromagnetic waves","Neutrons"],ans:1},
+    {q:"An object of mass 2kg accelerates at 5m/s². The net force is:",opts:["10 N","7 N","2.5 N","3 N"],ans:0},
+    {q:"The speed of sound in air at room temperature is approximately:",opts:["330 m/s","3×10⁸ m/s","1500 m/s","150 m/s"],ans:0},
+    {q:"Which of the following converts electrical energy to mechanical energy?",opts:["Generator","Resistor","Motor","Transformer"],ans:2},
+    {q:"Gamma rays are:",opts:["Fast electrons","Alpha particles","High-energy electromagnetic radiation","Sound waves"],ans:2},
+    {q:"A bob of a simple pendulum swings from one end to another. This is an example of:",opts:["Circular motion","Simple harmonic motion","Linear motion","Projectile motion"],ans:1},
+
   ],
   Chemistry:[
     {q:"The atomic number of Carbon is:",opts:["6","12","8","14"],ans:0},
@@ -708,6 +868,38 @@ const QUESTION_BANK = {
     {q:"Isotopes are atoms of the same element with different:",opts:["Atomic numbers","Proton numbers","Mass numbers","Electron numbers"],ans:2},
     {q:"The pH of stomach acid is approximately:",opts:["7","2","10","4"],ans:1},
     {q:"Which gas is used in making fertilizers?",opts:["Oxygen","Nitrogen","Ammonia","Hydrogen"],ans:2},
+
+    {q:"Which of the following is an oxidising agent in the reaction: Mg + CuSO₄ → MgSO₄ + Cu?",opts:["Mg","MgSO₄","CuSO₄","Cu"],ans:2},
+    {q:"Chromatography is used to:",opts:["Separate components of a mixture","Synthesise compounds","Measure pH","Test for metals"],ans:0},
+    {q:"The IUPAC name for CH₃COOH is:",opts:["Methanoic acid","Propanoic acid","Ethanoic acid","Butanoic acid"],ans:2},
+    {q:"Which of the following is a product of cracking of petroleum?",opts:["Water","Ethene (ethylene)","Sodium chloride","Calcium carbonate"],ans:1},
+    {q:"A buffer solution resists changes in:",opts:["Temperature","Concentration","pH","Volume"],ans:2},
+    {q:"Le Chatelier's Principle states that when a system at equilibrium is disturbed, it:",opts:["Increases the disturbance","Shifts to oppose the disturbance","Stops the reaction","Increases temperature"],ans:1},
+    {q:"Which of the following is a test for hydrogen gas?",opts:["Glowing splint relights","Burns with a 'pop' sound","Turns limewater milky","Bleaches litmus"],ans:1},
+    {q:"The van der Waals forces are:",opts:["Strong ionic bonds","Weak intermolecular forces","Covalent bonds","Hydrogen bonds"],ans:1},
+    {q:"Electrolysis requires which type of substance?",opts:["Solid ionic compound","Molten or aqueous ionic compound","Covalent compound","Gaseous mixture"],ans:1},
+    {q:"In the reaction 2H₂O₂ → 2H₂O + O₂, H₂O₂ is acting as:",opts:["An acid","A base","An oxidising and reducing agent","A catalyst"],ans:2},
+    {q:"The functional group –OH is found in:",opts:["Aldehydes","Alcohols","Ketones","Esters"],ans:1},
+    {q:"Which of the following is the formula for limestone?",opts:["CaSO₄","CaCO₃","Ca(OH)₂","CaCl₂"],ans:1},
+    {q:"The process of making iron in a blast furnace involves the reduction of iron ore by:",opts:["Hydrogen","Carbon monoxide","Oxygen","Steam"],ans:1},
+    {q:"Standard temperature and pressure (STP) refers to:",opts:["0°C and 1 atm","25°C and 1 atm","100°C and 2 atm","0°C and 2 atm"],ans:0},
+    {q:"Which of the following exhibits hydrogen bonding?",opts:["CH₄","CCl₄","HF","H₂S"],ans:2},
+    {q:"The molar volume of a gas at STP is approximately:",opts:["22.4 litres","24 litres","11.2 litres","44.8 litres"],ans:0},
+    {q:"Which gas is produced when a carbonate is treated with dilute acid?",opts:["Hydrogen","Oxygen","Carbon dioxide","Nitrogen"],ans:2},
+    {q:"The empirical formula of a compound is the:",opts:["Actual number of atoms in one molecule","Simplest whole number ratio of atoms","Formula showing 3D structure","Molecular weight formula"],ans:1},
+    {q:"Bakelite is an example of a:",opts:["Natural polymer","Thermoplastic","Thermosetting plastic","Rubber"],ans:2},
+    {q:"Organic chemistry is primarily the study of compounds containing:",opts:["Oxygen","Nitrogen","Carbon","Sulfur"],ans:2},
+    {q:"Which process separates a solid from a liquid using a membrane?",opts:["Distillation","Filtration","Crystallisation","Sublimation"],ans:1},
+    {q:"The element with atomic number 20 is:",opts:["Magnesium","Potassium","Calcium","Argon"],ans:2},
+    {q:"What type of isomerism exists between butane and methylpropane?",opts:["Geometric isomerism","Structural isomerism","Optical isomerism","No isomerism"],ans:1},
+    {q:"The chemical formula for sulfuric acid is:",opts:["H₂S","H₂SO₃","H₂SO₄","HSO₄"],ans:2},
+    {q:"Galvanisation involves coating iron with:",opts:["Tin","Copper","Zinc","Chromium"],ans:2},
+    {q:"Which of the following is a noble gas used in advertising signs?",opts:["Helium","Argon","Neon","Krypton"],ans:2},
+    {q:"The process of using electricity to deposit a metal on a surface is called:",opts:["Electroplating","Electrolysis","Galvanisation","Oxidation"],ans:0},
+    {q:"The chemical name for baking soda is:",opts:["Sodium carbonate","Sodium hydroxide","Sodium bicarbonate","Sodium chloride"],ans:2},
+    {q:"A substance that speeds up a chemical reaction without being consumed is a:",opts:["Inhibitor","Reactant","Catalyst","Product"],ans:2},
+    {q:"Which of the following is the correct definition of an isotope?",opts:["Atoms with the same mass number but different atomic numbers","Atoms of the same element with the same number of protons but different neutrons","Atoms of different elements with the same mass number","Atoms with the same number of electrons and protons"],ans:1},
+
   ],
   Biology:[
     {q:"The powerhouse of the cell is the:",opts:["Nucleus","Ribosome","Mitochondria","Chloroplast"],ans:2},
@@ -750,6 +942,38 @@ const QUESTION_BANK = {
     {q:"Which type of reproduction does NOT require two parents?",opts:["Sexual reproduction","Asexual reproduction","Cross-fertilization","Pollination"],ans:1},
     {q:"The functional unit of the kidney is the:",opts:["Ureter","Nephron","Glomerulus","Bowman's capsule"],ans:1},
     {q:"Which of the following is a characteristic of living organisms?",opts:["They are all visible to the naked eye","They all reproduce","They all have a nucleus","They all photosynthesize"],ans:1},
+
+    {q:"Which part of a plant absorbs water and minerals from the soil?",opts:["Leaves","Stem","Root hair cells","Bark"],ans:2},
+    {q:"The process by which organisms maintain a stable internal environment is called:",opts:["Respiration","Osmoregulation","Homeostasis","Excretion"],ans:2},
+    {q:"Which of the following is a recessive trait in Mendelian genetics?",opts:["Expressed in heterozygote","Expressed only in homozygote","Always expressed","Expressed in all offspring"],ans:1},
+    {q:"The part of the brain that controls breathing and heartbeat is the:",opts:["Cerebrum","Cerebellum","Medulla oblongata","Hypothalamus"],ans:2},
+    {q:"Aerobic respiration requires:",opts:["No oxygen","Carbon dioxide","Oxygen","Nitrogen"],ans:2},
+    {q:"Which of the following is NOT a function of the liver?",opts:["Detoxification","Production of bile","Regulation of blood glucose","Filtration of blood to form urine"],ans:3},
+    {q:"The double helix structure of DNA was proposed by:",opts:["Mendel and Morgan","Watson and Crick","Darwin and Wallace","Pasteur and Koch"],ans:1},
+    {q:"Xylem tissue in plants is responsible for:",opts:["Transporting food","Transporting water and minerals upward","Gas exchange","Reproduction"],ans:1},
+    {q:"The gene for colour blindness is:",opts:["Autosomal dominant","Autosomal recessive","X-linked recessive","Y-linked"],ans:2},
+    {q:"Which hormone controls the 'fight or flight' response?",opts:["Insulin","Thyroxine","Adrenaline","Oestrogen"],ans:2},
+    {q:"In a food chain: Grass → Rabbit → Fox → Eagle. The rabbit is a:",opts:["Producer","Primary consumer","Secondary consumer","Tertiary consumer"],ans:1},
+    {q:"Which of the following is NOT a method of asexual reproduction?",opts:["Budding","Fragmentation","Pollination","Binary fission"],ans:2},
+    {q:"The process by which plants lose water through their leaves is:",opts:["Osmosis","Transpiration","Guttation","Evaporation"],ans:1},
+    {q:"Which blood cells produce antibodies?",opts:["Erythrocytes","Platelets","Lymphocytes","Phagocytes"],ans:2},
+    {q:"The mitochondria produces energy in the form of:",opts:["Glucose","ATP","DNA","RNA"],ans:1},
+    {q:"Which of the following is a plant hormone that promotes growth?",opts:["Adrenaline","Insulin","Auxin","Thyroxine"],ans:2},
+    {q:"The larynx is also known as the:",opts:["Voice box","Windpipe","Gullet","Voice cord"],ans:0},
+    {q:"Diabetes mellitus is caused by insufficient production of:",opts:["Glucagon","Thyroxine","Insulin","Adrenaline"],ans:2},
+    {q:"Chlorophyll absorbs which two colours of light most efficiently for photosynthesis?",opts:["Green and yellow","Blue and red","Orange and violet","Yellow and orange"],ans:1},
+    {q:"The sequence of DNA bases that codes for one amino acid is called a:",opts:["Gene","Codon","Chromosome","Allele"],ans:1},
+    {q:"Which of the following statements about enzymes is TRUE?",opts:["They are used up in reactions","They work at any temperature","They are biological catalysts","They are always made of lipids"],ans:2},
+    {q:"In humans, the sex of offspring is determined by:",opts:["The mother's chromosomes","The father's chromosomes","Environmental factors","Both parents equally"],ans:1},
+    {q:"Which type of immunity is provided by vaccination?",opts:["Natural passive immunity","Natural active immunity","Artificial passive immunity","Artificial active immunity"],ans:3},
+    {q:"The scientific name for the study of fungi is:",opts:["Botany","Mycology","Zoology","Entomology"],ans:1},
+    {q:"Which of the following diseases is caused by a deficiency of Vitamin C?",opts:["Rickets","Scurvy","Beriberi","Pellagra"],ans:1},
+    {q:"The functional unit of the kidney is the:",opts:["Glomerulus","Nephron","Loop of Henle","Renal tubule"],ans:1},
+    {q:"Biomass refers to:",opts:["The mass of all living organisms in an area","The weight of soil","The total water in an ecosystem","The amount of sunlight"],ans:0},
+    {q:"Darwin's theory of evolution is based on the concept of:",opts:["Acquired characteristics","Natural selection","Genetic mutation only","Spontaneous generation"],ans:1},
+    {q:"Which of the following is responsible for carrying genetic information from nucleus to ribosome?",opts:["DNA","tRNA","mRNA","rRNA"],ans:2},
+    {q:"Active transport differs from diffusion in that it:",opts:["Moves particles from high to low concentration","Requires no energy","Requires energy and moves against concentration gradient","Does not require a membrane"],ans:2},
+
   ],
   Economics:[
     {q:"The law of demand states that, all things being equal, as price increases, quantity demanded:",opts:["Increases","Decreases","Stays the same","Doubles"],ans:1},
@@ -792,6 +1016,33 @@ const QUESTION_BANK = {
     {q:"External economies of scale occur when:",opts:["A firm grows in size","The whole industry grows and benefits all firms","A firm reduces wages","Government subsidizes production"],ans:1},
     {q:"Privatization means:",opts:["Government taking over private firms","Transfer of state-owned enterprises to private ownership","Creating new public enterprises","Increasing government control"],ans:1},
     {q:"The term 'barter' refers to:",opts:["Trade using money","Exchange of goods without money","Government grants","Foreign trade"],ans:1},
+
+    {q:"The law of diminishing returns states that as more units of a variable factor are added to a fixed factor, after a point:",opts:["Total output falls immediately","Marginal output eventually decreases","Average output always increases","Fixed costs fall"],ans:1},
+    {q:"In a free market economy, resource allocation is determined by:",opts:["The government","Price mechanism (supply and demand)","Central planning","Trade unions"],ans:1},
+    {q:"GNP stands for:",opts:["Gross National Product","Gross Net Product","General National Product","Gross National Price"],ans:0},
+    {q:"Inflation is best defined as:",opts:["A fall in prices","A sustained rise in the general price level","An increase in output","A fall in the exchange rate"],ans:1},
+    {q:"An oligopoly is a market with:",opts:["One seller","Many sellers","A few dominant sellers","Perfect competition"],ans:2},
+    {q:"The Phillips Curve shows the relationship between:",opts:["Inflation and GDP","Unemployment and inflation","Interest rates and investment","Exports and imports"],ans:1},
+    {q:"Fiscal policy refers to government use of:",opts:["Interest rates and money supply","Taxation and government spending","Exchange rates","Trade barriers"],ans:1},
+    {q:"Which of these is a merit good?",opts:["Cigarettes","Education","Luxury cars","Alcohol"],ans:1},
+    {q:"The income elasticity of demand for an inferior good is:",opts:["Greater than 1","Between 0 and 1","Negative","Zero"],ans:2},
+    {q:"The multiplier effect refers to:",opts:["The ratio of investment to saving","How an initial injection of spending creates a larger increase in national income","The rate of interest multiplication","Inflation caused by money supply"],ans:1},
+    {q:"Which institution is responsible for controlling money supply in Nigeria?",opts:["FIRS","SEC","Central Bank of Nigeria (CBN)","NAFDAC"],ans:2},
+    {q:"A budget deficit occurs when:",opts:["Government revenue exceeds expenditure","Government expenditure exceeds revenue","Exports exceed imports","Imports exceed exports"],ans:1},
+    {q:"Consumer surplus is the difference between:",opts:["Price paid and cost of production","What a consumer is willing to pay and what they actually pay","Revenue and cost","Demand and supply"],ans:1},
+    {q:"Which of the following is an automatic stabiliser in an economy?",opts:["Government borrowing","Unemployment benefits","Infrastructure spending","Tariffs"],ans:1},
+    {q:"Balance of trade refers to:",opts:["Total imports only","The difference between exports and imports of goods","Government budget balance","Exchange rate policy"],ans:1},
+    {q:"A progressive tax system means:",opts:["Everyone pays the same rate","Higher income earners pay a higher percentage","Lower income earners pay more","Tax rate decreases with income"],ans:1},
+    {q:"Economic recession is typically defined as:",opts:["One quarter of negative GDP growth","Two consecutive quarters of negative GDP growth","A fall in inflation","A rise in unemployment only"],ans:1},
+    {q:"The concept of opportunity cost refers to:",opts:["The monetary price of a good","The value of the next best alternative foregone","The total cost of production","The cost of imported goods"],ans:1},
+    {q:"Which of the following is NOT a factor of production?",opts:["Land","Labour","Capital","Money"],ans:3},
+    {q:"Devaluation of a currency is likely to:",opts:["Reduce exports","Make imports cheaper","Increase exports by making them cheaper abroad","Reduce inflation"],ans:2},
+    {q:"Which of these is an example of indirect tax in Nigeria?",opts:["Personal income tax","Company income tax","Value Added Tax (VAT)","Capital gains tax"],ans:2},
+    {q:"Economic development differs from economic growth because it includes:",opts:["Only increase in GDP","Improvements in welfare, education, health, and quality of life","More imports","Higher interest rates"],ans:1},
+    {q:"The term 'ceteris paribus' means:",opts:["With other things changing","All other things remaining equal","Without prices","With multiple variables"],ans:1},
+    {q:"Which of the following describes a public good?",opts:["Rival and excludable","Non-rival and non-excludable","Rival and non-excludable","Non-rival and excludable"],ans:1},
+    {q:"Stagflation is a situation where:",opts:["High inflation and low unemployment coexist","High inflation and high unemployment coexist","Low inflation and high unemployment coexist","Economic growth is high"],ans:1},
+
   ],
   Government:[
     {q:"The principle of separation of powers was developed by:",opts:["John Locke","Karl Marx","Montesquieu","Jean Rousseau"],ans:2},
@@ -834,6 +1085,33 @@ const QUESTION_BANK = {
     {q:"The first military coup in Nigeria occurred in:",opts:["1960","1966","1975","1983"],ans:1},
     {q:"A bicameral legislature has:",opts:["One house","Two houses","Three houses","No fixed number"],ans:1},
     {q:"The concept of 'lame duck' in politics refers to:",opts:["A weak politician","An official whose term is ending with diminished power","A corrupt official","A foreign diplomat"],ans:1},
+
+    {q:"Federalism is a system where:",opts:["Power is concentrated in one central government","Power is shared between central and state/regional governments","The military controls governance","One party rules all levels"],ans:1},
+    {q:"The principle of separation of powers was advocated by:",opts:["Karl Marx","John Locke","Montesquieu","Jean-Jacques Rousseau"],ans:2},
+    {q:"Nigeria became a republic in:",opts:["1960","1963","1979","1999"],ans:1},
+    {q:"Which of the following is NOT a feature of democracy?",opts:["Free and fair elections","Rule of law","One-party system","Fundamental human rights"],ans:2},
+    {q:"The Supreme Court of Nigeria is the:",opts:["Highest court of appeal for all matters","Court for federal matters only","Court for criminal matters only","Lowest court in the judicial hierarchy"],ans:0},
+    {q:"A constitutional monarchy is a system where:",opts:["The monarch has absolute power","The monarch's powers are limited by a constitution","The military advises the monarch","There is no parliament"],ans:1},
+    {q:"The doctrine of judicial review means:",opts:["Courts can review all government decisions","Courts can declare laws unconstitutional","Parliament can overrule court decisions","Judges make all laws"],ans:1},
+    {q:"Totalitarianism is a system where:",opts:["Power is shared by all citizens","The state exercises total control over all aspects of life","Multiple parties compete for power","Regional governments are supreme"],ans:1},
+    {q:"The Universal Declaration of Human Rights was adopted by the UN in:",opts:["1945","1948","1960","1966"],ans:1},
+    {q:"Which of the following is a unitary state?",opts:["USA","Nigeria","Germany","United Kingdom"],ans:3},
+    {q:"The concept of 'rule of law' means:",opts:["The ruler makes all laws","All persons and institutions are subject to and accountable to the law","Only citizens follow laws","Parliament is above the law"],ans:1},
+    {q:"ECOWAS was established in:",opts:["1960","1963","1975","1980"],ans:2},
+    {q:"Which arm of government makes laws in Nigeria?",opts:["Executive","Judiciary","Legislature (National Assembly)","Civil service"],ans:2},
+    {q:"A pressure group differs from a political party in that it:",opts:["Seeks to win elections","Seeks to influence government without seeking power directly","Has no members","Works outside the law"],ans:1},
+    {q:"The IMF (International Monetary Fund) was established mainly to:",opts:["Promote world peace","Provide loans to developing countries for development projects","Stabilize international monetary system and exchange rates","Promote international trade"],ans:2},
+    {q:"Bicameralism in Nigeria refers to the existence of:",opts:["The Senate only","The House of Representatives only","Both Senate and House of Representatives (National Assembly)","Federal and State legislatures"],ans:2},
+    {q:"Indirect rule was a British colonial policy that:",opts:["Replaced traditional rulers","Used existing traditional institutions to govern","Gave Africans direct control","Abolished all local customs"],ans:1},
+    {q:"Which of the following is a constitutional right of Nigerians?",opts:["Right to bear arms","Right to education (directive principle)","Right to free healthcare","Right to a government job"],ans:1},
+    {q:"The African Union (AU) replaced which organisation in 2002?",opts:["ECOWAS","OAU (Organisation of African Unity)","OPEC","Commonwealth of Nations"],ans:1},
+    {q:"In a parliamentary system, the head of government is typically the:",opts:["President","Monarch","Prime Minister","Speaker"],ans:2},
+    {q:"Legitimacy in government means:",opts:["Power obtained by force","The rightful and legal authority to govern, accepted by the people","Government revenue","Military superiority"],ans:1},
+    {q:"What is a referendum?",opts:["An election for representatives","A direct vote by the electorate on a specific question or policy","A court judgment","A parliamentary debate"],ans:1},
+    {q:"The Nigerian constitution of 1999 (as amended) created how many states?",opts:["30","36","32","40"],ans:1},
+    {q:"Which of these describes a confederal state?",opts:["Strong central government, weak states","Strong states, weak central government","Equal sharing between central and states","No central government at all"],ans:1},
+    {q:"A veto power allows:",opts:["The president to dissolve parliament","A holder to reject or block a law or decision","Courts to overrule elections","The military to suspend democracy"],ans:1},
+
   ],
   Literature:[
     {q:"Who wrote 'Things Fall Apart'?",opts:["Wole Soyinka","Chinua Achebe","Ngugi wa Thiong'o","Ben Okri"],ans:1},
@@ -876,6 +1154,33 @@ const QUESTION_BANK = {
     {q:"'The Lion and the Jewel' was written by:",opts:["Chinua Achebe","Wole Soyinka","Ngugi wa Thiong'o","J.P. Clark"],ans:1},
     {q:"A paradox in literature is a statement that:",opts:["Makes no sense","Seems contradictory but contains truth","Uses exaggeration","Compares two things"],ans:1},
     {q:"Which of these refers to the time and place of a story?",opts:["Theme","Setting","Plot","Tone"],ans:1},
+
+    {q:"Who wrote 'Things Fall Apart'?",opts:["Wole Soyinka","Chinua Achebe","Ben Okri","Ngugi wa Thiong'o"],ans:1},
+    {q:"'Death and the King's Horseman' was written by:",opts:["Chinua Achebe","J.P. Clark","Wole Soyinka","Ken Saro-Wiwa"],ans:2},
+    {q:"A sonnet traditionally has how many lines?",opts:["12","14","16","10"],ans:1},
+    {q:"The term 'protagonist' refers to:",opts:["The villain of a story","The main character","A minor character","The narrator"],ans:1},
+    {q:"'Purple Hibiscus' was written by:",opts:["Buchi Emecheta","Flora Nwapa","Chimamanda Ngozi Adichie","Sefi Atta"],ans:2},
+    {q:"A metaphor is a figure of speech that:",opts:["Exaggerates for effect","Makes a direct comparison without using 'like' or 'as'","Uses 'like' or 'as' to compare","Repeats the same sound"],ans:1},
+    {q:"The 'Weep Not, Child' was written by:",opts:["Chinua Achebe","Ngugi wa Thiong'o","Ayi Kwei Armah","Es'kia Mphahlele"],ans:1},
+    {q:"Dramatic irony occurs when:",opts:["The audience knows something the characters do not","All characters know a secret","The author speaks directly to the reader","The ending is unexpected"],ans:0},
+    {q:"In 'Arrow of God' by Chinua Achebe, who is the chief priest of Ulu?",opts:["Okonkwo","Ezeulu","Obierika","Nwosu"],ans:1},
+    {q:"A soliloquy is a speech delivered by a character:",opts:["To another character","To the audience while alone on stage","To God","To a crowd"],ans:1},
+    {q:"The climax of a story is:",opts:["The introduction","The falling action","The point of highest tension or turning point","The resolution"],ans:2},
+    {q:"Which of the following is an example of an epic poem?",opts:["Ode to a Nightingale","The Odyssey","Hamlet","Paradise Lost — both C and D qualify"],ans:3},
+    {q:"'Second Class Citizen' was written by:",opts:["Wole Soyinka","Buchi Emecheta","Ama Ata Aidoo","Chimamanda Adichie"],ans:1},
+    {q:"Onomatopoeia is a literary device where:",opts:["Words imitate the sounds they describe","Words are repeated for rhythm","A person is compared to an object","An idea is personified"],ans:0},
+    {q:"The term 'denouement' refers to:",opts:["The rising action","The climax","The resolution/outcome after the climax","The exposition"],ans:2},
+    {q:"Oedipus Rex was written by:",opts:["Homer","Sophocles","Aristophanes","Euripides"],ans:1},
+    {q:"Which novel by Chinua Achebe deals with the Biafran War?",opts:["Things Fall Apart","Arrow of God","A Man of the People","Anthills of the Savannah"],ans:3},
+    {q:"The WAEC/JAMB prescribed African prose text 'Season of Migration to the North' was written by:",opts:["Chinua Achebe","Ngugi wa Thiong'o","Tayeb Salih","Wole Soyinka"],ans:2},
+    {q:"A tragedy is a drama that ends in:",opts:["Happiness","Marriage","The suffering or downfall of the protagonist","Comedy"],ans:2},
+    {q:"Alliteration is the repetition of:",opts:["Vowel sounds","The same consonant sounds at the beginning of words","A line or phrase","Rhyme at the end of lines"],ans:1},
+    {q:"Which of these is a theme in Wole Soyinka's 'The Lion and the Jewel'?",opts:["War and peace","Tradition versus modernity","Religious conflict","Colonialism only"],ans:1},
+    {q:"In poetry, iambic pentameter consists of:",opts:["10 syllables per line with alternating unstressed-stressed pattern","12 syllables per line","8 syllables per line","Free verse"],ans:0},
+    {q:"Flashback as a literary device is used to:",opts:["Predict future events","Present events that occurred before the current narrative","Speed up the plot","Create humour"],ans:1},
+    {q:"The novel 'The Concubine' was written by:",opts:["T.M. Aluko","Elechi Amadi","Cyprian Ekwensi","Flora Nwapa"],ans:1},
+    {q:"A round character in fiction is one who is:",opts:["Morally perfect","Physically large","Complex and multi-dimensional","Unchanging throughout the story"],ans:2},
+
   ],
   Geography:[
     {q:"The longest river in Africa is the:",opts:["Niger","Congo","Nile","Zambezi"],ans:2},
@@ -918,6 +1223,33 @@ const QUESTION_BANK = {
     {q:"The term 'megalopolis' refers to:",opts:["A single city","A chain of conurbations forming a massive urban region","A small village","A capital city"],ans:1},
     {q:"Longitude is used to determine:",opts:["Latitude","Time zones","Temperature","Rainfall"],ans:1},
     {q:"The Jos Plateau in Nigeria is known for its production of:",opts:["Crude oil","Tin and columbite","Gold","Cocoa"],ans:1},
+
+    {q:"The River Niger flows into the:",opts:["Indian Ocean","Mediterranean Sea","Gulf of Guinea (Atlantic Ocean)","Red Sea"],ans:2},
+    {q:"The longest river in Africa is the:",opts:["River Niger","River Congo","River Nile","River Zambezi"],ans:2},
+    {q:"A watershed is:",opts:["An elevated area that separates river systems","A flooded valley","A type of waterfall","An underground water source"],ans:0},
+    {q:"The term 'latitude' refers to:",opts:["Distance east or west of the Prime Meridian","Distance north or south of the Equator","Height above sea level","Depth of the ocean"],ans:1},
+    {q:"Which of the following is an example of a fold mountain?",opts:["Mount Cameroon","The Himalayas","The Rift Valley","Kilimanjaro"],ans:1},
+    {q:"The Coriolis effect refers to the deflection of wind due to:",opts:["The shape of mountains","Earth's rotation","Ocean currents","The tilt of the Earth"],ans:1},
+    {q:"Which of the following is a renewable resource?",opts:["Coal","Crude oil","Natural gas","Solar energy"],ans:3},
+    {q:"The term 'isohyet' refers to a line on a map connecting places of equal:",opts:["Temperature","Rainfall","Atmospheric pressure","Altitude"],ans:1},
+    {q:"The Sahara Desert is located in:",opts:["Sub-Saharan Africa","North Africa","Southern Africa","East Africa"],ans:1},
+    {q:"Which type of rock is formed from cooled magma?",opts:["Sedimentary","Metamorphic","Igneous","Limestone"],ans:2},
+    {q:"The Greenwich Meridian (Prime Meridian) has a longitude of:",opts:["90°E","90°W","180°","0°"],ans:3},
+    {q:"Population density is calculated as:",opts:["Total population × area","Total population ÷ land area","Birth rate − death rate","Urbanisation rate"],ans:1},
+    {q:"The concept of urbanisation refers to:",opts:["Decline in city population","Movement of people from rural to urban areas","Industrial decline","Agricultural expansion"],ans:1},
+    {q:"Which type of rainfall occurs when moist air rises over mountains?",opts:["Convectional rainfall","Cyclonic rainfall","Relief (orographic) rainfall","Frontal rainfall"],ans:2},
+    {q:"The term 'GDP' in economic geography refers to:",opts:["Gross Domestic Product","General Development Plan","Geographic Development Product","Government Distribution Policy"],ans:0},
+    {q:"Which African country has the largest population?",opts:["Ethiopia","DRC","South Africa","Nigeria"],ans:3},
+    {q:"The major cause of soil erosion in Nigeria is:",opts:["Volcanic activity","Overgrazing, deforestation, and poor farming practices","Earthquakes","Excessive rainfall only"],ans:1},
+    {q:"The term 'archipelago' refers to:",opts:["A deep ocean trench","A group of islands","A type of coastal landform","A plateau"],ans:1},
+    {q:"Continental drift theory was proposed by:",opts:["Darwin","Alfred Wegener","Copernicus","Newton"],ans:1},
+    {q:"The international dateline is located at longitude:",opts:["0°","90°E","90°W","180°"],ans:3},
+    {q:"Which of these is a result of high population growth in Nigeria?",opts:["Decrease in urban population","Pressure on social amenities and natural resources","Economic prosperity","Improved standards of living"],ans:1},
+    {q:"The angle between the Earth's axis and its orbital plane is approximately:",opts:["23.5°","90°","45°","0°"],ans:0},
+    {q:"Which of the following is an example of an aquifer?",opts:["A river","A lake","A layer of permeable rock that stores groundwater","A glacier"],ans:2},
+    {q:"Mangrove forests are found in:",opts:["Desert regions","Tropical rainforests inland","Coastal wetland areas","Alpine zones"],ans:2},
+    {q:"The process by which rivers deposit sediment to form new land at their mouths is called:",opts:["Erosion","Delta formation","Weathering","Meander formation"],ans:1},
+
   ],
   AccountsPrinciples:[
     {q:"The accounting equation is:",opts:["Assets = Liabilities + Owner's Equity","Liabilities = Assets + Owner's Equity","Owner's Equity = Assets + Liabilities","Assets + Owner's Equity = Revenue"],ans:0},
@@ -960,6 +1292,33 @@ const QUESTION_BANK = {
     {q:"Which of these is a non-current liability?",opts:["Creditors","Bank overdraft","Long-term loan","Accrued expenses"],ans:2},
     {q:"The money measurement concept means:",opts:["Only monetary transactions are recorded","All assets are valued at market price","Currency must always be in Naira","Profit is measured in money"],ans:0},
     {q:"Drawings by the owner reduce:",opts:["Liabilities","Revenue","Owner's equity","Assets only"],ans:2},
+
+    {q:"The accounting equation is:",opts:["Assets = Liabilities + Owner's Equity","Assets + Liabilities = Capital","Capital = Assets − Owner's Equity","Liabilities = Assets + Capital"],ans:0},
+    {q:"Double-entry bookkeeping requires that for every debit there is:",opts:["Another debit","An equal credit","A larger credit","No corresponding entry"],ans:1},
+    {q:"Depreciation is the reduction in value of an asset due to:",opts:["Inflation","Wear and tear, age, or obsolescence","Market demand","Poor maintenance only"],ans:1},
+    {q:"A trial balance is prepared to:",opts:["Prepare the income statement","Verify that total debits equal total credits","Record all transactions","Calculate tax"],ans:1},
+    {q:"Which of the following is a current asset?",opts:["Land","Machinery","Trade debtors (accounts receivable)","Long-term investments"],ans:2},
+    {q:"Goodwill is classified as:",opts:["A current asset","A fixed (intangible) asset","A current liability","A long-term liability"],ans:1},
+    {q:"The purpose of a cash flow statement is to show:",opts:["Profit or loss for the period","Changes in equity","Inflows and outflows of cash and cash equivalents","Total assets and liabilities"],ans:2},
+    {q:"FIFO (First In First Out) is a method of:",opts:["Depreciating assets","Valuing closing stock (inventory)","Calculating profit","Preparing bank reconciliation"],ans:1},
+    {q:"Accruals (accrued expenses) are expenses that have been:",opts:["Paid but not yet incurred","Incurred but not yet paid","Prepaid by the business","Overpaid by the business"],ans:1},
+    {q:"A credit note is issued when:",opts:["Goods are sold on credit","A customer returns goods or is overcharged","Payment is received","New goods are purchased"],ans:1},
+    {q:"The gross profit is calculated as:",opts:["Revenue − all expenses","Revenue − cost of goods sold","Net profit + expenses","Total assets − total liabilities"],ans:1},
+    {q:"Capital expenditure refers to spending on:",opts:["Day-to-day running costs","Long-term assets like equipment and buildings","Staff salaries","Utility bills"],ans:1},
+    {q:"Revenue expenditure refers to:",opts:["Purchase of fixed assets","Expenditure on long-term investments","Day-to-day running costs of the business","Capital improvements"],ans:2},
+    {q:"The straight-line method of depreciation assumes:",opts:["Higher depreciation in early years","Equal depreciation over the asset's useful life","Depreciation based on usage","Increasing depreciation over time"],ans:1},
+    {q:"A bank reconciliation statement reconciles the:",opts:["Income statement and balance sheet","Cash book balance and bank statement balance","Debtors and creditors","Trial balance and ledger"],ans:1},
+    {q:"The balance sheet equation can also be stated as:",opts:["Assets = Capital + Liabilities","Profit = Revenue − Costs","Cash = Assets − Liabilities","Liabilities = Equity − Assets"],ans:0},
+    {q:"A sole trader's net profit increases the owner's:",opts:["Liabilities","Capital","Drawings","Expenses"],ans:1},
+    {q:"Which of the following best describes liquidity?",opts:["The profitability of a business","The ability to convert assets to cash quickly to meet obligations","Total capital of a business","Gross profit margin"],ans:1},
+    {q:"The term 'debtors' (accounts receivable) refers to:",opts:["People the business owes money to","People who owe money to the business","Outstanding loans","Unpaid suppliers"],ans:1},
+    {q:"A suspense account is used to:",opts:["Record fixed assets","Temporarily hold unresolved accounting differences","Record all cash transactions","Record drawings"],ans:1},
+    {q:"Trading, profit and loss account shows:",opts:["Assets and liabilities","Gross profit, net profit/loss, and how they were calculated","Cash movements","Owner's equity"],ans:1},
+    {q:"Which of the following best describes a partnership?",opts:["A business owned by one person","A business owned by 2-20 persons sharing profits and losses","A company limited by shares","A government enterprise"],ans:1},
+    {q:"Prepaid expenses are classified as:",opts:["Current liabilities","Current assets","Fixed assets","Long-term liabilities"],ans:1},
+    {q:"The purchases account records:",opts:["All goods received free of charge","All goods bought for resale","All expenses paid","All assets acquired"],ans:1},
+    {q:"Bad debts are:",opts:["Debts owed to the business that are unlikely to be recovered","Overpayment by customers","Discounts given to customers","Long-term loans"],ans:0},
+
   ],
   Commerce:[
     {q:"Commerce can be defined as all activities concerned with:",opts:["Manufacturing goods","Buying, selling, and distribution of goods and services","Growing agricultural products","Industrial production"],ans:1},
@@ -1002,6 +1361,28 @@ const QUESTION_BANK = {
     {q:"Which of these is a disadvantage of the barter system?",opts:["Easy exchange","Double coincidence of wants problem","No need for money","Quick transactions"],ans:1},
     {q:"The chain of distribution refers to:",opts:["Producer → Wholesaler → Retailer → Consumer","Producer → Consumer","Retailer → Consumer","Consumer → Producer"],ans:0},
     {q:"A deed of partnership includes:",opts:["Tax rates","Terms and conditions governing the partnership","Company shares","Government regulations"],ans:1},
+
+    {q:"The primary function of a wholesaler is to:",opts:["Sell directly to consumers","Buy in bulk from producers and sell in smaller quantities to retailers","Manufacture goods","Import goods"],ans:1},
+    {q:"Which of the following is a feature of a public limited company (PLC)?",opts:["Cannot sell shares to the public","Shares can be bought and sold freely on the stock exchange","Owned by the government","Managed by sole trader"],ans:1},
+    {q:"A consumer co-operative society primarily benefits:",opts:["Producers","Retailers","Consumers through dividends and lower prices","Wholesalers"],ans:2},
+    {q:"The purpose of product differentiation in marketing is to:",opts:["Make products identical","Distinguish a product from competitors to attract customers","Reduce prices","Increase production costs"],ans:1},
+    {q:"Hire purchase differs from leasing in that at the end of the agreement the buyer:",opts:["Returns the goods","Continues paying","Owns the goods","Has no rights"],ans:2},
+    {q:"Which of the following is an advantage of a sole trader business?",opts:["Limited liability","Easy access to large capital","Complete control and quick decision-making","Perpetual succession"],ans:2},
+    {q:"A promissory note is a written promise to:",opts:["Deliver goods","Pay a specified sum at a specified date","Open a bank account","Return borrowed goods"],ans:1},
+    {q:"The term 'economies of scale' means that as production increases:",opts:["Costs per unit rise","Costs per unit fall","Quality decreases","Number of workers falls"],ans:1},
+    {q:"Which document is given to a customer when they pay cash?",opts:["Invoice","Receipt","Statement of account","Credit note"],ans:1},
+    {q:"The main difference between life insurance and general insurance is:",opts:["Life insurance pays out on death or maturity; general insures property/liability","General insurance lasts longer","Life insurance is cheaper","General insurance pays more"],ans:0},
+    {q:"An agent who sells goods on behalf of a principal and receives commission is called a:",opts:["Factor","Broker","Del credere agent","Commission agent"],ans:3},
+    {q:"Which of the following is a form of non-banking financial institution in Nigeria?",opts:["First Bank","Zenith Bank","Pension Fund Administrator","CBN"],ans:2},
+    {q:"The term 'ad valorem' tax means a tax based on:",opts:["The weight of goods","The value of goods","The quantity of goods","The origin of goods"],ans:1},
+    {q:"Port Harcourt is primarily important in Nigerian commerce because of its:",opts:["Tourism","Oil industry and seaport","Agricultural exports","Gold mining"],ans:1},
+    {q:"What is the role of NAFDAC in Nigeria?",opts:["Banking regulation","Control of food, drugs and related products","Road safety","Export promotion"],ans:1},
+    {q:"Which of the following is a disadvantage of a public corporation?",opts:["Profit motive","Red tape, inefficiency, and political interference","Limited access to capital","No public accountability"],ans:1},
+    {q:"The Consumer Protection Council (CPC) in Nigeria is responsible for:",opts:["Manufacturing goods","Protecting consumer rights from exploitation","Regulating banks","Promoting exports"],ans:1},
+    {q:"Sales promotion techniques include all the following EXCEPT:",opts:["Discounts and rebates","Free samples","Tax increases","Lucky draws"],ans:2},
+    {q:"A franchise agreement involves:",opts:["Government-owned businesses only","A franchisor allowing a franchisee to use its brand and system","Simple partnership","Foreign trade only"],ans:1},
+    {q:"E-commerce has expanded in Nigeria mainly because of the growth of:",opts:["Railways","Aviation","Mobile internet and smartphones","Manufacturing"],ans:2},
+
   ],
   FurtherMaths:[
     {q:"If z = 3 + 4i, find |z|.",opts:["7","5","1","25"],ans:1},
@@ -1044,6 +1425,28 @@ const QUESTION_BANK = {
     {q:"The perpendicular distance from point (3,4) to the line x + y = 1 is:",opts:["√2","3√2","3/√2","6/√2"],ans:1},
     {q:"If z = a + bi, then z̄ (conjugate) equals:",opts:["a − bi","−a + bi","a + bi","−a − bi"],ans:0},
     {q:"The probability that at least one head appears in 3 coin tosses is:",opts:["1/8","3/8","7/8","6/8"],ans:2},
+
+    {q:"Find ∫(3x² + 2x − 1)dx",opts:["x³ + x² − x + C","x³ + x² + x + C","3x + 2 + C","6x + 2 + C"],ans:0},
+    {q:"The modulus of a complex number a+bi is:",opts:["a + b","a − b","√(a² + b²)","a² + b²"],ans:2},
+    {q:"The second derivative test: if f''(x) > 0 at a stationary point, the point is a:",opts:["Maximum","Minimum","Point of inflection","Saddle point"],ans:1},
+    {q:"Solve: 4^(x+1) = 16^(x-1)",opts:["x=3","x=2","x=1","x=4"],ans:0},
+    {q:"The general term of a GP with first term a and ratio r is:",opts:["a + (n-1)r","a × r^(n-1)","n/2(a+l)","a + nr"],ans:1},
+    {q:"Which of these is a valid set of conditions for the Binomial distribution?",opts:["Variable number of trials, variable probability","Fixed n, two outcomes, constant probability, independent trials","Continuous outcomes","Any number of outcomes per trial"],ans:1},
+    {q:"The determinant of [[3,2],[1,4]] is:",opts:["14","10","8","12"],ans:1},
+    {q:"The eccentricity of a circle is:",opts:["Greater than 1","Less than 1","Equal to 1","Zero"],ans:3},
+    {q:"If dy/dx = 3x² and y = 5 when x = 1, find y when x = 2.",opts:["12","13","8","9"],ans:1},
+    {q:"The angle subtended at the centre of a circle is twice that at the circumference. This is the:",opts:["Tangent-chord angle theorem","Alternate segment theorem","Angle at centre theorem","Cyclic quadrilateral theorem"],ans:2},
+    {q:"Evaluate: lim(x→2) [(x²−4)/(x−2)]",opts:["0","4","2","undefined"],ans:1},
+    {q:"The number of ways of selecting 3 items from 8 distinct items is:",opts:["24","56","336","512"],ans:1},
+    {q:"If |A| = 0, the matrix A is:",opts:["An identity matrix","Singular (non-invertible)","Symmetric","Diagonal"],ans:1},
+    {q:"For an arithmetic progression: 5, 9, 13, 17, ... the 20th term is:",opts:["80","81","77","76"],ans:1},
+    {q:"The derivative of tan(x) is:",opts:["sec(x)","sec²(x)","cot(x)","cosec²(x)"],ans:1},
+    {q:"The parametric equations of a circle with radius r and centre (0,0) are:",opts:["x=r cosθ, y=r sinθ","x=r tanθ, y=r cosθ","x=r sinθ, y=r tanθ","x=cosθ, y=sinθ"],ans:0},
+    {q:"The variance of the data set {2, 4, 4, 4, 5, 5, 7, 9} is:",opts:["4","2","3","5"],ans:0},
+    {q:"If f(x) = ln(2x), find f'(x).",opts:["1/x","2/x","1/(2x)","2x"],ans:0},
+    {q:"Find the value of tan(135°).",opts:["1","−1","√3","−√3"],ans:1},
+    {q:"The sum of an infinite geometric series with a=3 and r=-1/2 is:",opts:["6","2","4","1"],ans:1},
+
   ],
   CRS:[
     {q:"In the Bible, the first book is:",opts:["Exodus","Genesis","Leviticus","Numbers"],ans:1},
@@ -1086,6 +1489,28 @@ const QUESTION_BANK = {
     {q:"The Beatitudes begin with the words:",opts:["Blessed are the poor in spirit","Thou shalt love the Lord","In the beginning was the Word","For God so loved the world"],ans:0},
     {q:"Which New Testament letter discusses faith and works?",opts:["Romans","Philippians","James","Hebrews"],ans:2},
     {q:"The city of Nineveh is associated with which prophet?",opts:["Micah","Jonah","Nahum","Both Jonah and Nahum"],ans:3},
+
+    {q:"The book of Proverbs is attributed primarily to:",opts:["David","Solomon","Moses","Isaiah"],ans:1},
+    {q:"Which of the following is NOT one of the twelve tribes of Israel?",opts:["Judah","Dan","Levi","Ishmael"],ans:3},
+    {q:"The Magnificat is a song of praise by:",opts:["Elizabeth","Anna","Mary","Miriam"],ans:2},
+    {q:"Jesus raised Lazarus from the dead in which gospel?",opts:["Matthew","Mark","Luke","John"],ans:3},
+    {q:"The Council of Nicaea (325 AD) was convened to address:",opts:["The canon of scripture","The Arian controversy (nature of Christ)","Baptism practices","Sunday worship"],ans:1},
+    {q:"Which prophet is called 'the weeping prophet'?",opts:["Isaiah","Ezekiel","Jeremiah","Amos"],ans:2},
+    {q:"The Old Testament covenant with Abraham included a promise of:",opts:["A law","Land, descendants, and blessing","A temple","Political power"],ans:1},
+    {q:"The concept of grace in Christian theology means:",opts:["Earning God's favour","God's unmerited favour and love freely given","Strict obedience to the law","Prayer and fasting"],ans:1},
+    {q:"Peter's original name was:",opts:["John","Simeon (Simon)","Saul","Barnabas"],ans:1},
+    {q:"'The wages of sin is death' is found in:",opts:["Galatians","Philippians","Romans","Corinthians"],ans:2},
+    {q:"Which of the following describes the 'Great Commission'?",opts:["The Sermon on the Mount","Jesus' command to make disciples of all nations","The Ten Commandments","The Beatitudes"],ans:1},
+    {q:"Which apostle wrote the most letters in the New Testament?",opts:["Peter","John","James","Paul"],ans:3},
+    {q:"The burning bush through which God spoke to Moses was located on:",opts:["Mount Sinai","Mount Horeb","Mount Carmel","Mount Zion"],ans:1},
+    {q:"Agape in Greek Christianity means:",opts:["Romantic love","Brotherly love","Unconditional divine love","Friendship"],ans:2},
+    {q:"Which of the following is one of the seven sacraments in Catholicism?",opts:["Prayer","Reading the Bible","Confirmation","Sunday school"],ans:2},
+    {q:"The 'Sermon on the Plain' appears in which gospel?",opts:["Matthew","Mark","Luke","John"],ans:2},
+    {q:"Who succeeded Joshua as leader of Israel?",opts:["Samuel","Saul","Gideon","Othniel"],ans:3},
+    {q:"Pentecost occurred how many days after the resurrection of Jesus?",opts:["7","40","50","100"],ans:2},
+    {q:"The Nicene Creed affirms that Jesus Christ is:",opts:["A created being below God","Of the same substance as the Father (fully God)","Only a great prophet","An angel"],ans:1},
+    {q:"The story of the Good Samaritan teaches primarily about:",opts:["Prayer","Love of neighbour without prejudice","Tithing","Sabbath observance"],ans:1},
+
   ],
   IRS:[
     {q:"The first pillar of Islam (Shahadah) means:",opts:["Prayer","Declaration of faith","Fasting","Pilgrimage"],ans:1},
@@ -1128,8 +1553,67 @@ const QUESTION_BANK = {
     {q:"Islamic marriage contract is called:",opts:["Talaq","Nikah","Mahr","Iddat"],ans:1},
     {q:"The concept of Qadar in Islam means:",opts:["Prayer","Divine decree/predestination","Angels","Charity"],ans:1},
     {q:"The first Surah of the Quran is:",opts:["Al-Baqarah","Al-Ikhlas","Al-Fatihah","Al-Nas"],ans:2},
+
+    {q:"The word 'Islam' means:",opts:["Peace","Submission/surrender to the will of Allah","Prayer","Faith"],ans:1},
+    {q:"Which of the following describes Taqwa?",opts:["Pilgrimage to Makkah","God-consciousness and piety","Islamic law","Charity"],ans:1},
+    {q:"The Kaaba is located in the centre of which mosque?",opts:["Masjid al-Nabawi","Masjid al-Aqsa","Masjid al-Haram","Masjid al-Qiblatayn"],ans:2},
+    {q:"Who was the second Caliph (Rashidun Caliphate)?",opts:["Abu Bakr","Umar ibn al-Khattab","Uthman ibn Affan","Ali ibn Abi Talib"],ans:1},
+    {q:"Ijtihad in Islamic law means:",opts:["Consensus of scholars","Individual independent reasoning to derive rulings","Prayer","The Sunnah"],ans:1},
+    {q:"Al-Isra wa Al-Miraj refers to:",opts:["The revelation of the Quran","The Night Journey and Ascension of the Prophet","The migration to Madinah","The Battle of Badr"],ans:1},
+    {q:"In Islam, the Friday prayer (Jumu'ah) is:",opts:["Voluntary (Sunnah)","Obligatory (Fard) for male Muslims","Only for the elderly","Optional in cities"],ans:1},
+    {q:"The Islamic concept of Khalifah (stewardship) teaches that humans are:",opts:["Owners of the earth","Stewards/trustees of God's creation","Superior to all creation","Independent from God's will"],ans:1},
+    {q:"Which Surah is recited in every unit (raka'ah) of prayer?",opts:["Al-Baqarah","Al-Ikhlas","Al-Fatihah","Al-Nas"],ans:2},
+    {q:"The Treaty of Hudaybiyyah was an agreement between:",opts:["Muslims and Christians","The Prophet and the Makkans (Quraysh)","Muslims and Jews of Madinah","The caliphs"],ans:1},
+    {q:"Riba (usury/interest) is prohibited in Islam primarily because:",opts:["It is uncommon","It leads to exploitation and unjust enrichment","It is difficult to calculate","It was only prohibited in early Islam"],ans:1},
+    {q:"Which of the following describes Sadaqah?",opts:["Obligatory annual almsgiving","Voluntary charity given freely at any time","The Friday sermon","Annual pilgrimage"],ans:1},
+    {q:"The Ummah in Islam refers to:",opts:["The city of Makkah","The worldwide Muslim community","The Quran","Friday prayer"],ans:1},
+    {q:"The Battle of Uhud resulted in:",opts:["A decisive Muslim victory","A Muslim defeat with lessons in obedience","Complete conquest of Makkah","The migration to Madinah"],ans:1},
+    {q:"Which pillar of Hajj involves standing at Arafat?",opts:["Ihram","Tawaf","Wuquf","Sa'i"],ans:2},
+    {q:"The first school of Islamic jurisprudence to be established was:",opts:["Maliki","Hanbali","Hanafi","Shafi'i"],ans:2},
+    {q:"Ijma in Islamic jurisprudence refers to:",opts:["Individual reasoning","Consensus of Islamic scholars","Prayer times","The Sunnah"],ans:1},
+    {q:"Taqdir (Qadar) in Islam means:",opts:["Prayer","Divine predestination","Angels","Charity"],ans:1},
+    {q:"Which condition must be met for Zakat to be obligatory?",opts:["Possessing wealth above the Nisab for one lunar year","Performing Hajj","Being male","Being 40 years old"],ans:0},
+    {q:"The term 'Seerah' refers to:",opts:["Islamic law","Biography of the Prophet Muhammad","Quranic recitation","Islamic jurisprudence"],ans:1},
   ]
 };
+
+
+// ═══════════════════════════════════════════════
+// PIN LOGIN
+// ═══════════════════════════════════════════════
+const CORRECT_PIN = '1234';
+let pinBuffer = '';
+function pinPress(d){
+  if(pinBuffer.length>=4) return;
+  pinBuffer += d;
+  updatePinDots();
+  if(pinBuffer.length===4) setTimeout(checkPin, 180);
+}
+function pinDel(){
+  pinBuffer = pinBuffer.slice(0,-1);
+  updatePinDots();
+  document.getElementById('pinError').textContent='';
+}
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    const dot=document.getElementById('pd'+i);
+    dot.classList.toggle('filled', i<pinBuffer.length);
+    dot.classList.remove('error');
+  }
+}
+function checkPin(){
+  if(pinBuffer===CORRECT_PIN){
+    show('setup');
+  } else {
+    document.getElementById('pinError').textContent='Incorrect PIN. Try again.';
+    for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.add('error');
+    setTimeout(()=>{
+      pinBuffer='';
+      updatePinDots();
+      document.getElementById('pinError').textContent='';
+    }, 700);
+  }
+}
 
 // ═══════════════════════════════════════════════
 // STATE
