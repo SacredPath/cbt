@@ -89,44 +89,78 @@ input,select{font-family:inherit}
 /* ── EXAM BODY ── */
 .exam-body{display:flex;flex:1;flex-direction:column;overflow:hidden;height:calc(100vh - 54px)}
 
-/* ── PALETTE FOOTER ── */
-.palette-footer{background:#fff;border-top:1px solid var(--border);flex-shrink:0;transition:max-height .25s ease}
-.pal-toggle-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;cursor:pointer;user-select:none;gap:10px}
-.pal-toggle-bar:hover{background:#f8faf7}
-.pal-toggle-left{display:flex;align-items:center;gap:10px}
-.pal-toggle-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-.pal-mini-stats{display:flex;gap:10px}
-.pal-mini-stat{font-size:11px;font-weight:700;display:flex;align-items:center;gap:3px}
+/* ── PALETTE FOOTER — always-visible compact strip ── */
+.palette-footer{
+  background:#fff;
+  border-top:2px solid var(--border);
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:0;
+  height:44px;
+  overflow:hidden;
+}
+/* left: stats pill */
+.pal-stats-pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  border-right:1px solid var(--border);
+  height:100%;
+  flex-shrink:0;
+  background:#f8faf7;
+}
+.pal-mini-stat{font-size:10px;font-weight:700;display:flex;align-items:center;gap:2px;white-space:nowrap}
 .pal-mini-stat.answered{color:#16a34a}
 .pal-mini-stat.remaining{color:#dc2626}
 .pal-mini-stat.flagged-count{color:#d97706}
-.pal-toggle-arrow{font-size:11px;color:var(--muted);transition:transform .2s;flex-shrink:0}
-.pal-toggle-arrow.open{transform:rotate(180deg)}
+/* centre: scrollable button strip */
+.pal-grid{
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding:0 8px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  height:100%;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+.pal-grid::-webkit-scrollbar{height:3px}
+.pal-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.pal-btn{
+  flex-shrink:0;
+  width:28px;height:28px;
+  border-radius:5px;
+  font-size:10px;font-weight:700;
+  background:#e8f0e5;color:var(--muted);
+  border:1.5px solid transparent;
+  transition:transform .1s,background .12s;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.pal-btn:hover{transform:scale(1.12);background:#d1fae5;color:var(--g1)}
+.pal-btn.answered{background:#16a34a;color:#fff;border-color:#15803d}
+.pal-btn.current{background:var(--g1);color:#fff;border-color:#003800;box-shadow:0 0 0 2px #a7f3d0}
+.pal-btn.flagged{background:#fef3c7;color:#92400e;border-color:var(--y)}
+.pal-btn.unanswered-visited{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+/* right: submit */
+.pal-submit-wrap{padding:0 10px;border-left:1px solid var(--border);height:100%;display:flex;align-items:center;flex-shrink:0}
+.pal-submit{padding:6px 14px;background:#dc2626;color:#fff;font-size:11px;font-weight:700;border-radius:6px;letter-spacing:.2px;border:none;cursor:pointer;white-space:nowrap}
+.pal-submit:hover{background:#b91c1c}
 
-.pal-legend{display:flex;flex-wrap:wrap;gap:5px;padding:5px 14px;border-bottom:1px solid var(--border)}
-.pal-legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
-.pal-dot{width:9px;height:9px;border-radius:2px}
+/* legend dots — reused in tooltip/review */
+.pal-dot{width:8px;height:8px;border-radius:2px;display:inline-block}
 .pal-dot.answered{background:#16a34a}
-.pal-dot.current{background:var(--text)}
+.pal-dot.current{background:var(--g1)}
 .pal-dot.flagged{background:var(--y)}
 .pal-dot.unanswered{background:#e2e8e0;border:1px solid #c8d5c4}
 
-.pal-body{overflow:hidden;max-height:0;transition:max-height .25s ease}
-.pal-body.open{max-height:200px}
-.pal-grid{padding:8px 14px;display:grid;grid-template-columns:repeat(10,1fr);gap:3px;overflow-x:auto}
-@media(max-width:640px){.pal-grid{grid-template-columns:repeat(8,1fr)}}
-.pal-btn{aspect-ratio:1;border-radius:5px;font-size:10px;font-weight:700;background:#e8f0e5;color:var(--muted);border:1.5px solid transparent;transition:transform .1s,background .1s;min-width:26px}
-.pal-btn:hover{transform:scale(1.1)}
-.pal-btn.answered{background:#16a34a;color:#fff;border-color:#15803d}
-.pal-btn.current{background:var(--g1);color:#fff;border-color:#003800}
-.pal-btn.flagged{background:#fef3c7;color:#92400e;border-color:var(--y)}
-
-.pal-footer-actions{display:flex;align-items:center;justify-content:space-between;padding:6px 14px;border-top:1px solid var(--border);gap:10px}
-.pal-submit{padding:7px 18px;background:#dc2626;color:#fff;font-size:12px;font-weight:700;border-radius:7px;letter-spacing:.3px;border:none;cursor:pointer}
-.pal-submit:hover{background:#b91c1c}
-
-/* legacy hidden - sidebar no longer used */
+/* legacy hidden */
 .palette-sidebar{display:none!important}
+.pal-toggle-bar,.pal-body,.pal-legend,.pal-mini-stats,.pal-toggle-arrow{display:none!important}
 
 /* ── MODAL ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
@@ -476,30 +510,16 @@ input,select{font-family:inherit}
   <div class="overlay" id="palOverlay"></div>
   <div class="exam-body">
     <div class="question-main" id="questionMain"></div>
-    <!-- ── FOOTER PALETTE ── -->
+    <!-- ── FOOTER PALETTE — compact always-visible strip ── -->
     <div class="palette-footer" id="paletteFooter">
-      <div class="pal-toggle-bar" onclick="togglePalette()">
-        <div class="pal-toggle-left">
-          <span class="pal-toggle-label">Question Palette</span>
-          <div class="pal-mini-stats">
-            <span class="pal-mini-stat answered">✓ <span id="palAnswered">0</span> answered</span>
-            <span class="pal-mini-stat remaining">○ <span id="palRemaining">0</span> left</span>
-            <span class="pal-mini-stat flagged-count" id="flaggedCountWrap" style="display:none">★ <span id="palFlagged">0</span> flagged</span>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <button class="pal-submit" onclick="event.stopPropagation();confirmSubmit()">Submit Exam</button>
-          <span class="pal-toggle-arrow" id="palArrow">▲</span>
-        </div>
+      <div class="pal-stats-pill">
+        <span class="pal-mini-stat answered" title="Answered">✓<span id="palAnswered">0</span></span>
+        <span class="pal-mini-stat remaining" title="Remaining">○<span id="palRemaining">0</span></span>
+        <span class="pal-mini-stat flagged-count" id="flaggedCountWrap" style="display:none" title="Flagged">★<span id="palFlagged">0</span></span>
       </div>
-      <div class="pal-body" id="palBody">
-        <div class="pal-legend">
-          <div class="pal-legend-item"><div class="pal-dot answered"></div>Answered</div>
-          <div class="pal-legend-item"><div class="pal-dot flagged"></div>Flagged</div>
-          <div class="pal-legend-item"><div class="pal-dot current"></div>Current</div>
-          <div class="pal-legend-item"><div class="pal-dot unanswered"></div>Not visited</div>
-        </div>
-        <div class="pal-grid" id="paletteGrid"></div>
+      <div class="pal-grid" id="paletteGrid"></div>
+      <div class="pal-submit-wrap">
+        <button class="pal-submit" onclick="confirmSubmit()">Submit</button>
       </div>
     </div>
   </div>
@@ -1868,12 +1888,13 @@ function renderPalette(){
   if(!grid)return;
   grid.innerHTML='';
   let flagCount=0;
+  let currentBtn=null;
   questions.forEach((q,i)=>{
     const btn=document.createElement('button');
     btn.className='pal-btn';
     btn.textContent=i+1;
-    btn.title=`Q${i+1}: ${q.subject}`;
-    if(i===currentIdx)btn.classList.add('current');
+    btn.title=`Q${i+1} · ${q.subject}${q.section?' — '+q.section:''}`;
+    if(i===currentIdx){btn.classList.add('current');currentBtn=btn;}
     else if(flagged[q.id]){btn.classList.add('flagged');flagCount++;}
     else if(answers[q.id]!==undefined)btn.classList.add('answered');
     btn.onclick=()=>goTo(i);
@@ -1887,7 +1908,11 @@ function renderPalette(){
   if(palAns)palAns.textContent=answered;
   if(palRem)palRem.textContent=questions.length-answered;
   if(palFlag)palFlag.textContent=flagCount;
-  if(flagWrap)flagWrap.style.display=flagCount>0?'flex':'none';
+  if(flagWrap)flagWrap.style.display=flagCount>0?'inline-flex':'none';
+  // Scroll current button into view within the strip
+  if(currentBtn){
+    requestAnimationFrame(()=>currentBtn.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'}));
+  }
 }
 
 // QUESTION RENDER
@@ -1953,21 +1978,8 @@ function toggleFlag(){
 function nextQ(){if(currentIdx<questions.length-1){currentIdx++;renderPalette();renderQuestion();}}
 function prevQ(){if(currentIdx>0){currentIdx--;renderPalette();renderQuestion();}}
 function goTo(i){currentIdx=i;renderPalette();renderQuestion();}
-let _palOpen=false;
-function togglePalette(){
-  _palOpen=!_palOpen;
-  const body=document.getElementById('palBody');
-  const arrow=document.getElementById('palArrow');
-  if(body)body.classList.toggle('open',_palOpen);
-  if(arrow){arrow.textContent=_palOpen?'▼':'▲';}
-}
-function closePalette(){
-  _palOpen=false;
-  const body=document.getElementById('palBody');
-  const arrow=document.getElementById('palArrow');
-  if(body)body.classList.remove('open');
-  if(arrow)arrow.textContent='▲';
-}
+function togglePalette(){}
+function closePalette(){}
 
 function confirmSubmit(){
   const unanswered=questions.length-Object.keys(answers).length;
